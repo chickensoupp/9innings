@@ -8,6 +8,9 @@ function calculate() {
     if (document.getElementById("player_type").value == "type"){
         alert("請選擇球員類型");
     }
+    else if (document.getElementById("training1").value == "0" || document.getElementById("training2").value == "0" || document.getElementById("training3").value == "0"){
+        alert("請選擇特訓");
+    }
     else{
         stats.forEach((stat, index) => {
             let span = document.getElementById(`dev_${stat}`);
@@ -26,6 +29,7 @@ function calculate() {
     // console.log(free_point)
 }
 function max_grade(){
+    
     const grade = [85,88,90,93,95,98,100,103,105,108,110]
     let res = [0,0,0,0,0,0,0]
     for (let i = 0;i < grade.length;i++){
@@ -40,6 +44,7 @@ function max_grade(){
     return res
 }
 function level_validation(level) {
+    console.log(level)
     let GI_values = getGIValues();
     let Base_values = getBaseValues();
     let free_point = type_of_player()
@@ -54,6 +59,7 @@ function level_validation(level) {
             return false
         }//無法達成此級距
     }
+    console.log(dev)
     
     let training1 = document.getElementById('training1').value;//特訓1
     let training2 = document.getElementById('training2').value;//特訓2
@@ -85,20 +91,21 @@ function level_validation(level) {
     let train_array = [training1,training2,training3]
     let max_dev_index = (dev[training4] > dev[training5]) ? training4 : training5;
     for (let i = 0;i < 3; i++){
-        let base_diff = (Base_values[train_array[i]] < Base_values[train_array[max_dev_index]]) ? 1 :0;
         let dev_diff = Math.max(dev[max_dev_index]- dev[train_array[i]],0)
-        dev[train_array[i]] +=  (base_diff + dev_diff)
-        free_point -= (base_diff + dev_diff)
+        dev[train_array[i]] +=  dev_diff
+        free_point -= dev_diff
     }
     if (free_point < 0){
         return false//特訓無法達成前三高強化量
     }
     
-    for (let i = 1;i >= 0; i--){
+    
+    console.log(dev)
+    for (let i = 1;i >= 0; i--){//t2 -> t1
         let train_diff = dev[train_array[i+1]] > dev[train_array[i]] ? dev[train_array[i+1]] - dev[train_array[i]]:0
         dev[i] += train_diff
         free_point -= train_diff
-        if (Base_values[train_array[i]] < Base_values[train_array[i+1]]){
+        if ((Base_values[train_array[i]] < Base_values[train_array[i+1]]) && dev[train_array[i+1]] == dev[train_array[i]]){
             dev[train_array[i]]++
             free_point--
         }
@@ -106,6 +113,7 @@ function level_validation(level) {
             return false//特訓順序無法達成
         }
     }
+    console.log(dev)
     return dev.concat([level,free_point])
 }
 
