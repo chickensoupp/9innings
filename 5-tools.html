@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>五拍計算機</title>
+    <script src="5-tools.js"></script>
+    <link rel="stylesheet" href="5-tools.css">
+</head>
+<body>
+    <h2>五拍計算機</h2>
+    <table>
+        <tr>
+            <th></th>
+            <th>接觸</th>
+            <th>力量</th>
+            <th>選球</th>
+            <th>速度</th>
+            <th>守備</th>
+        </tr>
+        <tr>
+            <td>上升量</td>
+            <td><input type="number" id="GI_contact"></td>
+            <td><input type="number" id="GI_power"></td>
+            <td><input type="number" id="GI_selection"></td>
+            <td><input type="number" id="GI_speed"></td>
+            <td><input type="number" id="GI_defense"></td>
+        </tr>
+        <tr>
+            <td>基礎值</td>
+            <td><input type="number" id="base_contact"></td>
+            <td><input type="number" id="base_power"></td>
+            <td><input type="number" id="base_selection"></td>
+            
+            <td><input type="number" id="base_speed"></td>
+            <td><input type="number" id="base_defense"></td>
+        </tr>
+        <tr>
+            <td>強化量</td>
+            <td><span class="dev-box" id="dev_contact">0</span></td>
+            <td><span class="dev-box" id="dev_power">0</span></td>
+            <td><span class="dev-box" id="dev_selection">0</span></td>
+            <td><span class="dev-box" id="dev_speed">0</span></td>
+            <td><span class="dev-box" id="dev_defense">0</span></td>
+        </tr>
+    </table>
+    
+    <label for="player_type">球員種類：</label>
+    <select id="player_type" onchange="type_of_player()">
+        <option value="type">類型</option>
+        <option value="supreme">卓越</option>
+        <option value="normal">非卓越</option>
+    </select>
+
+    <label for="training1">特訓1:</label>
+    <select id="training1" onchange="updateTrainingOptions()">
+        <option value="0">屬性</option>
+        <option value="contact">接觸</option>
+        <option value="power">力量</option>
+        <option value="selection">選球</option>
+        <option value="speed">速度</option>
+        <option value="defense">守備</option>
+    </select>
+    
+    <label for="training2">特訓2:</label>
+    <select id="training2" onchange="updateTrainingOptions()">
+        <option value="0">屬性</option>
+    </select>
+    
+    <label for="training3">特訓3:</label>
+    <select id="training3">
+        <option value="0">屬性</option>
+    </select>
+    <br>
+    <button onclick="calculate()">計算</button>
+    <h3>五拍等級:<span id="result">0</span></h3>
+    <h3></span>自由點數:<span id="freepoint">0</span></h3>
+
+</body>
+</html>
