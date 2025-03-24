@@ -59,7 +59,6 @@ function level_validation(level) {
             return false
         }//無法達成此級距
     }
-    console.log(dev)
     
     let training1 = document.getElementById('training1').value;//特訓1
     let training2 = document.getElementById('training2').value;//特訓2
@@ -100,11 +99,11 @@ function level_validation(level) {
     }
     
     
-    console.log(dev)
     for (let i = 1;i >= 0; i--){//t2 -> t1
         let train_diff = dev[train_array[i+1]] > dev[train_array[i]] ? dev[train_array[i+1]] - dev[train_array[i]]:0
-        dev[i] += train_diff
+        dev[train_array[i]] += train_diff
         free_point -= train_diff
+
         if ((Base_values[train_array[i]] < Base_values[train_array[i+1]]) && dev[train_array[i+1]] == dev[train_array[i]]){
             dev[train_array[i]]++
             free_point--
@@ -113,7 +112,7 @@ function level_validation(level) {
             return false//特訓順序無法達成
         }
     }
-    console.log(dev)
+    
     return dev.concat([level,free_point])
 }
 
