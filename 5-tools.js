@@ -168,11 +168,11 @@ function updateTrainingOptions() {
 
 function translateOption(option) {
     let translations = {
-        'contact': '接觸',
-        'power': '力量',
-        'selection': '選球',
-        'speed': '速度',
-        'defense': '守備'
+        'contact': '接觸/控球',
+        'power': '力量/球威',
+        'selection': '選球/體力',
+        'speed': '速度/直球',
+        'defense': '守備/變化'
     };
     return translations[option] || option;
 }
