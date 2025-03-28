@@ -30,7 +30,7 @@ function calculate() {
 }
 function max_grade(){
     
-    const grade = [85,88,90,93,95,98,100,103,105,108,110]
+    const grade = [83,85,88,90,93,95,98,100,103,105,108,110]
     let res = [0,0,0,0,0,0,0]
     for (let i = 0;i < grade.length;i++){
         let cur_res = level_validation(grade[i])
