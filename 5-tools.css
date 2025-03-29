@@ -34,7 +34,6 @@ input[type="number"]::-webkit-outer-spin-button,
             background-color: white;
         }
         select{
-            width: 100px;
             margin: 5px;
         }
         button {
