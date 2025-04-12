@@ -1,8 +1,28 @@
 function calculate() {
-    let grade_array = max_grade()
-    let max_level = grade_array[5]
-    let free_point = grade_array[6]
-    let dev = grade_array.slice(0,5)
+    let selected_level = select_level()
+    let grade_array
+    let max_level
+    let free_point
+    let dev
+    if (selected_level == "max") {
+        grade_array = max_grade()
+        if (grade_array == [0,0,0,0,0,0,0]){
+            grade_array = [0,0,0,0,0,"無法達成此階級",0]
+        }
+        max_level = grade_array[5]
+        free_point = grade_array[6]
+        dev = grade_array.slice(0,5)
+    }
+    else {
+        grade_array = level_validation(selected_level)
+        if (grade_array == false){
+            grade_array = [0,0,0,0,0,"無法達成此階級",0]
+        }
+        max_level = grade_array[5]
+        free_point = grade_array[6]
+        dev = grade_array.slice(0,5)
+    }
+    
     let stats = ['contact', 'power', 'selection', 'speed', 'defense']
 
     if (document.getElementById("player_type").value == "type"){
@@ -121,7 +141,6 @@ function type_of_player() {
     switch (document.getElementById("player_type").value) {
         case "type":
             dev = 0;
-            
             break;
         case "supreme":
             dev = 87;
@@ -134,6 +153,15 @@ function type_of_player() {
             break;
     }
     return dev
+}
+
+function select_level() {
+    if (document.getElementById("player_level").value == "max"){
+        return "max"
+    } 
+    else{
+        return Number(document.getElementById("player_level").value)
+    }
 }
 
 function getGIValues() {
