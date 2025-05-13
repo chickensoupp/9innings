@@ -9,53 +9,98 @@ const B_bronze_skill = ["代打專家", "鷹眼", "推打", "拉打", "左腕殺
 // const type8 = ["","","","","","","","","","","","","","","",""]
 
 // 將邏輯包成函式
-function ChangeSkills() {
-  new_skill = document.querySelector('.card2');
-  new_skill.querySelectorAll('.skill-1, .skill-2, .skill-3').forEach(box => {
-    const className = box.className;
+function ChangeSkills_normal() {
+  const new_skill = document.querySelector('.card2');
+  const skillBoxes = new_skill.querySelectorAll('.skill-1, .skill-2, .skill-3');
+  const usedSkills = new Set();
+
+  const skillCategories = {
+    legend: {
+      list: B_legend_skill,
+      image: 'url(pics/legend.png)',
+      probability: 0.1
+    },
+    gold: {
+      list: B_gold_skill,
+      image: 'url(pics/gold.png)'
+    },
+    silver: {
+      list: B_silver_skill,
+      image: 'url(pics/silver.png)'
+    },
+    bronze: {
+      list: B_bronze_skill,
+      image: 'url(pics/bronze.png)'
+    }
+  };
+
+  function getRandomSkillFrom(categoryList) {
+    const available = categoryList.filter(skill => !usedSkills.has(skill));
+    if (available.length === 0) return null;
+    const skill = available[Math.floor(Math.random() * available.length)];
+    usedSkills.add(skill);
+    return skill;
+  }
+
+  skillBoxes.forEach(box => {
     let selectedText = "";
     let backgroundImage = "";
 
-    if (className.includes('skill-1')) {
-      const rand = Math.random();
-      if (rand < 0.1) {
-        selectedText = B_legend_skill[Math.floor(Math.random() * B_legend_skill.length)];
-        backgroundImage = 'url(pics/legend.png)';
-      } else {
-        const secondThirdFourth = [B_gold_skill, B_silver_skill, B_bronze_skill];
-        const selectedType = secondThirdFourth[Math.floor(Math.random() * secondThirdFourth.length)];
-        selectedText = selectedType[Math.floor(Math.random() * selectedType.length)];
-        const index = secondThirdFourth.indexOf(selectedType);
-        backgroundImage = ['url(pics/gold.png)', 'url(pics/silver.png)', 'url(pics/ bronze.png)'][index];
+    if (box.classList.contains('skill-1')) {
+      if (Math.random() < skillCategories.legend.probability) {
+        const skill = getRandomSkillFrom(skillCategories.legend.list);
+        if (skill) {
+          selectedText = skill;
+          backgroundImage = skillCategories.legend.image;
+        }
+      }
+
+      if (!selectedText) { // fallback to gold/silver/bronze
+        const keys = ['gold', 'silver', 'bronze'];
+        while (keys.length > 0 && !selectedText) {
+          const randKey = keys.splice(Math.floor(Math.random() * keys.length), 1)[0];
+          const skill = getRandomSkillFrom(skillCategories[randKey].list);
+          if (skill) {
+            selectedText = skill;
+            backgroundImage = skillCategories[randKey].image;
+          }
+        }
       }
     } else {
-      const secondThirdFourth = [B_gold_skill, B_silver_skill, B_bronze_skill];
-      const selectedType = secondThirdFourth[Math.floor(Math.random() * secondThirdFourth.length)];
-      selectedText = selectedType[Math.floor(Math.random() * selectedType.length)];
-      const index = secondThirdFourth.indexOf(selectedType);
-      backgroundImage = ['url(pics/gold.png)', 'url(pics/silver.png)', 'url(pics/bronze.png)'][index];
+      const keys = ['gold', 'silver', 'bronze'];
+      while (keys.length > 0 && !selectedText) {
+        const randKey = keys.splice(Math.floor(Math.random() * keys.length), 1)[0];
+        const skill = getRandomSkillFrom(skillCategories[randKey].list);
+        if (skill) {
+          selectedText = skill;
+          backgroundImage = skillCategories[randKey].image;
+        }
+      }
     }
 
-    // 🔥 新增：隨機加上 Lv.1 ~ Lv.3
-    const level = Math.floor(Math.random() * 3) + 1; // 1~3
+    // 加上 Lv.1 ~ Lv.3
+    const level = Math.floor(Math.random() * 3) + 1;
     selectedText += `  Lv. ${level}`;
 
     // 設定文字與背景
     box.textContent = selectedText;
     box.style.backgroundImage = backgroundImage;
     box.style.backgroundSize = 'cover';
-    document.querySelector('.confirm-box').style.display = 'none';
-    document.querySelector('.card2').style.display = 'block';
-    document.querySelector('.skill-changes-container').style.display = 'none';
-    document.querySelector('.container').style.gap = '150px';
-    document.querySelectorAll('.select-skill').forEach(skill => {
-      skill.style.display = 'flex';
-    document.querySelector('.skill-box-right').style.display = 'block';
-    document.querySelector('.card1').classList.add('hover-effect');
-    document.querySelector('.card2').classList.add('hover-effect');
-    });
   });
+
+  // 顯示 / 隱藏 UI 元件
+  document.querySelector('.confirm-box').style.display = 'none';
+  document.querySelector('.card2').style.display = 'block';
+  document.querySelector('.skill-changes-container').style.display = 'none';
+  document.querySelector('.container').style.gap = '150px';
+  document.querySelectorAll('.select-skill').forEach(skill => {
+    skill.style.display = 'flex';
+  });
+  document.querySelector('.skill-box-right').style.display = 'block';
+  document.querySelector('.card1').classList.add('hover-effect');
+  document.querySelector('.card2').classList.add('hover-effect');
 }
+
 document.addEventListener('DOMContentLoaded', function() {
   updateSkillBox();
   // 頁面載入時，找出 mask 是 display:block 的那一張 skill-change
@@ -250,4 +295,4 @@ function replaceSkill() {
 
 
 
-ChangeSkills()
+ChangeSkills_normal()
