@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8">
+  <title>中間兩個矩形</title>
+  <link rel="stylesheet" href="skill.css">
+  <script src="skill.js"></script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="choose-skill-container"  style="display: none;">
+      <div class="choose-skill-banner">變更技能</div>
+      <div class="choose-skill-text">您確定要變更為新的技能嗎?</div>
+      <div class="btn-box">
+        <button class="btn-1" onclick=closeChooseSkillContainer()>否</button>
+        <button class="btn-2" onclick=replaceSkill()>是</button>
+      </div>
+    </div>
+    <div class="skill-box-left">
+      <div class="select-skill" style="display: none;">保留技能</div>
+      <div class="card1" onclick="chooseSkill(this)">
+        <div class="skill-box">
+          <div class="skill-1" style="background-image: url('pics/legend.png');">精準打擊 Lv. 3
+          </div>
+          <div class="skill-2" style="background-image: url('pics/gold.png');">預知能力 Lv. 3
+          </div>
+          <div class="skill-3" style="background-image: url('pics/gold.png');">超能神話 Lv. 3
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="skill-box-right" style="display: none;">
+      <div class="select-skill">變更技能</div>
+      <div class="card2" onclick="chooseSkill(this)">
+        <div class="skill-box">
+          <div class="skill-1"></div>
+          <div class="skill-2"></div>
+          <div class="skill-3"></div>
+        </div>
+      </div>
+    </div>
+    <div class="skill-changes-container" style="display: block;">
+      <div class="skill-changes">
+        <div class="skill-change" onclick="toggleOverlay(this)">
+          <div class="skill-change-icon"></div>
+          <div>高級技能變更券</div>
+          <div></div>
+          <div>x100</div>
+          <div class="mask" style="display:block;"></div>
+        </div>
+        <div class="skill-change" onclick="toggleOverlay(this)">
+          <div class="ultimate-skill-change-icon"></div>
+          <div>最高級技能變更券</div>
+          <div></div>
+          <div>x100</div>
+          <div class="mask" style="display: none;"></div>
+        </div>
+        <div class="skill-change" onclick="toggleOverlay(this)">
+          <div class="legend-skill-change-icon"></div>
+          <div>傳說技能變更券</div>
+          <div></div>
+          <div>x100</div>
+          <div class="mask" style="display: none;"></div>
+        </div>
+        <div class="skill-change" onclick="toggleOverlay(this)">
+          <div class="legend-skill-select-change-icon"></div>
+          <div>傳說技能選擇變更券</div>
+          <div></div>
+          <div>x100</div>
+          <div class="mask" style="display: none;"></div>
+        </div>
+        <div class="skill-change" onclick="toggleOverlay(this)">
+          <div class="skill-select-change-icon"></div>
+          <div>技能選擇變更券</div>
+          <div></div>
+          <div>x100</div>
+          <div class="mask" style="display: none;"></div>
+        </div>
+        <div class="skill-change" onclick="toggleOverlay(this)">
+          <div class="premium-skill-select-change-icon"></div>
+          <div>高級技能選擇變更券</div>
+          <div></div>
+          <div>x100</div>
+          <div class="mask" style="display: none;"></div>
+        </div>
+        <div class="skill-change" onclick="toggleOverlay(this)">
+          <div class="skill-protect-change-icon"></div>
+          <div>技能變更保護券</div>
+          <div></div>
+          <div>x100</div>
+          <div class="mask" style="display: none;"></div>
+        </div>
+        <div class="skill-change" onclick="toggleOverlay(this)">
+          <div class="premium-skill-protect-change-icon"></div>
+          <div>高級技能變更保護券</div>
+          <div></div>
+          <div>x100</div>
+          <div class="mask" style="display: none;"></div>
+        </div>
+      </div>
+      <div class="use-skill-changes-container">
+        <button class="use-skill-changes" onclick="document.querySelector('.confirm-box').style.display = 'flex';">
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- container -->
+
+  <div class="confirm-box" style="display: none;">
+    <div class="name-banner">高級技能變更券</div>
+    <div class="skill-box-banner">技能保管箱1</div>
+    <div class="skill-box-original-1"></div>
+    <div class="skill-box-original-2"></div>
+    <div class="skill-box-original-3"></div>
+    <div class="text">請問要在
+      <span>S.Ohtani'24</span>
+      球員上使用技能變更券嗎？<br>
+      全部的技能將會隨機產生，<br>
+      且技能經驗值和技能強化次數也會被初始化。<br>
+      不會出現傳說技能。
+    </div>
+    <div class="btn-box">
+      <div class="btn-1" onclick="document.querySelector('.confirm-box').style.display = 'none';">否</div>
+      <button class="btn-2" onclick="ChangeSkills(this)">是</button>
+    </div>
+  </div>
+</body>
+
+</html>

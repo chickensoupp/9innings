@@ -1,0 +1,412 @@
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+body {
+    margin: 0;
+    height: 100vh;
+    background-color: #000000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+  }
+
+  .container {
+    display: flex;
+    gap: 40px; /* 兩個矩形之間的距離 */
+  }
+  .skill-box-left, .skill-box-right {
+    width: 300px;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center;
+
+  }
+  .card1, .card2 {
+    position: relative;
+    top: 15px;
+    width: 300px;
+    height: 450px;
+    background-color: #444;
+  }
+  .hover-effect {
+    cursor: pointer;
+  }
+  .choose-skill {
+    background-color: rgba(74, 121, 231, 0.4);
+    outline: 2px solid #3975dd;
+    /* pointer-events: none; */
+    z-index: 100; /* 保證在上層 */
+    cursor: pointer;
+  }
+  .select-skill {
+    width: 300px;
+    height: 40px;
+    background-color: #5f76b8;
+    color: #ffffff;
+    font-size: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+  }
+  .choose-skill-container {
+    position: fixed;
+    flex-direction: column;
+    align-items: center;
+    justify-content: stretch;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px;
+    height: 550px;
+    background: linear-gradient(to bottom, #dad8d8, #b5b2b2);
+    border: 1px solid #555;
+    z-index: 1000; /* 保證在上層 */
+  }
+  .choose-skill-banner {
+    width: 100%;
+    height: 15%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    font-size: 30px;
+    color: #363535;
+    
+  }
+  .choose-skill-text {
+    width: 100%;
+    height: 75%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+    font-weight: 500;
+    color: #444242;
+  }
+  .skill-box {
+    width: 95%;
+    height: 40%;
+    position: absolute;
+    bottom: 5px; /* 距離底部 20px，可自行調整 */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #000000;
+    border: 2px solid #000000;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .skill-1, .skill-2, .skill-3 {
+    width: calc(100% - 2px);
+    display: flex;
+    align-items: center;
+    justify-content: center ;
+    background-size: cover;
+    background-position: center;
+    height: 33.3%;
+    margin: 2px;
+    font-weight: 500;
+    background-color: #FFFFFF;
+    color: rgb(221, 215, 215);             /* 字體白色 */
+    font-style: italic; 
+    font-size: 20px;      /* 斜體 */
+    text-shadow:
+      0 0 5px black,
+      0 0 5px black,
+      0 0 5px black;
+  }
+  .skill-changes {
+    width: 400px;
+    height: 500px; /* 類似你的範圍 */
+    overflow-y: auto; /* 可以滾動 */
+    background-color: #282727;
+    border: 1px solid #555;
+    padding: 3px;
+    box-sizing: border-box;
+    display: block;
+    scrollbar-width: none; /* 隱藏Firefox滾動條 */
+    -ms-overflow-style: none; /* 隱藏IE滾動條 */
+  }
+  .skill-changes::-webkit-scrollbar {
+    display: none; /* 隱藏Chrome滾動條 */
+  }
+
+  .skill-change {
+    background: rgb(171, 171, 174);
+    margin-bottom: 5px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    font-weight: 500;
+  }
+  .skill-change:hover {
+    cursor: pointer;
+  }
+  .skill-change div:nth-child(1){
+    width: 80px;
+    height: 80px;
+    background-color: #787474;
+    margin-right: 10px;
+    flex-shrink: 0;
+  }
+  .skill-change div:nth-child(2) {
+    color: #000000;
+    font-size: 20px; 
+    width: 50%;
+  }
+  .skill-change div:nth-child(3) {
+    width: 1px; /* 建議線條不要太粗，2px比較正常 */
+    height: 65px; /* 90%太高了，視覺看起來不平衡 */
+    background-color: #e9dfdf;
+    display: inline-block; /* 重點：讓div變成可以設定寬高的inline元素 */
+    margin: 0 10px 0 30px; /* 線左右留空 */
+  }  
+  .skill-change div:nth-child(4) {
+    font-size: 25px;
+  }
+  .skill-change .mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 99.5%;
+    height: 99%;
+    background-color: rgba(74, 121, 231, 0.4);
+    outline: 2px solid #3975dd;
+    border: 1.5px solid #3975dd;
+    pointer-events: none; /* 讓點擊仍然能夠作用於下層元素 */
+    z-index: 10; /* 保證在上層 */
+  }
+  .confirm-box {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: stretch;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px;
+    height: 500px;
+    background-color: #a49e9e;
+    border: 1px solid #555;
+    z-index: 10; /* 保證在上層 */
+  }
+  .name-banner {
+    width: 100%;
+    height: 15%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+    background-color: #e2d6d6;
+  }
+  .skill-box-banner {
+    width: 100%;
+    height: 10%;
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    color: #ffffff;
+    justify-content: center;
+    background-color: #c40a0a;
+    margin-bottom: 10px;
+  }
+  .skill-box-original-1, .skill-box-original-2, .skill-box-original-3 {
+    width: 300px;
+    height: 10%;
+    display: flex;
+    align-items: center;
+    justify-content: center ;
+    background-size: cover;
+    background-position: center;
+    margin: 3px;
+    background-color: #FFFFFF;
+    color: rgb(221, 215, 215);             /* 字體白色 */
+    font-style: italic; 
+    font-size: 20px;      /* 斜體 */
+    text-shadow:
+      0 0 5px black,
+      0 0 5px black,
+      0 0 5px black;
+  }
+  .btn-box {
+    width: 100%;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e2d6d6;
+  }
+  .btn-1 {
+    width: 200px;
+    height: 65%;
+    background-color: #4b5383;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    border: none;
+    color: #ffffff;
+  }
+  .btn-2 {
+    width: 200px;
+    height: 65%;
+    background-color: rgb(27, 27, 206);
+    margin-left: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    border: none;
+    color: #ffffff;
+  }
+  .btn-2:hover, .btn-1:hover {
+    cursor: pointer;
+  }
+  .text {
+    width: 50%;
+    height: 30%;
+    margin-top: 15px;
+    font-size: 17px;
+    text-align: center;
+    line-height: 1.5;
+  }
+  .text span {
+    display: inline;
+    color: #4c0665;
+    font-weight: bold;
+  }
+  .use-skill-changes-container {
+    width: 100%;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+  }
+  .use-skill-changes {
+    width: 90%;
+    height: 60%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    background-image: url('pics/skill-change-use.png');
+    background-size: cover;
+    background-position: center;
+    border: none;
+  }
+  .use-skill-changes:hover {
+    cursor: pointer;
+  }
+  .skill-change-icon {
+    background-image: url('pics/skill-change.png');
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+  }
+  .skill-change-icon {
+    background-image: url('pics/skill-change.png');
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+  }
+  .ultimate-skill-change-icon {
+    background-image: url('pics/ultimate-skill-change.png');
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+  }
+  .legend-skill-change-icon {
+    background-image: url('pics/legend-skill-change.png');
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+  }
+  .legend-skill-select-change-icon {
+    background-image: url('pics/legend-skill-select-change.png');
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+  }
+  .skill-select-change-icon {
+    background-image: url('pics/skill-select-change.png');
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+  }
+  .premium-skill-select-change-icon {
+    background-image: url('pics/premium-skill-select-change.png');
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+  }
+  .skill-protect-change-icon {
+    background-image: url('pics/skill-protect-change.png');
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+  }
+  .premium-skill-protect-change-icon {
+    background-image: url('pics/premium-skill-protect-change.png');
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+  }
+  
