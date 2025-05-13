@@ -9,28 +9,37 @@ const B_bronze_skill = ["代打專家", "鷹眼", "推打", "拉打", "左腕殺
 // const type8 = ["","","","","","","","","","","","","","","",""]
 
 // 將邏輯包成函式
-function ChangeSkills_normal() {
+function ChangeSkills_basic(mode) {
   const new_skill = document.querySelector('.card2');
   const skillBoxes = new_skill.querySelectorAll('.skill-1, .skill-2, .skill-3');
   const usedSkills = new Set();
+
+  const baseProbabilities = {
+    normal: 0.1,
+    ultimate: 0.15,
+    legend: 1.0
+  };
 
   const skillCategories = {
     legend: {
       list: B_legend_skill,
       image: 'url(pics/legend.png)',
-      probability: 0.1
+      probability: baseProbabilities[mode] || 0
     },
     gold: {
       list: B_gold_skill,
-      image: 'url(pics/gold.png)'
+      image: 'url(pics/gold.png)',
+      probability: mode === 'ultimate' ? 0.2833 : null
     },
     silver: {
       list: B_silver_skill,
-      image: 'url(pics/silver.png)'
+      image: 'url(pics/silver.png)',
+      probability: mode === 'ultimate' ? 0.2833 : null
     },
     bronze: {
       list: B_bronze_skill,
-      image: 'url(pics/bronze.png)'
+      image: 'url(pics/bronze.png)',
+      probability: mode === 'ultimate' ? 0.2833 : null
     }
   };
 
@@ -42,53 +51,69 @@ function ChangeSkills_normal() {
     return skill;
   }
 
-  skillBoxes.forEach(box => {
-    let selectedText = "";
-    let backgroundImage = "";
+  function selectCategory(index) {
+    if (index === 0) {
+      if (mode === 'legend') return 'legend';
+      if (Math.random() < skillCategories.legend.probability) return 'legend';
+    }
+    const normalKeys = ['gold', 'silver', 'bronze'];
+    return normalKeys[Math.floor(Math.random() * normalKeys.length)];
+  }
 
-    if (box.classList.contains('skill-1')) {
-      if (Math.random() < skillCategories.legend.probability) {
-        const skill = getRandomSkillFrom(skillCategories.legend.list);
-        if (skill) {
-          selectedText = skill;
-          backgroundImage = skillCategories.legend.image;
-        }
-      }
+  function generateSkills() {
+    const results = [];
+    let totalLevel = 0;
 
-      if (!selectedText) { // fallback to gold/silver/bronze
-        const keys = ['gold', 'silver', 'bronze'];
-        while (keys.length > 0 && !selectedText) {
-          const randKey = keys.splice(Math.floor(Math.random() * keys.length), 1)[0];
-          const skill = getRandomSkillFrom(skillCategories[randKey].list);
+    for (let i = 0; i < skillBoxes.length; i++) {
+      let category = selectCategory(i);
+      let skill = getRandomSkillFrom(skillCategories[category].list);
+
+      // fallback 若該類用完
+      if (!skill) {
+        const fallbackKeys = Object.keys(skillCategories).filter(k => k !== category);
+        while (fallbackKeys.length > 0 && !skill) {
+          const randKey = fallbackKeys.splice(Math.floor(Math.random() * fallbackKeys.length), 1)[0];
+          skill = getRandomSkillFrom(skillCategories[randKey].list);
           if (skill) {
-            selectedText = skill;
-            backgroundImage = skillCategories[randKey].image;
+            category = randKey;
+            break;
           }
         }
       }
-    } else {
-      const keys = ['gold', 'silver', 'bronze'];
-      while (keys.length > 0 && !selectedText) {
-        const randKey = keys.splice(Math.floor(Math.random() * keys.length), 1)[0];
-        const skill = getRandomSkillFrom(skillCategories[randKey].list);
-        if (skill) {
-          selectedText = skill;
-          backgroundImage = skillCategories[randKey].image;
-        }
-      }
+
+      const level = Math.floor(Math.random() * 3) + 1;
+      totalLevel += level;
+
+      results.push({
+        box: skillBoxes[i],
+        text: `${skill}  Lv. ${level}`,
+        image: skillCategories[category].image
+      });
     }
 
-    // 加上 Lv.1 ~ Lv.3
-    const level = Math.floor(Math.random() * 3) + 1;
-    selectedText += `  Lv. ${level}`;
+    return { results, totalLevel };
+  }
 
-    // 設定文字與背景
-    box.textContent = selectedText;
-    box.style.backgroundImage = backgroundImage;
-    box.style.backgroundSize = 'cover';
+  let finalResults;
+
+  if (mode === 'ultimate') {
+    // retry until totalLevel >= 5
+    do {
+      usedSkills.clear();
+      finalResults = generateSkills();
+    } while (finalResults.totalLevel < 5);
+  } else {
+    finalResults = generateSkills();
+  }
+
+  // 套用結果
+  finalResults.results.forEach(result => {
+    result.box.textContent = result.text;
+    result.box.style.backgroundImage = result.image;
+    result.box.style.backgroundSize = 'cover';
   });
 
-  // 顯示 / 隱藏 UI 元件
+  // UI 更新
   document.querySelector('.confirm-box').style.display = 'none';
   document.querySelector('.card2').style.display = 'block';
   document.querySelector('.skill-changes-container').style.display = 'none';
@@ -100,7 +125,86 @@ function ChangeSkills_normal() {
   document.querySelector('.card1').classList.add('hover-effect');
   document.querySelector('.card2').classList.add('hover-effect');
 }
+function legend_skill_select() {
+  const leftBox = document.querySelector('.skill-box-left');
+  const rightBox = document.querySelector('.skill-box-right');
 
+  const skillCategories = {
+    legend: {
+      list: B_legend_skill,
+      image: 'url(pics/legend.png)'
+    },
+    gold: {
+      image: 'url(pics/gold.png)'
+    },
+    silver: {
+      image: 'url(pics/silver.png)'
+    },
+    bronze: {
+      image: 'url(pics/bronze.png)'
+    }
+  };
+
+  for (let i = 1; i <= 3; i++) {
+    const leftSkill = leftBox.querySelector(`.skill-${i}`);
+    const rightSkill = rightBox.querySelector(`.skill-${i}`);
+
+    const text = leftSkill.textContent.trim();
+    const levelMatch = text.match(/Lv\.\s*\d+/);
+    const levelText = levelMatch ? `  ${levelMatch[0]}` : '';
+    
+    if (i === 1) {
+      // 第1格：挑 legend，排除左邊技能名
+      const leftSkillName = text.replace(/Lv\.\s*\d+/, '').trim();
+      const availableSkills = skillCategories.legend.list.filter(skill => skill !== leftSkillName);
+
+      if (availableSkills.length === 0) {
+        console.warn("無其他 legend 技能可替換。");
+        rightSkill.textContent = text;
+        rightSkill.style.backgroundImage = skillCategories.legend.image;
+      } else {
+        const newSkill = availableSkills[Math.floor(Math.random() * availableSkills.length)];
+        rightSkill.textContent = `${newSkill}${levelText}`;
+        rightSkill.style.backgroundImage = skillCategories.legend.image;
+      }
+    } else {
+      // 第2, 3格：完全複製
+      rightSkill.textContent = text;
+      rightSkill.style.backgroundImage = leftSkill.style.backgroundImage;
+    }
+
+    rightSkill.style.backgroundSize = 'cover';
+  }
+  document.querySelector('.confirm-box').style.display = 'none';
+  document.querySelector('.card2').style.display = 'block';
+  document.querySelector('.skill-changes-container').style.display = 'none';
+  document.querySelector('.container').style.gap = '150px';
+  document.querySelectorAll('.select-skill').forEach(skill => {
+    skill.style.display = 'flex';
+  });
+  document.querySelector('.skill-box-right').style.display = 'block';
+  document.querySelector('.card1').classList.add('hover-effect');
+  document.querySelector('.card2').classList.add('hover-effect');
+}
+function check_legend_skill() {
+  const iconClass = find_skill_type();
+  if (iconClass == "legend-skill-select-change-icon") {
+    const bgImage = getComputedStyle(document.querySelector('.card1 .skill-1')).backgroundImage;
+    if (bgImage.includes('legend.png')) {
+      return true
+    } else {
+      return false
+    }
+  }
+  else {
+    return true
+  }
+}
+function use_skill() {
+  if (check_legend_skill()) {
+    document.querySelector('.confirm-box').style.display = 'flex';
+  }
+}
 document.addEventListener('DOMContentLoaded', function() {
   updateSkillBox();
   // 頁面載入時，找出 mask 是 display:block 的那一張 skill-change
@@ -112,12 +216,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 });
+
 function updateSkillBox() {
   for (let i = 1; i <= 3; i++) {
     document.querySelector('.skill-box-original-' + i).textContent = document.querySelector('.skill-' + i).textContent;
     document.querySelector('.skill-box-original-' + i).style.backgroundImage = document.querySelector('.skill-' + i).style.backgroundImage;
   }
 }
+
+
 function toggleOverlay(element) {
   const masks = document.querySelectorAll('.skill-change .mask');
   // 先把所有 mask 關掉
@@ -178,7 +285,7 @@ function getImageNameFromClass(className) {
 window.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.skill-change').forEach(skillChange => {
     skillChange.addEventListener('click', function() {
-      toggleMask(this);
+      toggleOverlay(this);
     });
   });
 });
@@ -212,9 +319,9 @@ document.addEventListener('DOMContentLoaded', function () {
     skillChanges.style.cursor = 'auto';
   });
 });
+
 let count1 = 0;
 let count2 = 0;
-
 function chooseSkill(element) {
   // 只有有 hover-effect 才能選
   if (!element.classList.contains('hover-effect')) {
@@ -292,7 +399,44 @@ function replaceSkill() {
   updateSkillBox();
   
 }
+function ChangeSkill() {
+  const iconClass = find_skill_type();
+      switch (iconClass) {
+        case 'skill-change-icon':
+          ChangeSkills_basic('normal');
+          break;
+        case 'ultimate-skill-change-icon':
+          ChangeSkills_basic('ultimate');
+          break;
+        case 'legend-skill-change-icon':
+          ChangeSkills_basic('legend');
+          break;
+        case 'legend-skill-select-change-icon':
+          legend_skill_select();
+          break;
+        case 'skill-select-change-icon':
+          handleSkillSelectChange();
+          break;
+        case 'premium-skill-select-change-icon':
+          handlePremiumSkillSelectChange();
+          break;
+        case 'skill-protect-change-icon':
+          handleSkillProtectChange();
+          break;
+        case 'premium-skill-protect-change-icon':
+          handlePremiumSkillProtectChange();
+          break;
+        default:
+          console.warn('未知的 icon 類別:', iconClass);
+      }
 
-
-
-ChangeSkills_normal()
+}
+function find_skill_type() {
+  const skillChanges = document.querySelectorAll('.skill-change');
+  for (const change of skillChanges) {
+    const mask = change.querySelector('.mask');
+    if (mask && window.getComputedStyle(mask).display === 'block') {
+      return change.querySelector('div').className;
+    }
+  }
+}
