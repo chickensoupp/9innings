@@ -102,7 +102,7 @@ body {
     transform: translate(-50%, -50%);
     width: 800px;
     height: 550px;
-    background: linear-gradient(to bottom, #dad8d8, #b5b2b2);
+    background: linear-gradient(to bottom, #b6b4b4, #b5b2b2);
     border: 1px solid #555;
     z-index: 1000; /* 保證在上層 */
   }
@@ -115,6 +115,7 @@ body {
     font-weight: 500;
     font-size: 30px;
     color: #363535;
+    background-color: #ddd9d9;
     
   }
   .choose-skill-text {
