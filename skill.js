@@ -60,6 +60,14 @@ function initializeSkillBoxes() {
     skillBoxes[i].style.backgroundSize = 'cover';
   }
 }
+function reset_svg() {
+  const svgs = document.querySelectorAll('svg');
+  svgs.forEach(svg => {
+    svg.querySelectorAll('path').forEach(path => {
+      path.setAttribute('fill', '#051350');
+    });
+  });
+}
 function toggleSkill(el) {
   const labelText = document.getElementById('labelText');
   if (el.checked) {
@@ -312,6 +320,9 @@ function use_skill() {
     svgs.forEach(svg => {
       svg.style.display = 'block';
     });
+    const btn = document.querySelector('.selection-btn-2');
+    btn.disabled = true;      // 設為 disabled，視覺與操作上無法點擊
+    return;
   }
   
 }
@@ -435,7 +446,6 @@ function skill_select(indexToChange, type) {
   } else {
     new_skill = document.querySelector('.card1');
   }
-
   const fromCard = document.querySelector('.card1');
   const fromSkills = fromCard.querySelectorAll('.skill-1, .skill-2, .skill-3');
   const skillBoxes = new_skill.querySelectorAll('.skill-1, .skill-2, .skill-3');
@@ -762,7 +772,7 @@ function ChangeSkill() {
         default:
           break;
       }
-      
+      reset_svg();
 
 }
 function find_skill_type() {
@@ -775,6 +785,8 @@ function find_skill_type() {
   }
 }
 function select_svg(element) {
+  const btn = document.querySelector('.selection-btn-2');
+  btn.disabled = false;
   // 重設所有 path 的填色
   document.querySelectorAll('svg path.p1, svg path.p2, svg path.p3').forEach(path => {
     path.setAttribute('fill', '#051350');

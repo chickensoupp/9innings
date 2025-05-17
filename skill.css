@@ -223,7 +223,7 @@ body {
     pointer-events: none; /* 讓點擊仍然能夠作用於下層元素 */
     z-index: 10; /* 保證在上層 */
   }
-  .confirm-box,.selection-container{
+  .confirm-box{
     position: fixed;
     display: flex;
     flex-direction: column;
@@ -417,20 +417,6 @@ body {
     align-items: center;
     justify-content: center;
   }
-  .selection-container {
-    width: 80%;
-    height: 450px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #a49e9e;
-    z-index: 1000;
-  }
   .selection-box-banner{
     width: 100%;
     height: 70px;
@@ -534,4 +520,20 @@ body {
     margin-left: 10px;
     font-weight: bold;
     user-select: none;
+  }
+  .selection-container{
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    top: 50%;
+    left: 50%;
+    gap: 10px;
+    transform: translate(-50%, -50%);
+    width: 800px;
+    height: 500px;
+    background-color: #a49e9e;
+    border: 1px solid #555;
+    z-index: 100; /* 保證在上層 */
   }
