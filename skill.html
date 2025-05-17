@@ -8,9 +8,65 @@
   <script src="skill.js"></script>
 </head>
 
-<body>
+<body onload="initializeSkillBoxes()">
+  <label class="switch">
+    <input type="checkbox" id="toggleSwitch" onclick="toggleSkill(this)" />
+    <span class="slider"></span>
+    <span class="label-text" id="labelText">打者</span>
+  </label>
   <div class="container">
-    <div class="choose-skill-container"  style="display: none;">
+    <div class="selection-container" style="display: none;">
+      <div class="selection-box-banner"></div>
+      <div class="skill-box1" onclick="select_svg(this)">
+        <div class="selection-skill-box1" onclick="select_svg(this)">
+          <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="50.0pt" height="50.0pt" viewBox="0 0 105.000000 99.000000" preserveAspectRatio="xMidYMid meet">
+            <g transform="translate(0.000000,99.000000) scale(0.100000,-0.100000)" fill="#051350" stroke="none">
+              <path class="p1" fill＝"#051350" d="M894 728 c-22 -18 -126 -111 -231 -205 -106 -95 -198 -173 -204 -173 -6 0 -60 36 -120 80 -60 44 -116 83 -125 87 -14 5 -15 3 -4 -17 28 -52 243 -370 250 -370 9 0 66 72 309 393 95 126 171 231 168 233 -3 3 -22 -10 -43 -28z" />
+              <path d="M180 661 c0 -55 3 -63 33 -90 17 -17 35 -31 39 -31 4 0 8 21 10 48 l3 47 220 5 220 5 37 30 c21 17 38 33 38 38 0 4 -135 7 -300 7 l-300 0 0 -59z" />
+              <path d="M755 433 c-39 -46 -40 -50 -45 -138 l-5 -90 -72 -3 c-69 -3 -74 -5 -98 -36 -14 -18 -25 -36 -25 -40 0 -3 66 -5 148 -4 l147 3 3 169 c1 93 -1 173 -6 178 -4 4 -26 -13 -47 -39z" />
+              <path d="M182 273 l3 -148 113 -3 c122 -3 126 0 92 48 -18 25 -29 29 -73 32 l-52 3 -3 75 c-3 69 -6 78 -34 108 -18 17 -36 32 -40 32 -5 0 -7 -66 -6 -147z" />
+            </g>
+          </svg>
+          <div class="selection-skill-box-original-1"></div>
+        </div>
+      </div>
+      <hr class="line">
+      <div class="skill-box2" onclick="select_svg(this)">
+        <div class="selection-skill-box2" onclick="select_svg(this)">
+          <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="50.0pt" height="50.0pt" viewBox="0 0 105.000000 99.000000" preserveAspectRatio="xMidYMid meet">
+            <g transform="translate(0.000000,99.000000) scale(0.100000,-0.100000)" fill="#051350" stroke="none">
+              <path class="p2" fill＝"#051350" d="M894 728 c-22 -18 -126 -111 -231 -205 -106 -95 -198 -173 -204 -173 -6 0 -60 36 -120 80 -60 44 -116 83 -125 87 -14 5 -15 3 -4 -17 28 -52 243 -370 250 -370 9 0 66 72 309 393 95 126 171 231 168 233 -3 3 -22 -10 -43 -28z" />
+              <path d="M180 661 c0 -55 3 -63 33 -90 17 -17 35 -31 39 -31 4 0 8 21 10 48 l3 47 220 5 220 5 37 30 c21 17 38 33 38 38 0 4 -135 7 -300 7 l-300 0 0 -59z" />
+              <path d="M755 433 c-39 -46 -40 -50 -45 -138 l-5 -90 -72 -3 c-69 -3 -74 -5 -98 -36 -14 -18 -25 -36 -25 -40 0 -3 66 -5 148 -4 l147 3 3 169 c1 93 -1 173 -6 178 -4 4 -26 -13 -47 -39z" />
+              <path d="M182 273 l3 -148 113 -3 c122 -3 126 0 92 48 -18 25 -29 29 -73 32 l-52 3 -3 75 c-3 69 -6 78 -34 108 -18 17 -36 32 -40 32 -5 0 -7 -66 -6 -147z" />
+            </g>
+          </svg>
+          <div class="selection-skill-box-original-2"></div>
+        </div>
+        
+      </div>
+      <hr class="line">
+      <div class="skill-box3" onclick="select_svg(this)">
+        <div class="selection-skill-box3" onclick="select_svg(this)">
+          <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="50.0pt" height="50.0pt" viewBox="0 0 105.000000 99.000000" preserveAspectRatio="xMidYMid meet">
+            <g transform="translate(0.000000,99.000000) scale(0.100000,-0.100000)" fill="#051350" stroke="none">
+              <path class="p3" fill＝"#051350" d="M894 728 c-22 -18 -126 -111 -231 -205 -106 -95 -198 -173 -204 -173 -6 0 -60 36 -120 80 -60 44 -116 83 -125 87 -14 5 -15 3
+           -4 -17 28 -52 243 -370 250 -370 9 0 66 72 309 393 95 126 171 231 168 233 -3 3 -22 -10 -43 -28z" />
+              <path d="M180 661 c0 -55 3 -63 33 -90 17 -17 35 -31 39 -31 4 0 8 21 10 48 l3 47 220 5 220 5 37 30 c21 17 38 33 38 38 0 4 -135 7 -300 7 l-300 0 0 -59z" />
+              <path d="M755 433 c-39 -46 -40 -50 -45 -138 l-5 -90 -72 -3 c-69 -3 -74 -5 -98 -36 -14 -18 -25 -36 -25 -40 0 -3 66 -5 148 -4 l147 3 3 169 c1 93 -1 173 -6 178 -4 4 -26 -13 -47 -39z" />
+              <path d="M182 273 l3 -148 113 -3 c122 -3 126 0 92 48 -18 25 -29 29 -73 32 l-52 3 -3 75 c-3 69 -6 78 -34 108 -18 17 -36 32 -40 32 -5 0 -7 -66 -6 -147z" />
+            </g>
+          </svg>
+          <div class="selection-skill-box-original-3"></div>
+        </div>
+        
+      </div>
+      <div class="selection-footer">
+        <div class="selection-btn-1" onclick="document.querySelector('.selection-container').style.display = 'none';">否</div>
+      <button class="selection-btn-2" onclick="ChangeSkill();">是</button>
+      </div>
+    </div>
+    <div class="choose-skill-container" style="display: none;">
       <div class="choose-skill-banner">變更技能</div>
       <div class="choose-skill-text">您確定要變更為新的技能嗎?</div>
       <div class="btn-box">
@@ -22,12 +78,9 @@
       <div class="select-skill" style="display: none;">保留技能</div>
       <div class="card1" onclick="chooseSkill(this)">
         <div class="skill-box">
-          <div class="skill-1" style="background-image: url('pics/legend.png');">精準打擊 Lv. 3
-          </div>
-          <div class="skill-2" style="background-image: url('pics/gold.png');">預知能力 Lv. 3
-          </div>
-          <div class="skill-3" style="background-image: url('pics/gold.png');">超能神話 Lv. 3
-          </div>
+          <div class="skill-1"></div>
+          <div class="skill-2"></div>
+          <div class="skill-3"></div>
         </div>
       </div>
     </div>
@@ -111,24 +164,18 @@
   <div class="confirm-box" style="display: none;">
     <div class="name-banner">高級技能變更券</div>
     <div class="skill-box-banner">技能保管箱1</div>
-    
-      <div class="skill-box1">
-        <input type="checkbox" name="skill-1" id="skill-1" style="display: block;">
-        <label for="skill-1"></label>
-        <div class="skill-box-original-1"></div>
-      </div>
 
-      <div class="skill-box2">
-        <input type="checkbox" name="skill-2" id="skill-2" style="display: block;">
-        <label for="skill-2"></label>
-        <div class="skill-box-original-2"></div>
-      </div>
+    <div class="skill-box1">
+      <div class="skill-box-original-1"></div>
+    </div>
 
-      <div class="skill-box3">
-        <input type="checkbox" name="skill-3" id="skill-3" style="display: block;">
-        <label for="skill-3"></label>
-         <div class="skill-box-original-3"></div>
-      </div>
+    <div class="skill-box2">
+      <div class="skill-box-original-2"></div>
+    </div>
+
+    <div class="skill-box3">
+      <div class="skill-box-original-3"></div>
+    </div>
     <div class="text">請問要在
       <span>S.Ohtani'24</span>
       球員上使用技能變更券嗎？<br>
@@ -136,10 +183,12 @@
       且技能經驗值和技能強化次數也會被初始化。<br>
     </div>
     <div class="btn-box">
-      <div class="btn-1" onclick="document.querySelector('.confirm-box').style.display = 'none';">否</div>
+      <div class="btn-1" onclick="document.querySelector('.confirm-box').style.display = 'none';document.querySelector('.switch').style.display = 'flex';">否</div>
       <button class="btn-2" onclick="ChangeSkill()">是</button>
     </div>
   </div>
 </body>
-
+<script>
+  document.getElementById('labelText').style.color = 'crimson';
+</script>
 </html>

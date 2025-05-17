@@ -1,15 +1,101 @@
-// 四類文字陣列
 const B_legend_skill = ["精準打擊", "先鋒", "壞球打者", "天生巨星", "打者默契", "打者洞察力","最強打者","機會製造者","老手"];
 const B_gold_skill = ["強化優點","預知能力","超能神話","雷射肩","超級強打","廣角打者","萬眾矚目","五拍子球員","超級輔助","王牌殺手","打擊機器","盜壘天王","自走砲"];
 const B_silver_skill = ["精密打擊", "揮大棒打者", "巨砲本能", "開路先鋒", "筋疲力盡", "忍術","下盤鍛鍊", "逆轉的力量", "勝負天性", "動物本能", "信賴", "克服弱點"];
 const B_bronze_skill = ["代打專家", "鷹眼", "推打", "拉打", "左腕殺手", "右腕殺手", "守備將軍","打點機器", "直球殺手", "正面對決", "集中力", "初球攻略"];
-// const type5 = ["","","","","","","","","","","","","","","",""]
-// const type6 = ["","","","","","","","","","","","","","","",""]
-// const type7 = ["","","","","","","","","","","","","","","",""]
-// const type8 = ["","","","","","","","","","","","","","","",""]
+const P_legend_skill = ["工作馬","精準控球","速球型投手","完美先生","牛棚日","投手默契","投手洞察力","合力投球","先守後攻"]
+const P_gold_skill = ["技巧派投手","壓倒性投手","大吃局數","最後大魔王","交錯之火","自我解決","王牌","鬥志","王牌終結者","滾地球投手","巨人殺手","投球協調者","決勝球","無法碰觸"]
+const P_silver_skill = ["強力投手","控球藝術家","強打殺手","國寶投手","逆轉大師","狙擊手","野戰指揮","投球機器","佈局","乘勝追擊","救火隊","安全感","調整節奏"]
+const P_bronze_skill = ["牽制王","平靜","佛祖保佑","危機克服","光速投球","魔球大師","左打殺手","右打殺手","鋼鐵人","老謀深算","強心臟","冰凍"]
+function initializeSkillBoxes() {
+  const skillPools = getSkillPools(); // 技能池
+  const leftCard = document.querySelector('.skill-box-left .card1');
+  const skillBoxes = leftCard.querySelectorAll('.skill-1, .skill-2, .skill-3');
 
-// 將邏輯包成函式
-function ChangeSkills_basic(mode) {
+  const baseProbabilities = {
+    legend: 0.1
+  };
+
+  const skillCategories = {
+    legend: {
+      list: skillPools.legend,
+      image: 'url(pics/legend.png)',
+      probability: baseProbabilities.legend
+    },
+    gold: {
+      list: skillPools.gold,
+      image: 'url(pics/gold.png)'
+    },
+    silver: {
+      list: skillPools.silver,
+      image: 'url(pics/silver.png)'
+    },
+    bronze: {
+      list: skillPools.bronze,
+      image: 'url(pics/bronze.png)'
+    }
+  };
+
+  function getRandomSkillFrom(categoryList) {
+    // 直接從清單裡隨機挑，不排除重複
+    const skill = categoryList[Math.floor(Math.random() * categoryList.length)];
+    return skill;
+  }
+
+  function selectCategory(index) {
+    if (index === 0 && Math.random() < skillCategories.legend.probability) {
+      return 'legend';
+    }
+    const normalKeys = ['gold', 'silver', 'bronze'];
+    return normalKeys[Math.floor(Math.random() * normalKeys.length)];
+  }
+
+  for (let i = 0; i < skillBoxes.length; i++) {
+    let category = selectCategory(i);
+    let skill = getRandomSkillFrom(skillCategories[category].list);
+
+    const level = Math.floor(Math.random() * 3) + 1;
+
+    skillBoxes[i].textContent = `${skill}  Lv. ${level}`;
+    skillBoxes[i].style.backgroundImage = skillCategories[category].image;
+    skillBoxes[i].style.backgroundSize = 'cover';
+  }
+}
+function toggleSkill(el) {
+  const labelText = document.getElementById('labelText');
+  if (el.checked) {
+    labelText.textContent = '投手';
+    labelText.style.color = 'royalblue';
+  } else {
+    labelText.textContent = '打者';
+    labelText.style.color = 'crimson';
+  }
+  initializeSkillBoxes()
+}
+function getSkillPools() {
+  const pools = {
+    B: {
+      legend: B_legend_skill,
+      gold: B_gold_skill,
+      silver: B_silver_skill,
+      bronze: B_bronze_skill
+    },
+    P: {
+      legend: P_legend_skill,
+      gold: P_gold_skill,
+      silver: P_silver_skill,
+      bronze: P_bronze_skill
+    }
+  };
+  const labelText = document.getElementById('labelText');
+  if(labelText.textContent == '打者'){
+    return pools.B;
+  }
+  else{
+    return pools.P;
+  }
+}
+function ChangeSkills_basic(mode) { 
+  const skillPools = getSkillPools();
   const new_skill = document.querySelector('.card2');
   const skillBoxes = new_skill.querySelectorAll('.skill-1, .skill-2, .skill-3');
   const usedSkills = new Set();
@@ -22,22 +108,22 @@ function ChangeSkills_basic(mode) {
 
   const skillCategories = {
     legend: {
-      list: B_legend_skill,
+      list: skillPools.legend,
       image: 'url(pics/legend.png)',
       probability: baseProbabilities[mode] || 0
     },
     gold: {
-      list: B_gold_skill,
+      list: skillPools.gold,
       image: 'url(pics/gold.png)',
       probability: mode === 'ultimate' ? 0.2833 : null
     },
     silver: {
-      list: B_silver_skill,
+      list: skillPools.silver,
       image: 'url(pics/silver.png)',
       probability: mode === 'ultimate' ? 0.2833 : null
     },
     bronze: {
-      list: B_bronze_skill,
+      list: skillPools.bronze,
       image: 'url(pics/bronze.png)',
       probability: mode === 'ultimate' ? 0.2833 : null
     }
@@ -125,13 +211,14 @@ function ChangeSkills_basic(mode) {
   document.querySelector('.card1').classList.add('hover-effect');
   document.querySelector('.card2').classList.add('hover-effect');
 }
-function legend_skill_select() {
+function legend_skill_select() { //黑變
   const leftBox = document.querySelector('.skill-box-left');
   const rightBox = document.querySelector('.skill-box-right');
+  const skillPools = getSkillPools();
 
   const skillCategories = {
     legend: {
-      list: B_legend_skill,
+      list: skillPools.legend,
       image: 'url(pics/legend.png)'
     },
     gold: {
@@ -186,7 +273,7 @@ function legend_skill_select() {
   document.querySelector('.card1').classList.add('hover-effect');
   document.querySelector('.card2').classList.add('hover-effect');
 }
-function check_legend_skill() {
+function check_legend_skill() {//確認是否有黑技
   const iconClass = find_skill_type();
   if (iconClass == "legend-skill-select-change-icon") {
     const bgImage = getComputedStyle(document.querySelector('.card1 .skill-1')).backgroundImage;
@@ -201,9 +288,257 @@ function check_legend_skill() {
   }
 }
 function use_skill() {
+  const selections = ['premium-skill-select-change-icon', 'skill-select-change-icon', 'premium-skill-protect-change-icon', 'skill-protect-change-icon']
+  document.querySelector('.switch').style.display = 'none';
   if (check_legend_skill()) {
     document.querySelector('.confirm-box').style.display = 'flex';
   }
+  else{
+    document.querySelector('.switch').style.display = 'flex';
+  }
+  updateSkillBox();
+  
+  if (!selections.includes(String(find_skill_type()))) {
+    const svgs = document.querySelectorAll('svg');
+    svgs.forEach(svg => {
+      svg.style.display = 'none';
+    });
+  }
+  else{
+    const svgs = document.querySelectorAll('svg');
+    document.querySelector('.selection-container').style.display = 'flex';
+    document.querySelector('.confirm-box').style.display = 'none';
+    document.querySelector('.selection-box-banner').textContent = document.querySelector('.'+String(find_skill_type())).nextElementSibling.textContent;
+    svgs.forEach(svg => {
+      svg.style.display = 'block';
+    });
+  }
+  
+}
+function skill_protect(indexToKeep, type) {
+  let new_skill;
+  const skillPools = getSkillPools();
+  // 保證 card2 可見
+  document.querySelector('.card2').style.display = 'block';
+
+  // 決定要改哪張卡（card1 或 card2）
+  if (type === 'premium') {
+    new_skill = document.querySelector('.card2');
+  } else {
+    new_skill = document.querySelector('.card1');
+  }
+
+  const skillBoxes = new_skill.querySelectorAll('.skill-1, .skill-2, .skill-3');
+  const originalBoxes = document.querySelector('.card1').querySelectorAll('.skill-1, .skill-2, .skill-3');
+
+  const usedSkills = new Set();
+
+  const skillCategories = {
+    gold: {
+      list: skillPools.gold,
+      image: 'url(pics/gold.png)'
+    },
+    silver: {
+      list: skillPools.silver,
+      image: 'url(pics/silver.png)'
+    },
+    bronze: {
+      list: skillPools.bronze,
+      image: 'url(pics/bronze.png)'
+    }
+  };
+
+  // 先複製 indexToKeep 的技能
+  const keepIndex = indexToKeep - 1;
+  const copiedText = originalBoxes[keepIndex].textContent;
+  skillBoxes[keepIndex].textContent = copiedText;
+  skillBoxes[keepIndex].style.backgroundImage = originalBoxes[keepIndex].style.backgroundImage;
+  skillBoxes[keepIndex].style.backgroundSize = 'cover';
+
+  // 解析技能名稱並加入 usedSkills，避免抽到一樣的
+  const copiedSkillName = copiedText.split('Lv')[0].trim();
+  usedSkills.add(copiedSkillName);
+
+  // 將其他舊技能也加入 usedSkills
+  for (let i = 0; i < originalBoxes.length; i++) {
+    if (i !== keepIndex) {
+      const oldText = originalBoxes[i].textContent;
+      const skillName = oldText.split('Lv')[0].trim();
+      usedSkills.add(skillName);
+    }
+  }
+
+  function getRandomSkillFrom(categoryList) {
+    const available = categoryList.filter(skill => !usedSkills.has(skill));
+    if (available.length === 0) return null;
+    const skill = available[Math.floor(Math.random() * available.length)];
+    usedSkills.add(skill);
+    return skill;
+  }
+
+  function selectCategory() {
+    const keys = ['gold', 'silver', 'bronze'];
+    return keys[Math.floor(Math.random() * keys.length)];
+  }
+
+  // 替換其餘兩個技能
+  for (let i = 0; i < skillBoxes.length; i++) {
+    if (i === keepIndex) continue;
+
+    const originalText = originalBoxes[i].textContent;
+    const levelMatch = originalText.match(/Lv\.?\s*(\d)/i);
+    const level = levelMatch ? parseInt(levelMatch[1]) : 1;
+
+    let category = selectCategory();
+    let skill = getRandomSkillFrom(skillCategories[category].list);
+
+    if (!skill) {
+      const fallbackKeys = Object.keys(skillCategories).filter(k => k !== category);
+      while (fallbackKeys.length > 0 && !skill) {
+        const randKey = fallbackKeys.splice(Math.floor(Math.random() * fallbackKeys.length), 1)[0];
+        skill = getRandomSkillFrom(skillCategories[randKey].list);
+        if (skill) {
+          category = randKey;
+          break;
+        }
+      }
+    }
+
+    skillBoxes[i].textContent = `${skill}  Lv. ${level}`;
+    skillBoxes[i].style.backgroundImage = skillCategories[category].image;
+    skillBoxes[i].style.backgroundSize = 'cover';
+  }
+
+  // UI 更新
+  document.querySelector('.selection-container').style.display = 'none';
+  document.querySelectorAll('svg').forEach(svg => svg.style.display = 'none');
+
+  if (type === 'premium') {
+    document.querySelector('.confirm-box').style.display = 'none';
+    document.querySelector('.skill-changes-container').style.display = 'none';
+    document.querySelector('.container').style.gap = '150px';
+    document.querySelectorAll('.select-skill').forEach(skill => {
+      skill.style.display = 'flex';
+    });
+    document.querySelector('.skill-box-right').style.display = 'block';
+    document.querySelector('.card1').classList.add('hover-effect');
+    document.querySelector('.card2').classList.add('hover-effect');
+  }
+}
+function skill_select(indexToChange, type) {
+  let new_skill;
+  const skillPools = getSkillPools();
+  document.querySelector('.card2').style.display = 'block';
+
+  if (type === 'premium') {
+    new_skill = document.querySelector('.card2');
+  } else {
+    new_skill = document.querySelector('.card1');
+  }
+
+  const fromCard = document.querySelector('.card1');
+  const fromSkills = fromCard.querySelectorAll('.skill-1, .skill-2, .skill-3');
+  const skillBoxes = new_skill.querySelectorAll('.skill-1, .skill-2, .skill-3');
+
+  const usedSkills = new Set();
+
+  const skillCategories = {
+    gold: {
+      list: skillPools.gold,
+      image: 'url(pics/gold.png)'
+    },
+    silver: {
+      list: skillPools.silver,
+      image: 'url(pics/silver.png)'
+    },
+    bronze: {
+      list: skillPools.bronze,
+      image: 'url(pics/bronze.png)'
+    }
+  };
+
+  // 把原卡的技能加入 usedSkills，避免選重複
+  fromSkills.forEach(skillBox => {
+    const skillName = skillBox.textContent.split('Lv')[0].trim();
+    usedSkills.add(skillName);
+  });
+
+  function getRandomSkillFrom(categoryList) {
+    const available = categoryList.filter(skill => !usedSkills.has(skill));
+    if (available.length === 0) return null;
+    const skill = available[Math.floor(Math.random() * available.length)];
+    usedSkills.add(skill);
+    return skill;
+  }
+
+  function selectCategory() {
+    const keys = ['gold', 'silver', 'bronze'];
+    return keys[Math.floor(Math.random() * keys.length)];
+  }
+
+  for (let i = 0; i < skillBoxes.length; i++) {
+    const currentText = fromSkills[i].textContent;
+    const levelMatch = currentText.match(/Lv\.?\s*(\d)/i);
+    const level = levelMatch ? parseInt(levelMatch[1]) : 1;
+
+    if (i === indexToChange - 1) {
+      // 替換指定 index 的技能
+      let category = selectCategory();
+      let skill = getRandomSkillFrom(skillCategories[category].list);
+
+      if (!skill) {
+        const fallbackKeys = Object.keys(skillCategories).filter(k => k !== category);
+        while (fallbackKeys.length > 0 && !skill) {
+          const randKey = fallbackKeys.splice(Math.floor(Math.random() * fallbackKeys.length), 1)[0];
+          skill = getRandomSkillFrom(skillCategories[randKey].list);
+          if (skill) {
+            category = randKey;
+            break;
+          }
+        }
+      }
+
+      skillBoxes[i].textContent = `${skill}  Lv. ${level}`;
+      skillBoxes[i].style.backgroundImage = skillCategories[category].image;
+    } else {
+      // 其餘 index 直接複製原來的技能
+      skillBoxes[i].textContent = currentText;
+      skillBoxes[i].style.backgroundImage = fromSkills[i].style.backgroundImage;
+    }
+
+    skillBoxes[i].style.backgroundSize = 'cover';
+  }
+
+  document.querySelector('.selection-container').style.display = 'none';
+  document.querySelectorAll('svg').forEach(svg => svg.style.display = 'none');
+
+  if (type === 'premium') {
+    document.querySelector('.confirm-box').style.display = 'none';
+    document.querySelector('.skill-changes-container').style.display = 'none';
+    document.querySelector('.container').style.gap = '150px';
+    document.querySelectorAll('.select-skill').forEach(skill => {
+      skill.style.display = 'flex';
+    });
+    document.querySelector('.skill-box-right').style.display = 'block';
+    document.querySelector('.card1').classList.add('hover-effect');
+    document.querySelector('.card2').classList.add('hover-effect');
+  }
+}
+function get_selected() {
+  const svgs = document.querySelectorAll('svg');
+
+  for (let svg of svgs) {
+    const paths = svg.querySelectorAll('path');
+    for (let path of paths) {
+      if (path.getAttribute('fill') === '#1ec71e') {
+        const className = svg.parentElement.className;
+        const lastChar = className[className.length - 1];
+        return parseInt(lastChar, 10);
+      }
+    }
+  }
+
+  return null; // 若沒找到綠色 path
 }
 document.addEventListener('DOMContentLoaded', function() {
   updateSkillBox();
@@ -216,32 +551,27 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 });
-
 function updateSkillBox() {
+  const skills = document.querySelector('.card1');
   for (let i = 1; i <= 3; i++) {
-    document.querySelector('.skill-box-original-' + i).textContent = document.querySelector('.skill-' + i).textContent;
-    document.querySelector('.skill-box-original-' + i).style.backgroundImage = document.querySelector('.skill-' + i).style.backgroundImage;
+    document.querySelector('.skill-box-original-' + i).textContent = skills.querySelector('.skill-' + i).textContent;
+    document.querySelector('.selection-skill-box-original-' + i).textContent = skills.querySelector('.skill-' + i).textContent;
+    document.querySelector('.skill-box-original-' + i).style.backgroundImage = skills.querySelector('.skill-' + i).style.backgroundImage;
+    document.querySelector('.selection-skill-box-original-' + i).style.backgroundImage = skills.querySelector('.skill-' + i).style.backgroundImage;
   }
 }
-
-
 function toggleOverlay(element) {
   const masks = document.querySelectorAll('.skill-change .mask');
-  // 先把所有 mask 關掉
   masks.forEach(mask => {
     mask.style.display = 'none';
   });
 
-  // 把自己這個打開
   const mask = element.querySelector('.mask');
   if (mask) {
     mask.style.display = 'block';
   }
-
-  // 切換 use-skill-changes 背景
   setUseButtonBackground(element);
 }
-
 function setUseButtonBackground(skillChangeElement) {
   const icon = skillChangeElement.querySelector('div[class$="-icon"]');
   const useButton = document.querySelector('.use-skill-changes');
@@ -397,6 +727,7 @@ function replaceSkill() {
   document.querySelector('.card1').classList.remove('choose-skill');
   document.querySelector('.card2').classList.remove('choose-skill');
   updateSkillBox();
+  document.querySelector('.switch').style.display = 'flex';
   
 }
 function ChangeSkill() {
@@ -415,20 +746,23 @@ function ChangeSkill() {
           legend_skill_select();
           break;
         case 'skill-select-change-icon':
-          handleSkillSelectChange();
+          skill_select(get_selected(),'normal');
+          document.querySelector('.switch').style.display = 'flex';
           break;
         case 'premium-skill-select-change-icon':
-          handlePremiumSkillSelectChange();
+          skill_select(get_selected(),'premium');
           break;
         case 'skill-protect-change-icon':
-          handleSkillProtectChange();
+          skill_protect(get_selected(),'normal');
+          document.querySelector('.switch').style.display = 'flex';
           break;
         case 'premium-skill-protect-change-icon':
-          handlePremiumSkillProtectChange();
+          skill_protect(get_selected(),'premium');
           break;
         default:
-          console.warn('未知的 icon 類別:', iconClass);
+          break;
       }
+      
 
 }
 function find_skill_type() {
@@ -440,3 +774,17 @@ function find_skill_type() {
     }
   }
 }
+function select_svg(element) {
+  // 重設所有 path 的填色
+  document.querySelectorAll('svg path.p1, svg path.p2, svg path.p3').forEach(path => {
+    path.setAttribute('fill', '#051350');
+  });
+
+  // 只改這個 SVG 裡面有 class 的那條 path
+  const targetPath = element.querySelector('.p1, .p2, .p3');
+  if (targetPath) {
+    targetPath.setAttribute('fill', '#1ec71e');
+  }
+}
+
+
