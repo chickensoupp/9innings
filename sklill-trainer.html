@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>棒球傳奇技能表格 - 優化版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .tabs-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .tab-navigation {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            color: #6c757d;
+            position: relative;
+        }
+        
+        .tab-button.active {
+            color: #007acc;
+            background: white;
+        }
+        
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #007acc;
+        }
+        
+        .tab-button:hover:not(.active) {
+            background: #e9ecef;
+            color: #495057;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .skill-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .table-header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            padding: 15px 10px;
+            font-size: 16px;
+        }
+        
+        .sub-header {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            padding: 12px 10px;
+        }
+        
+        .skill-name {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            text-align: center;
+            font-weight: bold;
+            padding: 15px 10px;
+            vertical-align: middle;
+            color: white;
+            border-right: 3px solid #fff;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .option-cell {
+            text-align: center;
+            padding: 12px 10px;
+            border: 1px solid #dee2e6;
+            vertical-align: middle;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ecf0f1, #bdc3c7);
+            font-size: 16px;
+            color: #2c3e50;
+        }
+        
+        .type-cell {
+            text-align: center;
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            vertical-align: middle;
+            font-size: 13px;
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .description-cell {
+            padding: 12px 15px;
+            border: 1px solid #dee2e6;
+            vertical-align: top;
+            line-height: 1.6;
+            background: white;
+        }
+        
+        .description-cell div {
+            margin-bottom: 5px;
+        }
+        
+        .description-cell div:last-child {
+            margin-bottom: 0;
+        }
+        
+        .sub-text {
+            color: #6c757d;
+            font-size: 11px;
+            font-style: italic;
+        }
+        
+        .highlight {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+        
+        .skill-table tbody tr:hover {
+            background-color: rgba(52, 152, 219, 0.08);
+            transform: translateY(-1px);
+            transition: all 0.2s ease;
+        }
+        
+        .footer-note {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: #6c757d;
+            font-size: 12px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .skill-icon {
+            font-size: 20px;
+            margin-right: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .tab-button {
+                padding: 15px 10px;
+                font-size: 16px;
+            }
+            
+            .tab-content {
+                padding: 20px 15px;
+            }
+            
+            .skill-table {
+                font-size: 12px;
+            }
+            
+            .table-header, .sub-header {
+                font-size: 14px;
+                padding: 10px 8px;
+            }
+            
+            .skill-name, .option-cell, .description-cell {
+                padding: 10px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚾ 棒球傳奇技能完整指南</h1>
+            <p>投手與打者技能選項詳細說明</p>
+        </div>
+        
+        <div class="tabs-container">
+            <div class="tab-navigation">
+                <button class="tab-button active" onclick="switchTab('pitcher')">
+                    <span class="skill-icon">⚾</span>投手技能
+                </button>
+                <button class="tab-button" onclick="switchTab('batter')">
+                    <span class="skill-icon">🏏</span>打者技能
+                </button>
+            </div>
+            
+            <!-- 投手技能標籤頁 -->
+            <div id="pitcher" class="tab-content active">
+                <table class="skill-table">
+                    <thead>
+                        <tr>
+                            <th class="table-header" colspan="4">投手傳奇技能詳細說明</th>
+                        </tr>
+                        <tr>
+                            <th class="sub-header">技能名稱</th>
+                            <th class="sub-header">等級</th>
+                            <th class="sub-header">效果類型</th>
+                            <th class="sub-header">技能描述</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="skill-name" rowspan="13">投手洞察力</td>
+                            <td class="option-cell" rowspan="3">I</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">
+                                <div>提升邊緣球與壞球的誘騙效果</div>
+                                <div class="sub-text">（隨對戰次數增加效果更佳）</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">削弱對手打者傳奇技能等級</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">
+                                <div>提升邊緣球與壞球的誘騙效果</div>
+                                <div class="sub-text">（隨對戰次數增加效果更佳）</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="5">II</td>
+                            <td class="type-cell" rowspan="2">基本效果</td>
+                            <td class="description-cell">降低強勁安打機率（隨對戰次數增加效果）</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">降低平飛球機率（隨對戰次數增加效果）</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="3">進階效果</td>
+                            <td class="description-cell">削弱對手打者傳奇技能等級</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">降低強勁安打機率（隨對戰次數增加效果）</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">降低平飛球機率（隨對戰次數增加效果）</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="5">III</td>
+                            <td class="type-cell" rowspan="2">基本效果</td>
+                            <td class="description-cell">降低平飛球機率（隨對戰次數增加效果）</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">降低全壘打性擊球機率（隨對戰次數增加效果）</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="3">進階效果</td>
+                            <td class="description-cell">削弱對手打者傳奇技能等級</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">降低平飛球機率（隨對戰次數增加效果）</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">降低全壘打性擊球機率（隨對戰次數增加效果）</td>
+                        </tr>
+
+                        <tr>
+                            <td class="skill-name" rowspan="9">精準控球</td>
+                            <td class="option-cell" rowspan="3">I</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">增加高飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">
+                                <div>降低邊緣球與壞球的誘騙失敗率</div>
+                                <div class="sub-text">（依據控球力與變化球能力加成）</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加高飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="3">II</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">增加滾地球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">
+                                <div>降低邊緣球與壞球的誘騙失敗率</div>
+                                <div class="sub-text">（依據控球力與變化球能力加成）</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加滾地球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="3">III</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">增加朝向守備員的滾地球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">
+                                <div>降低邊緣球與壞球的誘騙失敗率</div>
+                                <div class="sub-text">（依據控球力與變化球能力加成）</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加朝向守備員的滾地球機率</td>
+                        </tr>
+
+                        <tr>
+                            <td class="skill-name" rowspan="13">速球型投手</td>
+                            <td class="option-cell" rowspan="3">I</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">增加高飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">削弱打者揮擊時機（依據球威與速球能力加成）</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加高飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="5">II</td>
+                            <td class="type-cell" rowspan="2">基本效果</td>
+                            <td class="description-cell">增加高飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加滾地球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="3">進階效果</td>
+                            <td class="description-cell">削弱打者揮擊時機（依據球威與速球能力加成）</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加高飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加滾地球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="5">III</td>
+                            <td class="type-cell" rowspan="2">基本效果</td>
+                            <td class="description-cell">降低平飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">降低全壘打性擊球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="3">進階效果</td>
+                            <td class="description-cell">削弱打者揮擊時機（依據球威與速球能力加成）</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">降低平飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">降低全壘打性擊球機率</td>
+                        </tr>
+
+                        <tr>
+                            <td class="skill-name" rowspan="9">場面調節</td>
+                            <td class="option-cell" rowspan="3">I</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">降低強勁安打機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">減少每球消耗體力</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">降低強勁安打機率</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="3">II</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">降低平飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">減少每球消耗體力</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">降低平飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="3">III</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">增加朝向守備員的滾地球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">減少每球消耗體力</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加朝向守備員的滾地球機率</td>
+                        </tr>
+
+                        <tr>
+                            <td class="skill-name" rowspan="12">中繼救援</td>
+                            <td class="option-cell" rowspan="4">I</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">登板後1局內增加高飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="3">進階效果</td>
+                            <td class="description-cell">4局前替換投手時優先換上具備教練技能的選手</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">降低體力消耗</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">登板後1局內增加高飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="4">II</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">登板後1局內降低強勁安打機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="3">進階效果</td>
+                            <td class="description-cell">4局前替換投手時優先換上具備教練技能的選手</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">降低體力消耗</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">登板後1局內降低強勁安打機率</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="4">III</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">登板後1局內增加滾地球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="3">進階效果</td>
+                            <td class="description-cell">4局前替換投手時優先換上具備教練技能的選手</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">降低體力消耗</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">登板後1局內增加滾地球機率</td>
+                        </tr>
+
+                        <tr>
+                            <td class="skill-name" rowspan="12">團隊配合</td>
+                            <td class="option-cell" rowspan="4">I</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">提升投球精準度</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="3">進階效果</td>
+                            <td class="description-cell">3局內體力消耗增加</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">3局內增加高飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">提升投球精準度</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="4">II</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">增加邊緣球與壞球的誘騙效果</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="3">進階效果</td>
+                            <td class="description-cell">3局內體力消耗增加</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">3局內增加高飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加邊緣球與壞球的誘騙效果</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="4">III</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">增加好球帶中央被擊出強勁安打的機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="3">進階效果</td>
+                            <td class="description-cell">3局內體力消耗增加</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">3局內增加高飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加好球帶中央被擊出強勁安打的機率</td>
+                        </tr>
+
+                        <tr>
+                            <td class="skill-name" rowspan="6">投手默契</td>
+                            <td class="option-cell" rowspan="2">I</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">提升佈局投手、長中繼投手的投球精準度</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell">進階效果</td>
+                            <td class="description-cell">提升佈局投手、長中繼投手的投球精準度</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="2">II</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">提升佈局投手、終結者的投球精準度</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell">進階效果</td>
+                            <td class="description-cell">提升佈局投手、終結者的投球精準度</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="2">III</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">
+                                <div>增加朝向守備員的滾地球機率</div>
+                                <div class="sub-text">（與保送+安打數成反比）</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell">進階效果</td>
+                            <td class="description-cell">
+                                <div>增加朝向守備員的滾地球機率</div>
+                                <div class="sub-text">（與保送+安打數成反比）</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 打者技能標籤頁 -->
+            <div id="batter" class="tab-content">
+                <table class="skill-table">
+                    <thead>
+                        <tr>
+                            <th class="table-header" colspan="4">打者傳奇技能詳細說明</th>
+                        </tr>
+                        <tr>
+                            <th class="sub-header">技能名稱</th>
+                            <th class="sub-header">等級</th>
+                            <th class="sub-header">效果類型</th>
+                            <th class="sub-header">技能描述</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="skill-name" rowspan="9">打者洞察力</td>
+                            <td class="option-cell" rowspan="3">I</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">
+                                <div>降低邊緣球與壞球的揮空機率</div>
+                                <div class="sub-text">（隨打席數增加效果提升）</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">削弱對手投手傳奇技能等級</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">
+                                <div>降低邊緣球與壞球的揮空機率</div>
+                                <div class="sub-text">（隨打席數增加效果提升）</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="3">II</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">增加強勁安打機率（隨打席數增加效果提升）</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">削弱對手投手傳奇技能等級</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加強勁安打機率（隨打席數增加效果提升）</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="3">III</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">增加平飛球機率（隨打席數增加效果提升）</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">削弱對手投手傳奇技能等級</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加平飛球機率（隨打席數增加效果提升）</td>
+                        </tr>
+
+                        <tr>
+                            <td class="skill-name" rowspan="9">精準打擊</td>
+                            <td class="option-cell" rowspan="3">I</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">降低邊緣球與壞球的揮空機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">提升好球帶中央擊球時機</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">降低邊緣球與壞球的揮空機率</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="3">II</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">增加暴投/觸身球發生機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">提升好球帶中央擊球時機</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加暴投/觸身球發生機率</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="3">III</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">增加平飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">提升好球帶中央擊球時機</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加平飛球機率</td>
+                        </tr>
+
+                        <tr>
+                            <td class="skill-name" rowspan="11">壞球狙擊手</td>
+                            <td class="option-cell" rowspan="3">I</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">增加邊緣球與壞球擊出平飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">擴大好球判定範圍</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加邊緣球與壞球擊出平飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="3">II</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">增加邊緣球與壞球擊出全壘打性擊球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">擴大好球判定範圍</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加邊緣球與壞球擊出全壘打性擊球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="5">III</td>
+                            <td class="type-cell" rowspan="2">基本效果</td>
+                            <td class="description-cell">增加好球帶中央擊出平飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加好球帶中央擊出全壘打性擊球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="3">進階效果</td>
+                            <td class="description-cell">擴大好球判定範圍</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加好球帶中央擊出平飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加好球帶中央擊出全壘打性擊球機率</td>
+                        </tr>
+
+                        <tr>
+                            <td class="skill-name" rowspan="9">首棒領袖</td>
+                            <td class="option-cell" rowspan="3">I</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">增加暴投/觸身球發生機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">首次打席免受技能負面效果影響</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加暴投/觸身球發生機率</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="3">II</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">增加強勁安打機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">前兩次打席免受技能負面效果影響</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加強勁安打機率</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="3">III</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">增加平飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">前三次打席免受技能負面效果影響</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加平飛球機率</td>
+                        </tr>
+
+                        <tr>
+                            <td class="skill-name" rowspan="9">天生好手</td>
+                            <td class="option-cell" rowspan="3">I</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">增加強勁安打機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">提升擊球時機（隨累積安打數增加效果）</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加強勁安打機率</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="3">II</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">增加平飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">提升擊球時機（隨累積安打數增加效果）</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加平飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="3">III</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">增加全壘打性擊球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">提升擊球時機（隨累積安打數增加效果）</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加全壘打性擊球機率</td>
+                        </tr>
+
+                        <tr>
+                            <td class="skill-name" rowspan="10">上壘專家</td>
+                            <td class="option-cell" rowspan="3">I</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">降低邊緣球與壞球的揮空機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">一壘無人時提升一壘跑壘速度</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">降低邊緣球與壞球的揮空機率</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="3">II</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">增加暴投/觸身球發生機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">一壘無人時提升一壘跑壘速度</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加暴投/觸身球發生機率</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="4">III</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">上壘時提升後續打者平飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="3">進階效果</td>
+                            <td class="description-cell">一壘無人時提升一壘跑壘速度</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">提升上壘頻率上限1點</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">上壘時提升後續打者平飛球機率</td>
+                        </tr>
+
+                        <tr>
+                            <td class="skill-name" rowspan="9">打線默契</td>
+                            <td class="option-cell" rowspan="3">I</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">代打上場時增加平飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">降低打線1、2、9棒邊緣球與壞球揮空機率</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">代打上場時增加平飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="3">II</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">代打上場時增加平飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">降低打線3、4、5棒邊緣球與壞球揮空機率</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">代打上場時增加平飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="3">III</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">代打上場時增加平飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">降低打線6、7、8、9棒邊緣球與壞球揮空機率</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">代打上場時增加平飛球機率</td>
+                        </tr>
+
+                        <tr>
+                            <td class="skill-name" rowspan="11">超級巨砲</td>
+                            <td class="option-cell" rowspan="3">I</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">增加平飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">提升擊球時機（依據打擊精準度能力加成）</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加平飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="3">II</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">增加全壘打性擊球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">提升擊球時機（依據打擊精準度能力加成）</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加全壘打性擊球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="5">III</td>
+                            <td class="type-cell" rowspan="2">基本效果</td>
+                            <td class="description-cell">增加強勁安打機率</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加平飛球機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="3">進階效果</td>
+                            <td class="description-cell">提升擊球時機（依據打擊精準度能力加成）</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加強勁安打機率</td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加平飛球機率</td>
+                        </tr>
+
+                        <tr>
+                            <td class="skill-name" rowspan="9">經驗老將</td>
+                            <td class="option-cell" rowspan="3">I</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">降低邊緣球與壞球的揮空機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">
+                                <div>增加朝向守備空隙的強勁安打</div>
+                                <div class="sub-text">（隨對戰次數增加效果）</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">降低邊緣球與壞球的揮空機率</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="3">II</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">增加暴投/觸身球發生機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">
+                                <div>增加朝向守備空隙的強勁安打</div>
+                                <div class="sub-text">（隨對戰次數增加效果）</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加暴投/觸身球發生機率</td>
+                        </tr>
+                        <tr>
+                            <td class="option-cell" rowspan="3">III</td>
+                            <td class="type-cell">基本效果</td>
+                            <td class="description-cell">增加強勁安打機率</td>
+                        </tr>
+                        <tr>
+                            <td class="type-cell" rowspan="2">進階效果</td>
+                            <td class="description-cell">
+                                <div>增加朝向守備空隙的強勁安打</div>
+                                <div class="sub-text">（隨對戰次數增加效果）</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="description-cell">增加強勁安打機率</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="footer-note">
+            <p><strong>※ 使用說明</strong></p>
+            <p>• 此表格為棒球遊戲傳奇技能選項的完整對照表，已優化棒球術語表達</p>
+            <p>• 所有數值和效果以遊戲內實際設定為準</p>
+            <p>• 技能等級：I < II < III，等級越高效果越強</p>
+            <p>• 進階效果通常比基本效果更為強大且複雜</p>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            // 隱藏所有標籤內容
+            const allTabs = document.querySelectorAll('.tab-content');
+            allTabs.forEach(tab => tab.classList.remove('active'));
+            
+            // 移除所有按鈕的active狀態
+            const allButtons = document.querySelectorAll('.tab-button');
+            allButtons.forEach(button => button.classList.remove('active'));
+            
+            // 顯示選定的標籤內容
+            document.getElementById(tabName).classList.add('active');
+            
+            // 添加選定按鈕的active狀態
+            event.target.classList.add('active');
+        }
+        
+        // 添加平滑滾動效果
+        document.addEventListener('DOMContentLoaded', function() {
+            const tables = document.querySelectorAll('.skill-table');
+            tables.forEach(table => {
+                table.addEventListener('mouseover', function(e) {
+                    if (e.target.closest('tr')) {
+                        e.target.closest('tr').style.transform = 'translateY(-2px)';
+                    }
+                });
+                
+                table.addEventListener('mouseout', function(e) {
+                    if (e.target.closest('tr')) {
+                        e.target.closest('tr').style.transform = 'translateY(0)';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
