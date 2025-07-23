@@ -237,13 +237,114 @@
                 padding: 10px 8px;
             }
         }
+                /* 主標題調整 */
+        .header h1 {
+            font-size: 36px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        /* 標籤按鈕調整 */
+        .tab-button {
+            padding: 22px;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        /* 標籤內容調整 */
+        .tab-content {
+            padding: 35px;
+        }
+
+        /* 表格整體調整 */
+        .skill-table {
+            font-size: 16px;
+            font-weight: normal;
+        }
+
+        /* 表格標題調整 */
+        .table-header {
+            font-weight: 800;
+            padding: 18px 12px;
+            font-size: 20px;
+        }
+
+        .sub-header {
+            font-weight: 700;
+            padding: 15px 12px;
+            font-size: 17px;
+        }
+
+        /* 技能名稱調整 */
+        .skill-name {
+            font-weight: 800;
+            padding: 18px 12px;
+            font-size: 25px;
+        }
+
+        /* 等級數字調整 */
+        .option-cell {
+            padding: 15px 12px;
+            font-weight: 800;
+            font-size: 19px;
+        }
+
+        /* 類型標籤調整 */
+        .type-cell {
+            padding: 12px;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        /* 描述內容調整 */
+        .description-cell {
+            padding: 15px 18px;
+            line-height: 1.8;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .description-cell div {
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        /* 副文字調整 */
+        .sub-text {
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        /* 強調文字調整 */
+        .highlight {
+            font-weight: 700;
+        }
+
+        /* 容器調整 */
+        .container {
+            max-width: 1500px;
+        }
+
+        /* 整體行高調整 */
+        body {
+            line-height: 1.7;
+        }
+
+        /* 技能圖示調整 */
+        .skill-icon {
+            font-size: 22px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>⚾ 棒球傳奇技能完整指南</h1>
-            <p>投手與打者技能選項詳細說明</p>
+            <h1>9局技能教練全解析</h1>
+            <p>© 2025 CC</p>
         </div>
         
         <div class="tabs-container">
@@ -425,7 +526,7 @@
                         </tr>
 
                         <tr>
-                            <td class="skill-name" rowspan="9">場面調節</td>
+                            <td class="skill-name" rowspan="9">先守後攻</td>
                             <td class="option-cell" rowspan="3">I</td>
                             <td class="type-cell">基本效果</td>
                             <td class="description-cell">降低強勁安打機率</td>
@@ -463,7 +564,7 @@
                         </tr>
 
                         <tr>
-                            <td class="skill-name" rowspan="12">中繼救援</td>
+                            <td class="skill-name" rowspan="12">牛棚日</td>
                             <td class="option-cell" rowspan="4">I</td>
                             <td class="type-cell">基本效果</td>
                             <td class="description-cell">登板後1局內增加高飛球機率</td>
@@ -510,7 +611,7 @@
                         </tr>
 
                         <tr>
-                            <td class="skill-name" rowspan="12">團隊配合</td>
+                            <td class="skill-name" rowspan="12">合力投球</td>
                             <td class="option-cell" rowspan="4">I</td>
                             <td class="type-cell">基本效果</td>
                             <td class="description-cell">提升投球精準度</td>
@@ -692,7 +793,7 @@
                         </tr>
 
                         <tr>
-                            <td class="skill-name" rowspan="11">壞球狙擊手</td>
+                            <td class="skill-name" rowspan="11">壞球打者</td>
                             <td class="option-cell" rowspan="3">I</td>
                             <td class="type-cell">基本效果</td>
                             <td class="description-cell">增加邊緣球與壞球擊出平飛球機率</td>
@@ -736,7 +837,7 @@
                         </tr>
 
                         <tr>
-                            <td class="skill-name" rowspan="9">首棒領袖</td>
+                            <td class="skill-name" rowspan="9">先鋒</td>
                             <td class="option-cell" rowspan="3">I</td>
                             <td class="type-cell">基本效果</td>
                             <td class="description-cell">增加暴投/觸身球發生機率</td>
@@ -774,7 +875,7 @@
                         </tr>
 
                         <tr>
-                            <td class="skill-name" rowspan="9">天生好手</td>
+                            <td class="skill-name" rowspan="9">天生巨星</td>
                             <td class="option-cell" rowspan="3">I</td>
                             <td class="type-cell">基本效果</td>
                             <td class="description-cell">增加強勁安打機率</td>
@@ -812,7 +913,7 @@
                         </tr>
 
                         <tr>
-                            <td class="skill-name" rowspan="10">上壘專家</td>
+                            <td class="skill-name" rowspan="10">機會製造者</td>
                             <td class="option-cell" rowspan="3">I</td>
                             <td class="type-cell">基本效果</td>
                             <td class="description-cell">降低邊緣球與壞球的揮空機率</td>
@@ -853,7 +954,7 @@
                         </tr>
 
                         <tr>
-                            <td class="skill-name" rowspan="9">打線默契</td>
+                            <td class="skill-name" rowspan="9">打者默契</td>
                             <td class="option-cell" rowspan="3">I</td>
                             <td class="type-cell">基本效果</td>
                             <td class="description-cell">代打上場時增加平飛球機率</td>
@@ -891,7 +992,7 @@
                         </tr>
 
                         <tr>
-                            <td class="skill-name" rowspan="11">超級巨砲</td>
+                            <td class="skill-name" rowspan="11">最強打者</td>
                             <td class="option-cell" rowspan="3">I</td>
                             <td class="type-cell">基本效果</td>
                             <td class="description-cell">增加平飛球機率</td>
@@ -935,7 +1036,7 @@
                         </tr>
 
                         <tr>
-                            <td class="skill-name" rowspan="9">經驗老將</td>
+                            <td class="skill-name" rowspan="9">老手</td>
                             <td class="option-cell" rowspan="3">I</td>
                             <td class="type-cell">基本效果</td>
                             <td class="description-cell">降低邊緣球與壞球的揮空機率</td>
@@ -983,14 +1084,6 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-        
-        <div class="footer-note">
-            <p><strong>※ 使用說明</strong></p>
-            <p>• 此表格為棒球遊戲傳奇技能選項的完整對照表，已優化棒球術語表達</p>
-            <p>• 所有數值和效果以遊戲內實際設定為準</p>
-            <p>• 技能等級：I < II < III，等級越高效果越強</p>
-            <p>• 進階效果通常比基本效果更為強大且複雜</p>
         </div>
     </div>
 
