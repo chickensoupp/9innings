@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>棒球名人堂球員資料庫</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft JhengHei", Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .filter-section {
+            background: rgba(255,255,255,0.1);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .filter-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .search-group {
+            grid-column: span 2;
+        }
+
+        label {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.9);
+        }
+
+        select, input {
+            padding: 10px 15px;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .search-input {
+            background: rgba(255,255,255,0.95);
+            color: #333;
+        }
+
+        .search-input::placeholder {
+            color: #666;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .reset-btn {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .reset-btn:hover {
+            background: linear-gradient(45deg, #c0392b, #a93226);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+
+        .clear-btn {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+            color: white;
+        }
+
+        .clear-btn:hover {
+            background: linear-gradient(45deg, #e67e22, #d68910);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4);
+        }
+
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #f1c40f;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .player-card {
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .player-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .player-image {
+            width: 100%;
+            height: 320px;
+            object-fit: contain;
+            background: #f8f9fa;
+        }
+
+        .player-info {
+            padding: 20px;
+        }
+
+        .player-name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+
+        .player-team {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .player-position {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .team-colors {
+            width: 100%;
+            height: 5px;
+            margin-bottom: 12px;
+            border-radius: 2px;
+        }
+
+        /* 隊伍顏色 */
+        .giants { background: linear-gradient(90deg, #FD5A1E, #27251F); }
+        .dodgers { background: linear-gradient(90deg, #005A9C, #FFFFFF); }
+        .yankees { background: linear-gradient(90deg, #132448, #C4CED4); }
+        .cardinals { background: linear-gradient(90deg, #C41E3A, #FEDB00); }
+        .redsox { background: linear-gradient(90deg, #BD3039, #0C2340); }
+        .athletics { background: linear-gradient(90deg, #003831, #EFB21E); }
+        .braves { background: linear-gradient(90deg, #CE1141, #13274F); }
+        .cubs { background: linear-gradient(90deg, #0E3386, #CC3433); }
+        .orioles { background: linear-gradient(90deg, #DF4601, #000000); }
+        .twins { background: linear-gradient(90deg, #002B5C, #D31145); }
+        .brewers { background: linear-gradient(90deg, #FFC52F, #12284B); }
+        .reds { background: linear-gradient(90deg, #C6011F, #000000); }
+        .phillies { background: linear-gradient(90deg, #E81828, #002D72); }
+        .mets { background: linear-gradient(90deg, #002D72, #FF5910); }
+        .pirates { background: linear-gradient(90deg, #FDB827, #27251F); }
+        .tigers { background: linear-gradient(90deg, #0C2340, #FA4616); }
+        .astros { background: linear-gradient(90deg, #002D62, #EB6E1F); }
+        .angels { background: linear-gradient(90deg, #BA0021, #003263); }
+        .whitesox { background: linear-gradient(90deg, #27251F, #C4CED4); }
+        .mariners { background: linear-gradient(90deg, #0C2C56, #005C5C); }
+        .indians { background: linear-gradient(90deg, #E31937, #0C2340); }
+        .royals { background: linear-gradient(90deg, #004687, #BD9B60); }
+        .rangers { background: linear-gradient(90deg, #003278, #C0111F); }
+        .padres { background: linear-gradient(90deg, #2F241D, #FFC425); }
+        .nationals { background: linear-gradient(90deg, #AB0003, #14225A); }
+
+        .no-results {
+            text-align: center;
+            padding: 80px 20px;
+            font-size: 1.5rem;
+            color: rgba(255,255,255,0.7);
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .no-results-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .filter-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .filter-tag {
+            background: rgba(52, 152, 219, 0.8);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-tag .remove {
+            cursor: pointer;
+            font-weight: bold;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .filter-tag .remove:hover {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .filter-controls {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .search-group {
+                grid-column: span 1;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .stats-summary {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .players-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-summary {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚾ 棒球名人堂球員資料庫</h1>
+        
+        <div class="filter-section">
+            <div class="filter-controls">
+                <div class="filter-group search-group">
+                    <label for="searchInput">🔍 搜尋球員姓名:</label>
+                    <input type="text" id="searchInput" class="search-input" 
+                           placeholder="輸入球員姓名進行搜尋..." 
+                           autocomplete="off">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="teamFilter">🏟️ 選擇隊伍:</label>
+                    <select id="teamFilter">
+                        <option value="">全部隊伍</option>
+                        <option value="勇士">勇士 (Braves)</option>
+                        <option value="國民">國民 (Nationals)</option>
+                        <option value="大都會">大都會 (Mets)</option>
+                        <option value="天使">天使 (Angels)</option>
+                        <option value="太空人">太空人 (Astros)</option>
+                        <option value="守護者">守護者 (Guardians)</option>
+                        <option value="小熊">小熊 (Cubs)</option>
+                        <option value="巨人">巨人 (Giants)</option>
+                        <option value="教士">教士 (Padres)</option>
+                        <option value="水手">水手 (Mariners)</option>
+                        <option value="洋基">洋基 (Yankees)</option>
+                        <option value="海盜">海盜 (Pirates)</option>
+                        <option value="白襪">白襪 (White Sox)</option>
+                        <option value="皇家">皇家 (Royals)</option>
+                        <option value="紅人">紅人 (Reds)</option>
+                        <option value="紅襪">紅襪 (Red Sox)</option>
+                        <option value="紅雀">紅雀 (Cardinals)</option>
+                        <option value="老虎">老虎 (Tigers)</option>
+                        <option value="費城人">費城人 (Phillies)</option>
+                        <option value="遊騎兵">遊騎兵 (Rangers)</option>
+                        <option value="運動家">運動家 (Athletics)</option>
+                        <option value="道奇">道奇 (Dodgers)</option>
+                        <option value="釀酒人">釀酒人 (Brewers)</option>
+                        <option value="金鶯">金鶯 (Orioles)</option>
+                        <option value="雙城">雙城 (Twins)</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="positionFilter">⚾ 守備位置:</label>
+                    <select id="positionFilter">
+                        <option value="">全部位置</option>
+                        <option value="SP">投手 (SP)</option>
+                        <option value="CP">終結者 (CP)</option>
+                        <option value="C">捕手 (C)</option>
+                        <option value="1B">一壘手 (1B)</option>
+                        <option value="2B">二壘手 (2B)</option>
+                        <option value="3B">三壘手 (3B)</option>
+                        <option value="SS">游擊手 (SS)</option>
+                        <option value="LF">左外野手 (LF)</option>
+                        <option value="CF">中外野手 (CF)</option>
+                        <option value="RF">右外野手 (RF)</option>
+                        <option value="DH">指定打擊 (DH)</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="leagueFilter">🏆 聯盟分類:</label>
+                    <select id="leagueFilter">
+                        <option value="">全部聯盟</option>
+                        <option value="AL">美聯 (AL)</option>
+                        <option value="NL">國聯 (NL)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn reset-btn" onclick="resetFilters()">
+                    🔄 重置所有篩選
+                </button>
+                <button class="btn clear-btn" onclick="clearSearch()">
+                    🗑️ 清除搜尋
+                </button>
+            </div>
+
+            <div class="filter-tags" id="filterTags">
+                <!-- 動態生成的篩選標籤 -->
+            </div>
+            
+            <div class="stats-summary">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalPlayers">75</div>
+                    <div class="stat-label">總球員數</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="visiblePlayers">75</div>
+                    <div class="stat-label">顯示中</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="totalTeams">25</div>
+                    <div class="stat-label">隊伍數</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="totalPositions">0</div>
+                    <div class="stat-label">守備位置</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="players-grid" id="playersGrid">
+            <!-- 球員卡片將由 JavaScript 動態生成 -->
+        </div>
+
+        <div class="no-results" id="noResults" style="display: none;">
+            <div class="no-results-icon">🔍</div>
+            <div>沒有找到符合條件的球員</div>
+            <div style="font-size: 1rem; margin-top: 10px; opacity: 0.7;">
+                請嘗試調整篩選條件或搜尋關鍵字
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 球員資料與聯盟分類
+        const players = [
+            // 勇士 (Atlanta Braves) - NL - 5位
+            { name: "Chipper Jones", team: "勇士", position: "3B", image: "pic/ATL-Chipper_Jones.png", teamClass: "braves", league: "NL" },
+            { name: "Eddie Mathews", team: "勇士", position: "3B", image: "pic/ATL-Eddie_Mathews.png", teamClass: "braves", league: "NL" },
+            { name: "John Smoltz", team: "勇士", position: "SP", image: "pic/ATL-John_Smoltz.png", teamClass: "braves", league: "NL" },
+            { name: "Phil Niekro", team: "勇士", position: "SP", image: "pic/ATL-Phil_Niekro.png", teamClass: "braves", league: "NL" },
+            { name: "Tom Glavine", team: "勇士", position: "SP", image: "pic/ATL-Tom_Glavine.png", teamClass: "braves", league: "NL" },
+            
+            // 國民 (Washington Nationals) - NL - 3位
+            { name: "Andre Dawson", team: "國民", position: "CF", image: "pic/WSH-Andre_Dawson.png", teamClass: "nationals", league: "NL" },
+            { name: "Gary Carter", team: "國民", position: "C", image: "pic/WSH-Gary_Carter.png", teamClass: "nationals", league: "NL" },
+            { name: "Tim Raines", team: "國民", position: "LF", image: "pic/WSH-Tim_Raines.png", teamClass: "nationals", league: "NL" },
+            
+            // 大都會 (New York Mets) - NL - 1位
+            { name: "Tom Seaver", team: "大都會", position: "SP", image: "pic/NYM-Tom_Seaver.png", teamClass: "mets", league: "NL" },
+            
+            // 天使 (Los Angeles Angels) - AL - 1位
+            { name: "Vladimir Guerrero", team: "天使", position: "RF", image: "pic/LAA-Vladimir_Guerrero.png", teamClass: "angels", league: "AL" },
+            
+            // 太空人 (Houston Astros) - AL - 3位
+            { name: "Billy Wagner", team: "太空人", position: "CP", image: "pic/HOU-Billy_Wagner.png", teamClass: "astros", league: "AL" },
+            { name: "Craig Biggio", team: "太空人", position: "2B", image: "pic/HOU-Craig_Biggio.png", teamClass: "astros", league: "AL" },
+            { name: "Jeff Bagwell", team: "太空人", position: "1B", image: "pic/HOU-Jeff_Bagwell.png", teamClass: "astros", league: "AL" },
+            
+            // 守護者 (Cleveland Guardians) - AL - 6位
+            { name: "Bob Feller", team: "守護者", position: "SP", image: "pic/CLE-Bob_Feller.png", teamClass: "indians", league: "AL" },
+            { name: "Bob Lemon", team: "守護者", position: "SP", image: "pic/CLE-Bob_Lemon.png", teamClass: "indians", league: "AL" },
+            { name: "Early Wynn", team: "守護者", position: "SP", image: "pic/CLE-Early_Wynn.png", teamClass: "indians", league: "AL" },
+            { name: "Jim Thome", team: "守護者", position: "1B", image: "pic/CLE-Jim_Thome.png", teamClass: "indians", league: "AL" },
+            { name: "Lou Boudreau", team: "守護者", position: "SS", image: "pic/CLE-Lou_Boudreau.png", teamClass: "indians", league: "AL" },
+            { name: "Tris Speaker", team: "守護者", position: "CF", image: "pic/CLE-Tris_Speaker.png", teamClass: "indians", league: "AL" },
+            
+            // 小熊 (Chicago Cubs) - NL - 3位
+            { name: "Billy Williams", team: "小熊", position: "LF", image: "pic/CHC-Billy_Williams.png", teamClass: "cubs", league: "NL" },
+            { name: "Ron Santo", team: "小熊", position: "3B", image: "pic/CHC-Ron_Santo.png", teamClass: "cubs", league: "NL" },
+            { name: "Ryne Sandberg", team: "小熊", position: "2B", image: "pic/CHC-Ryne_Sandberg.png", teamClass: "cubs", league: "NL" },
+            
+            // 巨人 (San Francisco Giants) - NL - 7位
+            { name: "Christy Mathewson", team: "巨人", position: "SP", image: "pic/SF-Christy_Mathewson.png", teamClass: "giants", league: "NL" },
+            { name: "Gaylord Perry", team: "巨人", position: "SP", image: "pic/SF-Gaylord_Perry.png", teamClass: "giants", league: "NL" },
+            { name: "Hoyt Wilhelm", team: "巨人", position: "CP", image: "pic/SF-Hoyt_Wilhelm.png", teamClass: "giants", league: "NL" },
+            { name: "Juan Marichal", team: "巨人", position: "SP", image: "pic/SF-Juan_Marichal.png", teamClass: "giants", league: "NL" },
+            { name: "Mel Ott", team: "巨人", position: "RF", image: "pic/SF-Mel_Ott.png", teamClass: "giants", league: "NL" },
+            { name: "Willie McCovey", team: "巨人", position: "1B", image: "pic/SF-Willie_McCovey.png", teamClass: "giants", league: "NL" },
+            { name: "Carl Hubbell", team: "巨人", position: "SP", image: "pic/SF-Carl_Hubbell.png", teamClass: "giants", league: "NL" },
+            
+            // 教士 (San Diego Padres) - NL - 1位
+            { name: "Dave Winfield", team: "教士", position: "RF", image: "pic/SD-Dave_Winfield.png", teamClass: "padres", league: "NL" },
+            
+            // 水手 (Seattle Mariners) - AL - 2位
+            { name: "Edgar Martinez", team: "水手", position: "DH/3B", image: "pic/SEA-Edgar_Martinez.png", teamClass: "mariners", league: "AL" },
+            { name: "Ken Griffey Jr.", team: "水手", position: "CF", image: "pic/SEA-Ken_Griffey_Jr..png", teamClass: "mariners", league: "AL" },
+            
+            // 洋基 (New York Yankees) - AL - 3位
+            { name: "Lou Gehrig", team: "洋基", position: "1B", image: "pic/NYY-Lou_Gehrig.png", teamClass: "yankees", league: "AL" },
+            { name: "Rich Gossage", team: "洋基", position: "CP", image: "pic/NYY-Rich_Goosage.png", teamClass: "yankees", league: "AL" },
+            { name: "Whitey Ford", team: "洋基", position: "SP", image: "pic/NYY-Whitey_Ford.png", teamClass: "yankees", league: "AL" },
+            
+            // 海盜 (Pittsburgh Pirates) - NL - 3位
+            { name: "Ralph Kiner", team: "海盜", position: "LF", image: "pic/PIT-Ralph_Kiner.png", teamClass: "pirates", league: "NL" },
+            { name: "Roberto Clemente", team: "海盜", position: "RF", image: "pic/PIT-Roberto_Clemente.png", teamClass: "pirates", league: "NL" },
+            { name: "Willie Stargell", team: "海盜", position: "LF", image: "pic/PIT-Wille_Stargell.png", teamClass: "pirates", league: "NL" },
+            
+            // 白襪 (Chicago White Sox) - AL - 1位
+            { name: "Frank Thomas", team: "白襪", position: "1B", image: "pic/CWS-Frank_Thamos.png", teamClass: "whitesox", league: "AL" },
+            
+            // 皇家 (Kansas City Royals) - AL - 1位
+            { name: "George Brett", team: "皇家", position: "3B", image: "pic/KC-George_Brett.png", teamClass: "royals", league: "AL" },
+            
+            // 紅人 (Cincinnati Reds) - NL - 3位
+            { name: "Barry Larkin", team: "紅人", position: "SS", image: "pic/CIN-Barry_Larkin.png", teamClass: "reds", league: "NL" },
+            { name: "Johnny Bench", team: "紅人", position: "C", image: "pic/CIN-Johmmy_Bench.png", teamClass: "reds", league: "NL" },
+            { name: "Tony Perez", team: "紅人", position: "3B", image: "pic/CIN-Tony_Perez.png", teamClass: "reds", league: "NL" },
+            
+            // 紅襪 (Boston Red Sox) - AL - 5位
+            { name: "David Ortiz", team: "紅襪", position: "DH/1B", image: "pic/BOS-David_Ortiz.png", teamClass: "redsox", league: "AL" },
+            { name: "Jim Rice", team: "紅襪", position: "DH/LF", image: "pic/BOS-Jim_Rice.png", teamClass: "redsox", league: "AL" },
+            { name: "Jimmie Foxx", team: "紅襪", position: "1B", image: "pic/BOS-Jimmie_Foxx.png", teamClass: "redsox", league: "AL" },
+            { name: "Lefty Grove", team: "紅襪", position: "SP", image: "pic/BOS-Lefty_Grove.png", teamClass: "redsox", league: "AL" },
+            { name: "Wade Boggs", team: "紅襪", position: "3B", image: "pic/BOS-Wade_Boggs.png", teamClass: "redsox", league: "AL" },
+            
+            // 紅雀 (St. Louis Cardinals) - NL - 5位
+            { name: "Bruce Sutter", team: "紅雀", position: "CP", image: "pic/STL-Bruce_Sutter.png", teamClass: "cardinals", league: "NL" },
+            { name: "Dizzy Dean", team: "紅雀", position: "SP", image: "pic/STL-Dizzy_Dean.png", teamClass: "cardinals", league: "NL" },
+            { name: "Ozzie Smith", team: "紅雀", position: "SS", image: "pic/STL-Ozzie_Smith.png", teamClass: "cardinals", league: "NL" },
+            { name: "Rogers Hornsby", team: "紅雀", position: "2B", image: "pic/STL-Rogers_Hornsby.png", teamClass: "cardinals", league: "NL" },
+            { name: "Scott Rolen", team: "紅雀", position: "3B", image: "pic/STL-Scott_Rolen.png", teamClass: "cardinals", league: "NL" },
+            
+            // 老虎 (Detroit Tigers) - AL - 3位
+            { name: "Al Kaline", team: "老虎", position: "RF", image: "pic/DET-Al_Kaline.png", teamClass: "tigers", league: "AL" },
+            { name: "Alan Trammell", team: "老虎", position: "SS", image: "pic/DET-Alan_Trammell.png", teamClass: "tigers", league: "AL" },
+            { name: "Ty Cobb", team: "老虎", position: "CF", image: "pic/DET-Ty_Cobb.png", teamClass: "tigers", league: "AL" },
+            
+            // 費城人 (Philadelphia Phillies) - NL - 2位
+            { name: "Pete Alexander", team: "費城人", position: "SP", image: "pic/PHI-Pete_Alexander.png", teamClass: "phillies", league: "NL" },
+            { name: "Robin Roberts", team: "費城人", position: "SP", image: "pic/PHI-Robin_Roberts.png", teamClass: "phillies", league: "NL" },
+            
+            // 遊騎兵 (Texas Rangers) - AL - 1位
+            { name: "Nolan Ryan", team: "遊騎兵", position: "SP", image: "pic/TEX-Nolan_Ryan.png", teamClass: "rangers", league: "AL" },
+            
+            // 運動家 (Oakland Athletics) - AL - 2位
+            { name: "Catfish Hunter", team: "運動家", position: "SP", image: "pic/ATH-Catfish_Hunter.png", teamClass: "athletics", league: "AL" },
+            { name: "Rollie Fingers", team: "運動家", position: "CP", image: "pic/ATH-Rollie_Fingers.png", teamClass: "athletics", league: "AL" },
+            
+            // 道奇 (Los Angeles Dodgers) - NL - 5位
+            { name: "Don Drysdale", team: "道奇", position: "SP", image: "pic/LAD-Don_Drysdale.png", teamClass: "dodgers", league: "NL" },
+            { name: "Don Sutton", team: "道奇", position: "SP", image: "pic/LAD-Don_sutton.png", teamClass: "dodgers", league: "NL" },
+            { name: "Duke Snider", team: "道奇", position: "CF", image: "pic/LAD-Duke_Snider.png", teamClass: "dodgers", league: "NL" },
+            { name: "Jackie Robinson", team: "道奇", position: "2B", image: "pic/LAD-Jackie_Robinson.png", teamClass: "dodgers", league: "NL" },
+            { name: "Roy Campanella", team: "道奇", position: "C", image: "pic/LAD-Roy_Campanella.png", teamClass: "dodgers", league: "NL" },
+            
+            // 釀酒人 (Milwaukee Brewers) - AL - 2位
+            { name: "Paul Molitor", team: "釀酒人", position: "DH/1B", image: "pic/MIL-Paul_Molitor.png", teamClass: "brewers", league: "AL" },
+            { name: "Robin Yount", team: "釀酒人", position: "SS", image: "pic/MIL-Robin_Yount.png", teamClass: "brewers", league: "AL" },
+            
+            // 金鶯 (Baltimore Orioles) - AL - 3位
+            { name: "Brooks Robinson", team: "金鶯", position: "3B", image: "pic/BAL-Brooks_Robinson.png", teamClass: "orioles", league: "AL" },
+            { name: "Jim Palmer", team: "金鶯", position: "SP", image: "pic/BAL-Jim_palmer.png", teamClass: "orioles", league: "AL" },
+            { name: "Mike Mussina", team: "金鶯", position: "SP", image: "pic/BAL-Mike_Mussina.png", teamClass: "orioles", league: "AL" },
+            
+            // 雙城 (Minnesota Twins) - AL - 4位
+            { name: "Bert Blyleven", team: "雙城", position: "SP", image: "pic/MIN-Bert_Blyleven.png", teamClass: "twins", league: "AL" },
+            { name: "Harmon Killebrew", team: "雙城", position: "3B/1B", image: "pic/MIN-Harmon_Killebrew.png", teamClass: "twins", league: "AL" },
+            { name: "Joe Mauer", team: "雙城", position: "C", image: "pic/MIN-Joe_Mauer.png", teamClass: "twins", league: "AL" },
+            { name: "Rod Carew", team: "雙城", position: "1B", image: "pic/MIN-Rod_Carew.png", teamClass: "twins", league: "AL" }
+        ];
+
+        let filteredPlayers = [...players];
+        let currentFilters = {
+            search: '',
+            team: '',
+            position: '',
+            league: ''
+        };
+
+        function createPlayerCard(player) {
+            return `
+                <div class="player-card" data-team="${player.team}" data-position="${player.position}" data-league="${player.league}">
+                    <img class="player-image" src="${player.image}" alt="${player.name}" 
+                         onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjMyMCIgdmlld0JveD0iMCAwIDI4MCAzMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyODAiIGhlaWdodD0iMzIwIiBmaWxsPSIjZjhmOWZhIi8+CjxjaXJjbGUgY3g9IjE0MCIgY3k9IjEyMCIgcj0iNDAiIGZpbGw9IiNkZGQiLz4KPHJlY3QgeD0iMTAwIiB5PSIxODAiIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgcng9IjEwIiBmaWxsPSIjZGRkIi8+Cjx0ZXh0IHg9IjUwJSIgeT0iMjkwIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5IiBmb250LXNpemU9IjEyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiPuWcluePh+eEoeazleWKoOi8ijwvdGV4dD4KPC9zdmc+'; console.log('圖片載入失敗:', '${player.image}');">
+                    <div class="player-info">
+                        <div class="team-colors ${player.teamClass}"></div>
+                        <div class="player-name">${player.name}</div>
+                        <div class="player-team">${player.team}</div>
+                        <div class="player-position">${player.position}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderPlayers(playersToRender = filteredPlayers) {
+            const grid = document.getElementById('playersGrid');
+            const noResults = document.getElementById('noResults');
+            
+            if (playersToRender.length === 0) {
+                grid.innerHTML = '';
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+                grid.innerHTML = playersToRender.map(createPlayerCard).join('');
+            }
+            
+            updateStats(playersToRender);
+            updateFilterTags();
+        }
+
+        function updateStats(playersToShow) {
+            document.getElementById('visiblePlayers').textContent = playersToShow.length;
+            const uniqueTeams = new Set(playersToShow.map(p => p.team));
+            // 計算獨特守備位置時，需要將多位置球員的每個位置都計算進去
+            const allPositions = new Set();
+            playersToShow.forEach(player => {
+                const positions = player.position.split('/');
+                positions.forEach(pos => allPositions.add(pos.trim()));
+            });
+            document.getElementById('totalTeams').textContent = uniqueTeams.size;
+            document.getElementById('totalPositions').textContent = allPositions.size;
+        }
+
+        function updateFilterTags() {
+            const tagsContainer = document.getElementById('filterTags');
+            const tags = [];
+
+            if (currentFilters.search) {
+                tags.push(`搜尋: "${currentFilters.search}" <span class="remove" onclick="removeFilter('search')">×</span>`);
+            }
+            if (currentFilters.team) {
+                tags.push(`隊伍: ${currentFilters.team} <span class="remove" onclick="removeFilter('team')">×</span>`);
+            }
+            if (currentFilters.position) {
+                tags.push(`位置: ${currentFilters.position} <span class="remove" onclick="removeFilter('position')">×</span>`);
+            }
+            if (currentFilters.league) {
+                const leagueName = currentFilters.league === 'AL' ? '美聯' : '國聯';
+                tags.push(`聯盟: ${leagueName} <span class="remove" onclick="removeFilter('league')">×</span>`);
+            }
+
+            if (tags.length > 0) {
+                tagsContainer.style.display = 'flex';
+                tagsContainer.innerHTML = tags.map(tag => `<div class="filter-tag">${tag}</div>`).join('');
+            } else {
+                tagsContainer.style.display = 'none';
+            }
+        }
+
+        function removeFilter(filterType) {
+            currentFilters[filterType] = '';
+            
+            // 更新對應的輸入框
+            if (filterType === 'search') {
+                document.getElementById('searchInput').value = '';
+            } else if (filterType === 'team') {
+                document.getElementById('teamFilter').value = '';
+            } else if (filterType === 'position') {
+                document.getElementById('positionFilter').value = '';
+            } else if (filterType === 'league') {
+                document.getElementById('leagueFilter').value = '';
+            }
+            
+            filterPlayers();
+        }
+
+        function filterPlayers() {
+            // 更新當前篩選條件
+            currentFilters.search = document.getElementById('searchInput').value.trim().toLowerCase();
+            currentFilters.team = document.getElementById('teamFilter').value;
+            currentFilters.position = document.getElementById('positionFilter').value;
+            currentFilters.league = document.getElementById('leagueFilter').value;
+            
+            filteredPlayers = players.filter(player => {
+                // 姓名搜尋 (支援中英文)
+                const searchMatch = !currentFilters.search || 
+                    player.name.toLowerCase().includes(currentFilters.search) ||
+                    player.team.includes(currentFilters.search);
+                
+                // 隊伍篩選
+                const teamMatch = !currentFilters.team || player.team === currentFilters.team;
+                
+                // 位置篩選 - 支援多個位置用/分隔
+                let positionMatch = true;
+                if (currentFilters.position) {
+                    // 將球員位置按/分割，檢查是否包含篩選的位置
+                    const playerPositions = player.position.split('/');
+                    positionMatch = playerPositions.includes(currentFilters.position);
+                }
+                
+                // 聯盟篩選
+                const leagueMatch = !currentFilters.league || player.league === currentFilters.league;
+                
+                return searchMatch && teamMatch && positionMatch && leagueMatch;
+            });
+            
+            renderPlayers(filteredPlayers);
+        }
+
+        function resetFilters() {
+            // 清除所有篩選條件
+            document.getElementById('searchInput').value = '';
+            document.getElementById('teamFilter').value = '';
+            document.getElementById('positionFilter').value = '';
+            document.getElementById('leagueFilter').value = '';
+            
+            // 重置篩選物件
+            currentFilters = {
+                search: '',
+                team: '',
+                position: '',
+                league: ''
+            };
+            
+            filteredPlayers = [...players];
+            renderPlayers();
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            currentFilters.search = '';
+            filterPlayers();
+        }
+
+        // 防抖搜尋功能
+        let searchTimeout;
+        function debounceSearch() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(filterPlayers, 300);
+        }
+
+        // 事件監聽器
+        document.getElementById('searchInput').addEventListener('input', debounceSearch);
+        document.getElementById('teamFilter').addEventListener('change', filterPlayers);
+        document.getElementById('positionFilter').addEventListener('change', filterPlayers);
+        document.getElementById('leagueFilter').addEventListener('change', filterPlayers);
+
+        // 鍵盤快捷鍵
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + K 聚焦搜尋框
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+            // Escape 清除搜尋
+            if (e.key === 'Escape') {
+                clearSearch();
+                document.getElementById('searchInput').blur();
+            }
+        });
+
+        // 初始化
+        renderPlayers();
+    </script>
+</body>
+</html>
