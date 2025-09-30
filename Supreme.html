@@ -390,6 +390,9 @@
                         <option value="3B">三壘手 (3B)</option>
                         <option value="SS">游擊手 (SS)</option>
                         <option value="OF">外野手 (OF)</option>
+                        <option value="CF">中外野手 (CF)</option>
+                        <option value="RF">右外野手 (RF)</option>
+                        <option value="LF">左外野手 (LF)</option>
                         <option value="DH">指定打擊 (DH)</option>
                     </select>
                 </div>
@@ -692,9 +695,18 @@
                 // 位置篩選 - 支援多個位置用/分隔
                 let positionMatch = true;
                 if (currentFilters.position) {
-                    // 將球員位置按/分割，檢查是否包含篩選的位置
-                    const playerPositions = player.position.split('/');
-                    positionMatch = playerPositions.includes(currentFilters.position);
+                    // 將球員位置按/分割
+                    const playerPositions = player.position.split('/').map(p => p.trim());
+                    
+                    // 如果篩選 OF,則匹配 LF、RF、CF 任何一個
+                    if (currentFilters.position === 'OF') {
+                        positionMatch = playerPositions.some(pos => 
+                            pos === 'OF' || pos === 'LF' || pos === 'RF' || pos === 'CF'
+                        );
+                    } else {
+                        // 一般位置篩選
+                        positionMatch = playerPositions.includes(currentFilters.position);
+                    }
                 }
                 
                 // 聯盟篩選
