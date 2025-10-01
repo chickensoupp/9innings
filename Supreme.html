@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -56,6 +57,22 @@
             grid-column: span 2;
         }
 
+        .ovr-filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .ovr-controls-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .ovr-slider-wrapper {
+            flex: 1;
+        }
+
         label {
             font-weight: bold;
             font-size: 1.1rem;
@@ -87,11 +104,106 @@
             color: #666;
         }
 
+        .ovr-slider-container {
+            padding: 1px 10px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 8px;
+        }
+
+        .ovr-values {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            font-size: 1rem;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .ovr-value {
+            padding: 5px 12px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border-radius: 6px;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .range-slider-wrapper {
+            position: relative;
+            height: 20px;
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .range-slider {
+            position: absolute;
+            width: 98%;
+            margin-left: 4px;
+            height: 6px;
+            background: #ddd;
+            border-radius: 3px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .range-slider-fill {
+            position: absolute;
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            border-radius: 3px;
+            top: 0;
+        }
+
+        input[type="range"] {
+            position: absolute;
+            width: 100%;
+            height: 20px;
+            background: transparent;
+            pointer-events: none;
+            -webkit-appearance: none;
+            top: 50%;
+            transform: translateY(-50%);
+            left: 0;
+            margin: 0;
+            padding: 0;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #3498db;
+            border: 3px solid white;
+            border-radius: 50%;
+            cursor: pointer;
+            pointer-events: all;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            margin-top: 0;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #3498db;
+            border: 3px solid white;
+            border-radius: 50%;
+            cursor: pointer;
+            pointer-events: all;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        
+        input[type="range"]::-moz-range-track {
+            background: transparent;
+            border: none;
+        }
+
         .action-buttons {
             display: flex;
             gap: 15px;
-            justify-content: center;
-            margin-bottom: 20px;
+            flex-shrink: 0;
         }
 
         .btn {
@@ -330,7 +442,6 @@
             padding: 4px;
         }
 
-        /* 隊伍顏色 */
         .giants { background: linear-gradient(90deg, #FD5A1E, #27251F); }
         .dodgers { background: linear-gradient(90deg, #005A9C, #FFFFFF); }
         .yankees { background: linear-gradient(90deg, #132448, #C4CED4); }
@@ -414,9 +525,14 @@
                 grid-column: span 1;
             }
             
+            .ovr-controls-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
             .action-buttons {
                 flex-direction: column;
-                align-items: center;
+                width: 100%;
             }
             
             .stats-summary {
@@ -512,13 +628,34 @@
                 </div>
             </div>
             
-            <div class="action-buttons">
-                <button class="btn reset-btn" onclick="resetFilters()">
-                    🔄 重置所有篩選
-                </button>
-                <button class="btn clear-btn" onclick="clearSearch()">
-                    🗑️ 清除搜尋
-                </button>
+            <div class="filter-group ovr-filter-group">
+                <label>📊 OVR 數值範圍:</label>
+                <div class="ovr-controls-row">
+                    <div class="ovr-slider-wrapper">
+                        <div class="ovr-slider-container">
+                            <div class="ovr-values">
+                                <div class="ovr-value"><span id="minOvrValue">70</span></div>
+                                <div class="range-slider-wrapper">
+                                    <div class="range-slider">
+                                        <div class="range-slider-fill" id="rangeSliderFill"></div>
+                                    </div>
+                                    <input type="range" id="minOvrSlider" min="70" max="80" value="70" step="1">
+                                    <input type="range" id="maxOvrSlider" min="70" max="80" value="80" step="1">
+                                </div>
+                                <div class="ovr-value"><span id="maxOvrValue">80</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn reset-btn" onclick="resetFilters()">
+                            🔄 重置所有篩選
+                        </button>
+                        <button class="btn clear-btn" onclick="clearSearch()">
+                            🗑️ 清除搜尋
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <div class="filter-tags" id="filterTags"></div>
@@ -569,7 +706,7 @@
             { name: "Tom Glavine", team: "勇士", position: "SP", image: "pic/ATL-Tom_Glavine.png", teamClass: "braves", league: "NL", stats: {con: 78, pow: 73, eye: 77, spd: 78, fld: 73, conUp: 16, powUp: 14, eyeUp: 16, spdUp: 16, fldUp: 13} },
             { name: "Paul Molitor", team: "釀酒人", position: "DH/3B", image: "pic/MIL-Paul_Molitor.png", teamClass: "brewers", league: "AL", stats: {con: 85, pow: 72, eye: 76, spd: 71, fld: 67, conUp: 20, powUp: 15, eyeUp: 16, spdUp: 13, fldUp: 11} },
             { name: "Robin Yount", team: "釀酒人", position: "SS/CF", image: "pic/MIL-Robin_Yount.png", teamClass: "brewers", league: "AL", stats: {con: 82, pow: 75, eye: 75, spd: 69, fld: 69, conUp: 19, powUp: 16, eyeUp: 16, spdUp: 12, fldUp: 12} },
-            { name: "Bruce Sutter", team: "紅雀", position: "CP", image: "pic/STL-Bruce_Sutter.png", teamClass: "cardinals", league: "NL", stats: {con: 77, pow: 77, eye: 53, spd: 80, fld: 71, conUp: 18, powUp: 18, eyeUp: 6, spdUp: 19, fldUp: 14} },
+            { name: "Bruce Sutter", team: "紅雀", position: "CP", image: "pic/STL-Bruce_Sutter.png", teamClass: "cardinals", league: "NL", stats: {con: 77, pow: 77, eye: 53, spd:80, fld: 71, conUp: 18, powUp: 18, eyeUp: 6, spdUp: 19, fldUp: 14} },
             { name: "Dizzy Dean", team: "紅雀", position: "SP", image: "pic/STL-Dizzy_Dean.png", teamClass: "cardinals", league: "NL", stats: {con: 78, pow: 70, eye: 82, spd: 76, fld: 73, conUp: 16, powUp: 12, eyeUp: 18, spdUp: 16, fldUp: 13} },
             { name: "Ozzie Smith", team: "紅雀", position: "SS", image: "pic/STL-Ozzie_Smith.png", teamClass: "cardinals", league: "NL", stats: {con: 78, pow: 64, eye: 79, spd: 77, fld: 81, conUp: 15, powUp: 10, eyeUp: 17, spdUp: 15, fldUp: 18} },
             { name: "Rogers Hornsby", team: "紅雀", position: "2B", image: "pic/STL-Rogers_Hornsby.png", teamClass: "cardinals", league: "NL", stats: {con: 94, pow: 82, eye: 83, spd: 65, fld: 66, conUp: 22, powUp: 17, eyeUp: 17, spdUp: 9, fldUp: 10} },
@@ -633,18 +770,75 @@
             { name: "Whitey Ford", team: "洋基", position: "SP", image: "pic/NYY-Whitey_Ford.png", teamClass: "yankees", league: "AL", stats: {con: 79, pow: 73, eye: 77, spd: 77, fld: 74, conUp: 17, powUp: 13, eyeUp: 16, spdUp: 15, fldUp: 14} }
         ];
 
+        // 為每個球員計算 OVR
+        players.forEach(player => {
+            player.ovr = ((player.stats.con + player.stats.pow + player.stats.eye + player.stats.spd + player.stats.fld) / 5);
+        });
+
         let filteredPlayers = [...players];
         let currentFilters = {
             search: '',
             team: '',
             position: '',
-            league: ''
+            league: '',
+            minOvr: 70,
+            maxOvr: 80
         };
+
+        // 初始化滑桿
+        const minSlider = document.getElementById('minOvrSlider');
+        const maxSlider = document.getElementById('maxOvrSlider');
+        const minOvrValue = document.getElementById('minOvrValue');
+        const maxOvrValue = document.getElementById('maxOvrValue');
+        const rangeSliderFill = document.getElementById('rangeSliderFill');
+
+        function updateSliderFill() {
+            const min = parseInt(minSlider.value);
+            const max = parseInt(maxSlider.value);
+            const rangeMin = parseInt(minSlider.min);
+            const rangeMax = parseInt(minSlider.max);
+            
+            const percentMin = ((min - rangeMin) / (rangeMax - rangeMin)) * 100;
+            const percentMax = ((max - rangeMin) / (rangeMax - rangeMin)) * 100;
+            
+            rangeSliderFill.style.left = percentMin + '%';
+            rangeSliderFill.style.width = (percentMax - percentMin) + '%';
+        }
+
+        minSlider.addEventListener('input', function() {
+            const min = parseInt(this.value);
+            const max = parseInt(maxSlider.value);
+            
+            if (min > max) {
+                this.value = max;
+                minOvrValue.textContent = max;
+            } else {
+                minOvrValue.textContent = min;
+            }
+            
+            updateSliderFill();
+            filterPlayers();
+        });
+
+        maxSlider.addEventListener('input', function() {
+            const max = parseInt(this.value);
+            const min = parseInt(minSlider.value);
+            
+            if (max < min) {
+                this.value = min;
+                maxOvrValue.textContent = min;
+            } else {
+                maxOvrValue.textContent = max;
+            }
+            
+            updateSliderFill();
+            filterPlayers();
+        });
 
         function getStatLabel(position) {
             const pitcherPositions = ['SP', 'CP', 'RP'];
             return pitcherPositions.some(p => position.includes(p)) 
-                ? ['控球', '威力', '體力', '球速', '變化']
+                ? ['控球', '球威', '體力', '直球', '變化']
                 : ['接觸', '力量', '選球', '速度', '守備'];
         }
 
@@ -656,17 +850,14 @@
             const total4 = player.stats.spd + player.stats.spdUp;
             const total5 = player.stats.fld + player.stats.fldUp;
             
-            // 計算五圍基礎平均
-            const baseAvg = ((player.stats.con + player.stats.pow + player.stats.eye + player.stats.spd + player.stats.fld) / 5);
-            
             return `
-                <div class="player-card" data-team="${player.team}" data-position="${player.position}" data-league="${player.league}">
+                <div class="player-card" data-team="${player.team}" data-position="${player.position}" data-league="${player.league}" data-ovr="${player.ovr}">
                     <div class="player-image-container">
                         <img class="player-image" src="${player.image}" alt="${player.name}" 
                              onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDI4MCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyODAiIGhlaWdodD0iMjgwIiBmaWxsPSIjZjhmOWZhIi8+CjxjaXJjbGUgY3g9IjE0MCIgY3k9IjEyMCIgcj0iNDAiIGZpbGw9IiNkZGQiLz4KPHJlY3QgeD0iMTAwIiB5PSIxODAiIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgcng9IjEwIiBmaWxsPSIjZGRkIi8+Cjx0ZXh0IHg9IjUwJSIgeT0iMjYwIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5IiBmb250LXNpemU9IjEyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiPuWcluePh+eEoeazleWKoOi8ijwvdGV4dD4KPC9zdmc+';">
                         <div class="base-avg-badge">
                             <div class="base-avg-label">OVR</div>
-                            <div class="base-avg-value">${baseAvg}</div>
+                            <div class="base-avg-value">${player.ovr}</div>
                         </div>
                     </div>
                     <div class="player-info">
@@ -720,15 +911,18 @@
             const grid = document.getElementById('playersGrid');
             const noResults = document.getElementById('noResults');
             
-            if (playersToRender.length === 0) {
+            // 按 OVR 由高到低排序
+            const sortedPlayers = [...playersToRender].sort((a, b) => b.ovr - a.ovr);
+            
+            if (sortedPlayers.length === 0) {
                 grid.innerHTML = '';
                 noResults.style.display = 'block';
             } else {
                 noResults.style.display = 'none';
-                grid.innerHTML = playersToRender.map(createPlayerCard).join('');
+                grid.innerHTML = sortedPlayers.map(createPlayerCard).join('');
             }
             
-            updateStats(playersToRender);
+            updateStats(sortedPlayers);
             updateFilterTags();
         }
 
@@ -761,6 +955,9 @@
                 const leagueName = currentFilters.league === 'AL' ? '美聯' : '國聯';
                 tags.push(`聯盟: ${leagueName} <span class="remove" onclick="removeFilter('league')">×</span>`);
             }
+            if (currentFilters.minOvr !== 60 || currentFilters.maxOvr !== 95) {
+                tags.push(`OVR: ${currentFilters.minOvr}-${currentFilters.maxOvr} <span class="remove" onclick="removeFilter('ovr')">×</span>`);
+            }
 
             if (tags.length > 0) {
                 tagsContainer.style.display = 'flex';
@@ -771,16 +968,26 @@
         }
 
         function removeFilter(filterType) {
-            currentFilters[filterType] = '';
-            
             if (filterType === 'search') {
+                currentFilters.search = '';
                 document.getElementById('searchInput').value = '';
             } else if (filterType === 'team') {
+                currentFilters.team = '';
                 document.getElementById('teamFilter').value = '';
             } else if (filterType === 'position') {
+                currentFilters.position = '';
                 document.getElementById('positionFilter').value = '';
             } else if (filterType === 'league') {
+                currentFilters.league = '';
                 document.getElementById('leagueFilter').value = '';
+            } else if (filterType === 'ovr') {
+                currentFilters.minOvr = 70;
+                currentFilters.maxOvr = 80;
+                minSlider.value = 70;
+                maxSlider.value = 80;
+                minOvrValue.textContent = 70;
+                maxOvrValue.textContent = 80;
+                updateSliderFill();
             }
             
             filterPlayers();
@@ -791,6 +998,8 @@
             currentFilters.team = document.getElementById('teamFilter').value;
             currentFilters.position = document.getElementById('positionFilter').value;
             currentFilters.league = document.getElementById('leagueFilter').value;
+            currentFilters.minOvr = parseInt(minSlider.value);
+            currentFilters.maxOvr = parseInt(maxSlider.value);
             
             filteredPlayers = players.filter(player => {
                 const searchMatch = !currentFilters.search || 
@@ -814,7 +1023,9 @@
                 
                 const leagueMatch = !currentFilters.league || player.league === currentFilters.league;
                 
-                return searchMatch && teamMatch && positionMatch && leagueMatch;
+                const ovrMatch = player.ovr >= currentFilters.minOvr && player.ovr <= currentFilters.maxOvr;
+                
+                return searchMatch && teamMatch && positionMatch && leagueMatch && ovrMatch;
             });
             
             renderPlayers(filteredPlayers);
@@ -825,14 +1036,21 @@
             document.getElementById('teamFilter').value = '';
             document.getElementById('positionFilter').value = '';
             document.getElementById('leagueFilter').value = '';
+            minSlider.value = 70;
+            maxSlider.value = 80;
+            minOvrValue.textContent = 70;
+            maxOvrValue.textContent = 80;
             
             currentFilters = {
                 search: '',
                 team: '',
                 position: '',
-                league: ''
+                league: '',
+                minOvr: 70,
+                maxOvr: 80
             };
             
+            updateSliderFill();
             filteredPlayers = [...players];
             renderPlayers();
         }
@@ -865,6 +1083,8 @@
             }
         });
 
+        // 初始化
+        updateSliderFill();
         renderPlayers();
     </script>
 </body>
