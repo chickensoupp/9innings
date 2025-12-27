@@ -1,4 +1,4 @@
-function calculate() {
+﻿function calculate() {
     let selected_level = select_level()
     let grade_array
     let max_level

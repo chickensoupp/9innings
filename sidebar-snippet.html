@@ -1,0 +1,37 @@
+<!-- 將此代碼插入到 body 標籤開始後 -->
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <h2>⚾ 9INNINGS</h2>
+        <button class="close-btn" onclick="toggleSidebar()">✕</button>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="home.html" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-text">首頁</span>
+        </a>
+        <a href="index.html" class="nav-item">
+            <span class="nav-icon">🔢</span>
+            <span class="nav-text">五拍計算機</span>
+        </a>
+        <a href="skill.html" class="nav-item">
+            <span class="nav-icon">⚡</span>
+            <span class="nav-text">技能模擬器</span>
+        </a>
+        <a href="Supreme.html" class="nav-item">
+            <span class="nav-icon">📊</span>
+            <span class="nav-text">卓越資料庫</span>
+        </a>
+    </nav>
+    <div class="sidebar-footer">
+        <p>© 2024 9INNINGS Tools</p>
+    </div>
+</div>
+
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<!-- 選單切換按鈕 -->
+<button class="menu-toggle" onclick="toggleSidebar()">
+    <span></span>
+    <span></span>
+    <span></span>
+</button>

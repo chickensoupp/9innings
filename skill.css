@@ -1,4 +1,4 @@
-html, body, div, span, applet, object, iframe,
+﻿html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
 del, dfn, em, img, ins, kbd, q, s, samp,
@@ -475,8 +475,8 @@ body {
   }
   .switch {
     position: fixed;      /* 固定在視窗 */
-    top: 10px;            /* 距離頂部10px */
-    left: 10px;           /* 距離左邊10px */
+    top: 30px;            /* 距離頂部10px */
+    left: 100px;           /* 距離左邊10px */
     display: flex;
     align-items: center;
     cursor: pointer;
