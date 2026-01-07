@@ -3,13 +3,260 @@
 
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>9INNINGS25 Skill-emulator</title>
   <link rel="stylesheet" href="navigation.css">
   <link rel="stylesheet" href="skill.css">
   <script src="skill.js"></script>
-</head>
+  <style>
+    /* 改善整體佈局 */
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #000000;
+      user-select: none;
+      overflow: auto;
+    }
 
-<body onload="initializeSkillBoxes()">
+    .main-content {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .container {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      max-width: 100%;
+      margin: auto;
+    }
+
+    /* 開關位置調整 - 確保不被遮擋 */
+    .switch {
+      position: fixed;
+      top: 80px;
+      left: 20px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      z-index: 997;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 8px 12px;
+      border-radius: 25px;
+      backdrop-filter: blur(10px);
+    }
+
+    /* 響應式設計 - 平板橫向 */
+    @media (max-width: 1024px) and (orientation: landscape) {
+      body {
+        padding: 15px 0;
+      }
+
+      .main-content {
+        padding: 15px;
+        min-height: auto;
+      }
+
+      .container {
+        gap: 30px;
+        transform: scale(0.85);
+      }
+
+      .switch {
+        top: 70px;
+        left: 15px;
+        transform: scale(0.9);
+      }
+
+      .skill-box-left, .skill-box-right {
+        width: 250px !important;
+        height: 420px !important;
+      }
+
+      .card1, .card2 {
+        width: 250px !important;
+        height: 380px !important;
+      }
+
+      .select-skill {
+        height: 35px !important;
+        font-size: 20px !important;
+      }
+    }
+
+    /* 響應式設計 - 手機橫向 */
+    @media (max-width: 768px) and (orientation: landscape) {
+      body {
+        padding: 10px 0;
+      }
+
+      .main-content {
+        padding: 10px;
+        min-height: auto;
+      }
+
+      .container {
+        gap: 20px;
+        transform: scale(0.7);
+      }
+
+      .switch {
+        top: 65px;
+        left: 10px;
+        transform: scale(0.85);
+      }
+
+      .skill-box-left, .skill-box-right {
+        width: 220px !important;
+        height: 370px !important;
+      }
+
+      .card1, .card2 {
+        width: 220px !important;
+        height: 330px !important;
+      }
+
+      .select-skill {
+        height: 30px !important;
+        font-size: 18px !important;
+      }
+
+      .skill-changes-container {
+        transform: scale(0.9);
+      }
+
+      /* 彈出視窗調整 */
+      .choose-skill-container,
+      .confirm-box,
+      .selection-container {
+        width: 90vw !important;
+        max-width: 700px !important;
+        height: auto !important;
+        max-height: 85vh !important;
+        overflow-y: auto;
+      }
+    }
+
+    /* 響應式設計 - 手機直向 */
+    @media (max-width: 768px) and (orientation: portrait) {
+      .main-content {
+        padding: 80px 15px 20px;
+        min-height: 100vh;
+      }
+
+      .container {
+        flex-direction: column;
+        gap: 30px;
+      }
+
+      .switch {
+        top: 75px;
+        left: 15px;
+      }
+
+      .skill-box-left, .skill-box-right {
+        width: 280px !important;
+        height: 470px !important;
+      }
+
+      .card1, .card2 {
+        width: 280px !important;
+        height: 420px !important;
+      }
+
+      .skill-changes-container {
+        width: 100%;
+        max-width: 350px;
+      }
+
+      .skill-changes {
+        height: 400px !important;
+      }
+
+      /* 彈出視窗調整 */
+      .choose-skill-container,
+      .confirm-box,
+      .selection-container {
+        width: 90vw !important;
+        max-width: 350px !important;
+        height: auto !important;
+        max-height: 80vh !important;
+        overflow-y: auto;
+      }
+    }
+
+    /* 小螢幕橫向 - 更激進的縮放 */
+    @media (max-height: 500px) and (orientation: landscape) {
+      .container {
+        transform: scale(0.6);
+        gap: 15px;
+      }
+
+      .switch {
+        top: 55px;
+        left: 8px;
+        transform: scale(0.75);
+      }
+
+      .skill-box-left, .skill-box-right {
+        width: 200px !important;
+        height: 330px !important;
+      }
+
+      .card1, .card2 {
+        width: 200px !important;
+        height: 290px !important;
+      }
+
+      .select-skill {
+        height: 28px !important;
+        font-size: 16px !important;
+      }
+    }
+
+    /* 確保彈出視窗可滾動且不超出螢幕 */
+    .choose-skill-container,
+    .confirm-box,
+    .selection-container {
+      position: fixed;
+      max-height: 90vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* 改善滾動條樣式 */
+    .choose-skill-container::-webkit-scrollbar,
+    .confirm-box::-webkit-scrollbar,
+    .selection-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .choose-skill-container::-webkit-scrollbar-track,
+    .confirm-box::-webkit-scrollbar-track,
+    .selection-container::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .choose-skill-container::-webkit-scrollbar-thumb,
+    .confirm-box::-webkit-scrollbar-thumb,
+    .selection-container::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 4px;
+    }
+  </style>
+</head>
 
   <!-- 主內容 -->
   <div class="main-content">
