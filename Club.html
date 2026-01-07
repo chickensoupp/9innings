@@ -327,6 +327,7 @@
         .reset-btn {
             background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
             color: white;
+            width: 100%;
             border: none;
             padding: 15px 35px;
             font-size: 16px;
@@ -402,7 +403,7 @@
     <div class="main-content">
         <div class="page-container">
             <div class="header">
-                <h1>⚔️ 對戰積分計算器</h1>
+                <h1>⚔️ 俱樂部戰計算器</h1>
             </div>
             
             <div class="content-wrapper">
@@ -421,7 +422,7 @@
                     <div class="section-title">當前統計</div>
                     <div class="stats-grid">
                         <div class="stat-card">
-                            <h3>總分數</h3>
+                            <h3>勝場分數</h3>
                             <div class="stat-value" id="scoreLabel">0</div>
                         </div>
                         <div class="stat-card">
@@ -533,50 +534,57 @@
             return circle;
         }
 
-        // 圓圈點擊事件
+        // 圓圈點擊事件（修正版）
         function onCircleClick(opponentNumber, position) {
             const index = opponentNumber - 1;
             const previousHp = opponentHpHistory[index];
-            const currentHp = position;
+            let currentHp = position;
+            
+            // 如果點擊當前HP位置，則歸零
+            if (currentHp === previousHp) {
+                currentHp = 0;
+            }
 
             if (currentHp === previousHp) return;
 
             let pointsGained = 0;
             let scoreGained = 0;
             let gamesIncrement = 0;
+            
+            const starLevel = getStarLevel(opponentNumber);
+            const baseScore = starInfo[starLevel].score;
 
-            // 血量減少
+            // 血量減少（打贏對手）
             if (currentHp < previousHp) {
+                // 計算每一場的積點和得分
                 for (let hp = previousHp; hp > currentHp; hp--) {
                     if (hpPoints[hp]) {
                         pointsGained += hpPoints[hp];
                         gamesIncrement += 1;
+                        
+                        // 每打贏一場就計算得分
+                        // 先計算打完這場後的積點總和
+                        const currentTotalPoints = totalPoints + pointsGained;
+                        // 判斷這場是否有加倍
+                        const multiplier = currentTotalPoints >= 75 ? 2 : 1;
+                        scoreGained += baseScore * multiplier;
                     }
                 }
-
-                // 被打敗
-                if (currentHp === 0 && previousHp > 0) {
-                    const starLevel = getStarLevel(opponentNumber);
-                    const baseScore = starInfo[starLevel].score;
-                    const multiplier = isDoubled ? 2 : 1;
-                    scoreGained = baseScore * multiplier;
-                }
             }
-            // 血量增加(恢復)
+            // 血量增加（取消勝場，恢復對手血量）
             else {
+                // 反向計算：從當前血量往回加到之前的血量
                 for (let hp = currentHp; hp > previousHp; hp--) {
                     if (hpPoints[hp]) {
                         pointsGained -= hpPoints[hp];
                         gamesIncrement -= 1;
+                        
+                        // 計算要扣除的分數
+                        // 判斷當時這場是否有加倍
+                        const currentTotalPoints = totalPoints + pointsGained;
+                        const multiplier = currentTotalPoints >= 75 ? 2 : 1;
+                        scoreGained -= baseScore * multiplier;
                     }
-                }
-
-                // 從0恢復
-                if (previousHp === 0) {
-                    const starLevel = getStarLevel(opponentNumber);
-                    const baseScore = starInfo[starLevel].score;
-                    const multiplier = isDoubled ? 2 : 1;
-                    scoreGained = -baseScore * multiplier;
                 }
             }
 

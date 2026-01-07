@@ -90,15 +90,18 @@
             overflow: hidden;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             background: white;
+            width: 100%;
+            max-width: 100%;
         }
         
         .stats-table th {
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             color: white;
-            padding: 15px 12px;
+            padding: 12px 8px;
             font-weight: 600;
             text-align: center;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
+            white-space: nowrap;
         }
         
         .stats-table td {
@@ -117,11 +120,14 @@
             background: linear-gradient(135deg, #f8f9ff 0%, #e6f3ff 100%);
             font-weight: 600;
             color: #4facfe;
+            font-size: 0.85rem;
+            white-space: nowrap;
         }
         
         input[type="number"] {
-            width: 70px;
-            padding: 8px;
+            width: 100%;
+            max-width: 70px;
+            padding: 8px 4px;
             border: 2px solid #e1e5e9;
             border-radius: 8px;
             text-align: center;
@@ -129,6 +135,7 @@
             font-weight: 500;
             transition: all 0.3s ease;
             background: white;
+            box-sizing: border-box;
         }
         
         input[type="number"]:focus {
@@ -156,10 +163,16 @@
         }
         
         .controls-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .controls-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
-            margin-bottom: 30px;
         }
         
         .control-group {
@@ -316,27 +329,175 @@
         .group-15 { background: linear-gradient(135deg, #6db2ff 0%, #64adff 100%); }
         
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
             .content-wrapper {
-                padding: 20px;
+                padding: 15px;
+            }
+            
+            .calculator-section {
+                padding: 20px 15px;
             }
             
             .header h1 {
-                font-size: 2rem;
+                font-size: 1.8rem;
             }
             
-            .controls-section {
+            .section-title {
+                font-size: 1.1rem;
+            }
+            
+            .controls-row {
                 grid-template-columns: 1fr;
+                gap: 15px;
             }
             
-            .stats-table th,
+            .control-group {
+                padding: 15px;
+            }
+            
+            .stats-table {
+                font-size: 0.85rem;
+            }
+            
+            .stats-table th {
+                padding: 10px 4px;
+                font-size: 0.75rem;
+            }
+            
             .stats-table td {
+                padding: 8px 4px;
+            }
+            
+            .stats-table td:first-child {
+                font-size: 0.7rem;
                 padding: 8px 6px;
+            }
+            
+            input[type="number"] {
+                max-width: 50px;
+                padding: 6px 2px;
+                font-size: 13px;
+            }
+            
+            .dev-box {
+                width: 50px;
+                height: 32px;
+                font-size: 13px;
+            }
+            
+            .calculate-btn {
+                padding: 12px 30px;
+                font-size: 1rem;
+                min-width: 150px;
+            }
+            
+            .results-section {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .result-card {
+                padding: 20px;
+            }
+            
+            .result-value {
+                font-size: 1.5rem;
+            }
+            
+            .data-section {
+                padding: 20px 15px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+            
+            .page-container {
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 20px 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .content-wrapper {
+                padding: 10px;
+            }
+            
+            .calculator-section {
+                padding: 15px 10px;
+                margin-bottom: 15px;
+            }
+            
+            .section-title {
+                font-size: 1rem;
+                margin-bottom: 15px;
+            }
+            
+            .stats-table th {
+                padding: 8px 2px;
+                font-size: 0.7rem;
+            }
+            
+            .stats-table td {
+                padding: 6px 2px;
+            }
+            
+            .stats-table td:first-child {
+                font-size: 0.65rem;
+                padding: 6px 4px;
+            }
+            
+            input[type="number"] {
+                max-width: 45px;
+                padding: 5px 2px;
+                font-size: 12px;
+            }
+            
+            .dev-box {
+                width: 45px;
+                height: 28px;
+                font-size: 12px;
+            }
+            
+            .control-group {
+                padding: 12px;
+            }
+            
+            .control-group label {
                 font-size: 0.9rem;
             }
             
-            input[type="number"],
-            .dev-box {
-                width: 60px;
+            select {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+            
+            .calculate-btn {
+                padding: 10px 25px;
+                font-size: 0.95rem;
+                min-width: 130px;
+            }
+            
+            .result-card {
+                padding: 15px;
+            }
+            
+            .result-card h3 {
+                font-size: 0.95rem;
+            }
+            
+            .result-value {
+                font-size: 1.3rem;
             }
         }
         
@@ -413,58 +574,64 @@
                     </table>
                     
                     <div class="controls-section">
-                        <div class="control-group">
-                            <label for="player_type">球員類型</label>
-                            <select id="player_type" onchange="type_of_player()">
-                                <option value="type">請選擇類型</option>
-                                <option value="supreme">卓越</option>
-                                <option value="normal">非卓越</option>
-                            </select>
+                        <!-- 第一列：球員類型和目標等級 -->
+                        <div class="controls-row">
+                            <div class="control-group">
+                                <label for="player_type">球員類型</label>
+                                <select id="player_type" onchange="type_of_player()">
+                                    <option value="type">請選擇類型</option>
+                                    <option value="supreme">卓越</option>
+                                    <option value="normal">非卓越</option>
+                                </select>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label for="player_level">目標等級</label>
+                                <select id="player_level" onchange="select_level()">
+                                    <option value="max">最大等級</option>
+                                    <option value=83>83</option>
+                                    <option value=85>85</option>
+                                    <option value=88>88</option>
+                                    <option value=90>90</option>
+                                    <option value=93>93</option>
+                                    <option value=95>95</option>
+                                    <option value=98>98</option>
+                                    <option value=100>100</option>
+                                    <option value=103>103</option>
+                                    <option value=105>105</option>
+                                    <option value=108>108</option>
+                                    <option value=110>110</option>
+                                </select>
+                            </div>
                         </div>
                         
-                        <div class="control-group">
-                            <label for="player_level">目標等級</label>
-                            <select id="player_level" onchange="select_level()">
-                                <option value="max">最大等級</option>
-                                <option value=83>83</option>
-                                <option value=85>85</option>
-                                <option value=88>88</option>
-                                <option value=90>90</option>
-                                <option value=93>93</option>
-                                <option value=95>95</option>
-                                <option value=98>98</option>
-                                <option value=100>100</option>
-                                <option value=103>103</option>
-                                <option value=105>105</option>
-                                <option value=108>108</option>
-                                <option value=110>110</option>
-                            </select>
-                        </div>
-                        
-                        <div class="control-group">
-                            <label for="training1">特訓1</label>
-                            <select id="training1" onchange="updateTrainingOptions()">
-                                <option value="0">請選擇屬性</option>
-                                <option value="contact">接觸</option>
-                                <option value="power">力量</option>
-                                <option value="selection">選球</option>
-                                <option value="speed">速度</option>
-                                <option value="defense">守備</option>
-                            </select>
-                        </div>
-                        
-                        <div class="control-group">
-                            <label for="training2">特訓2</label>
-                            <select id="training2" onchange="updateTrainingOptions()">
-                                <option value="0">請選擇屬性</option>
-                            </select>
-                        </div>
-                        
-                        <div class="control-group">
-                            <label for="training3">特訓3</label>
-                            <select id="training3">
-                                <option value="0">請選擇屬性</option>
-                            </select>
+                        <!-- 第二列：特訓1、2、3 -->
+                        <div class="controls-row">
+                            <div class="control-group">
+                                <label for="training1">特訓1</label>
+                                <select id="training1" onchange="updateTrainingOptions()">
+                                    <option value="0">請選擇屬性</option>
+                                    <option value="contact">接觸</option>
+                                    <option value="power">力量</option>
+                                    <option value="selection">選球</option>
+                                    <option value="speed">速度</option>
+                                    <option value="defense">守備</option>
+                                </select>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label for="training2">特訓2</label>
+                                <select id="training2" onchange="updateTrainingOptions()">
+                                    <option value="0">請選擇屬性</option>
+                                </select>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label for="training3">特訓3</label>
+                                <select id="training3">
+                                    <option value="0">請選擇屬性</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     
