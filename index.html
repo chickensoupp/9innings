@@ -128,34 +128,6 @@
     </style>
 </head>
 <body>
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <h2>⚾ 9局工具箱</h2>
-            <button class="close-btn" onclick="toggleSidebar()">✕</button>
-        </div>
-        <nav class="sidebar-nav">
-            <a href="index.html" class="nav-item active">
-                <span class="nav-icon">🏠</span>
-                <span class="nav-text">首頁</span>
-            </a>
-            <a href="5-tools.html" class="nav-item">
-                <span class="nav-icon">🔢</span>
-                <span class="nav-text">五拍計算機</span>
-            </a>
-            <a href="skill.html" class="nav-item">
-                <span class="nav-icon">⚡</span>
-                <span class="nav-text">技能模擬器</span>
-            </a>
-            <a href="Supreme.html" class="nav-item">
-                <span class="nav-icon">📊</span>
-                <span class="nav-text">卓越資料庫</span>
-            </a>
-        </nav>
-        <div class="sidebar-footer">
-            <p>© 2025 CC</p>
-        </div>
-    </div>
-
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
 
     <div class="main-content">
@@ -191,6 +163,13 @@
                     <h2>卓越資料庫</h2>
                     <p>完整的卓越球員資料庫，包含詳細數據與篩選功能，快速找到您需要的球員資訊</p>
                     <a href="Supreme.html" class="tool-btn">立即使用</a>
+                </div>
+
+                <div class="tool-card" onclick="window.location.href='score-calculator.html'">
+                    <span class="tool-icon">⚔️</span>
+                    <h2>俱樂部戰計算器</h2>
+                    <p>對戰積分追蹤工具，即時計算積點進度與分數，幫助您掌握對戰節奏與策略</p>
+                    <a href="score-calculator.html" class="tool-btn">立即使用</a>
                 </div>
             </div>
         </div>
