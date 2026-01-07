@@ -94,6 +94,49 @@
             max-width: 100%;
         }
         
+        .stats-table-mobile {
+            display: none;
+            table-layout: fixed;
+            width: 100%;
+        }
+        
+        .stats-table-mobile th,
+        .stats-table-mobile td {
+            padding: 10px 6px;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+        
+        /* 第一列（屬性名稱）固定寬度 */
+        .stats-table-mobile th:first-child,
+        .stats-table-mobile td:first-child {
+            width: 60px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #e6f3ff 100%);
+            font-weight: 700;
+            color: #4facfe;
+        }
+        
+        /* 第二、三、四列（上升量、基礎值、強化量）平均分配剩餘寬度 */
+        .stats-table-mobile th:nth-child(2),
+        .stats-table-mobile th:nth-child(3),
+        .stats-table-mobile th:nth-child(4),
+        .stats-table-mobile td:nth-child(2),
+        .stats-table-mobile td:nth-child(3),
+        .stats-table-mobile td:nth-child(4) {
+            width: calc((100% - 60px) / 3);
+        }
+        
+        .stats-table-mobile input[type="number"] {
+            max-width: 100%;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .stats-table-mobile .dev-box {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
         .stats-table th {
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             color: white;
@@ -413,6 +456,14 @@
         }
         
         @media (max-width: 480px) {
+            /* 隱藏桌面版表格，顯示手機版表格 */
+            .stats-table-desktop {
+                display: none !important;
+            }
+            
+            .stats-table-mobile {
+                display: table !important;
+            }
             body {
                 padding: 5px;
             }
@@ -443,19 +494,7 @@
                 margin-bottom: 15px;
             }
             
-            .stats-table th {
-                padding: 8px 2px;
-                font-size: 0.7rem;
-            }
             
-            .stats-table td {
-                padding: 6px 2px;
-            }
-            
-            .stats-table td:first-child {
-                font-size: 0.65rem;
-                padding: 6px 4px;
-            }
             
             input[type="number"] {
                 max-width: 45px;
@@ -534,7 +573,8 @@
                 <div class="calculator-section">
                     <div class="section-title">球員屬性設定</div>
                     
-                    <table class="stats-table">
+                    <!-- 桌面版表格 -->
+                    <table class="stats-table stats-table-desktop">
                         <thead>
                             <tr>
                                 <th></th>
@@ -548,27 +588,71 @@
                         <tbody>
                             <tr>
                                 <td>上升量</td>
-                                <td><input type="number" id="GI_contact" min="0" max="30"></td>
-                                <td><input type="number" id="GI_power" min="0" max="30"></td>
-                                <td><input type="number" id="GI_selection" min="0" max="30"></td>
-                                <td><input type="number" id="GI_speed" min="0" max="30"></td>
-                                <td><input type="number" id="GI_defense" min="0" max="30"></td>
+                                <td data-label="接觸"><input type="number" id="GI_contact" min="0" max="30"></td>
+                                <td data-label="力量"><input type="number" id="GI_power" min="0" max="30"></td>
+                                <td data-label="選球"><input type="number" id="GI_selection" min="0" max="30"></td>
+                                <td data-label="速度"><input type="number" id="GI_speed" min="0" max="30"></td>
+                                <td data-label="守備"><input type="number" id="GI_defense" min="0" max="30"></td>
                             </tr>
                             <tr>
                                 <td>基礎值</td>
-                                <td><input type="number" id="base_contact"></td>
-                                <td><input type="number" id="base_power"></td>
-                                <td><input type="number" id="base_selection"></td>
-                                <td><input type="number" id="base_speed"></td>
-                                <td><input type="number" id="base_defense"></td>
+                                <td data-label="接觸"><input type="number" id="base_contact"></td>
+                                <td data-label="力量"><input type="number" id="base_power"></td>
+                                <td data-label="選球"><input type="number" id="base_selection"></td>
+                                <td data-label="速度"><input type="number" id="base_speed"></td>
+                                <td data-label="守備"><input type="number" id="base_defense"></td>
                             </tr>
                             <tr>
                                 <td>強化量</td>
-                                <td><span class="dev-box" id="dev_contact">0</span></td>
-                                <td><span class="dev-box" id="dev_power">0</span></td>
-                                <td><span class="dev-box" id="dev_selection">0</span></td>
-                                <td><span class="dev-box" id="dev_speed">0</span></td>
-                                <td><span class="dev-box" id="dev_defense">0</span></td>
+                                <td data-label="接觸"><span class="dev-box" id="dev_contact">0</span></td>
+                                <td data-label="力量"><span class="dev-box" id="dev_power">0</span></td>
+                                <td data-label="選球"><span class="dev-box" id="dev_selection">0</span></td>
+                                <td data-label="速度"><span class="dev-box" id="dev_speed">0</span></td>
+                                <td data-label="守備"><span class="dev-box" id="dev_defense">0</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <!-- 手機版表格（轉置）-->
+                    <table class="stats-table stats-table-mobile">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>上升量</th>
+                                <th>基礎值</th>
+                                <th>強化量</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>接觸</td>
+                                <td><input type="number" class="mobile-gi-contact" min="0" max="30"></td>
+                                <td><input type="number" class="mobile-base-contact"></td>
+                                <td><span class="dev-box mobile-dev-contact">0</span></td>
+                            </tr>
+                            <tr>
+                                <td>力量</td>
+                                <td><input type="number" class="mobile-gi-power" min="0" max="30"></td>
+                                <td><input type="number" class="mobile-base-power"></td>
+                                <td><span class="dev-box mobile-dev-power">0</span></td>
+                            </tr>
+                            <tr>
+                                <td>選球</td>
+                                <td><input type="number" class="mobile-gi-selection" min="0" max="30"></td>
+                                <td><input type="number" class="mobile-base-selection"></td>
+                                <td><span class="dev-box mobile-dev-selection">0</span></td>
+                            </tr>
+                            <tr>
+                                <td>速度</td>
+                                <td><input type="number" class="mobile-gi-speed" min="0" max="30"></td>
+                                <td><input type="number" class="mobile-base-speed"></td>
+                                <td><span class="dev-box mobile-dev-speed">0</span></td>
+                            </tr>
+                            <tr>
+                                <td>守備</td>
+                                <td><input type="number" class="mobile-gi-defense" min="0" max="30"></td>
+                                <td><input type="number" class="mobile-base-defense"></td>
+                                <td><span class="dev-box mobile-dev-defense">0</span></td>
                             </tr>
                         </tbody>
                     </table>
@@ -885,6 +969,40 @@
             };
             return translations[option] || option;
         }
+        
+        // 同步桌面版和手機版表格數據
+        function syncMobileInputs() {
+            const stats = ['contact', 'power', 'selection', 'speed', 'defense'];
+            
+            stats.forEach(stat => {
+                // 同步 GI 輸入
+                const desktopGI = document.getElementById(`GI_${stat}`);
+                const mobileGI = document.querySelector(`.mobile-gi-${stat}`);
+                if (desktopGI && mobileGI) {
+                    desktopGI.addEventListener('input', (e) => {
+                        mobileGI.value = e.target.value;
+                    });
+                    mobileGI.addEventListener('input', (e) => {
+                        desktopGI.value = e.target.value;
+                    });
+                }
+                
+                // 同步 base 輸入
+                const desktopBase = document.getElementById(`base_${stat}`);
+                const mobileBase = document.querySelector(`.mobile-base-${stat}`);
+                if (desktopBase && mobileBase) {
+                    desktopBase.addEventListener('input', (e) => {
+                        mobileBase.value = e.target.value;
+                    });
+                    mobileBase.addEventListener('input', (e) => {
+                        desktopBase.value = e.target.value;
+                    });
+                }
+            });
+        }
+        
+        // 頁面載入時執行同步
+        window.addEventListener('DOMContentLoaded', syncMobileInputs);
     </script>
     <script src="navigation.js"></script>
 </body>
