@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>五拍計算機</title>
     <link rel="stylesheet" href="navigation.css">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4308184900595874"
-     crossorigin="anonymous"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
         
@@ -227,10 +225,10 @@
         
         .control-group label {
             display: block;
+            margin-bottom: 10px;
             font-weight: 600;
             color: #4facfe;
-            margin-bottom: 8px;
-            font-size: 0.95rem;
+            font-size: 1rem;
         }
         
         select {
@@ -262,56 +260,22 @@
             padding: 15px 40px;
             font-size: 1.1rem;
             font-weight: 600;
-            border-radius: 25px;
+            border-radius: 12px;
             cursor: pointer;
+            box-shadow: 0 8px 20px rgba(79, 172, 254, 0.3);
             transition: all 0.3s ease;
-            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
             display: block;
-            margin: 30px auto;
+            margin: 30px auto 0;
             min-width: 200px;
         }
         
         .calculate-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 12px 35px rgba(79, 172, 254, 0.5);
+            box-shadow: 0 12px 30px rgba(79, 172, 254, 0.4);
         }
         
         .calculate-btn:active {
             transform: translateY(0);
-        }
-        
-        .results-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-        
-        .result-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-            transition: transform 0.3s ease;
-        }
-        
-        .result-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .result-card h3 {
-            font-size: 1.1rem;
-            font-weight: 500;
-            margin-bottom: 10px;
-            opacity: 0.9;
-        }
-        
-        .result-value {
-            font-size: 2rem;
-            font-weight: 700;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
         
         .data-section {
@@ -322,70 +286,59 @@
             border: 1px solid rgba(79, 172, 254, 0.2);
         }
         
-        .data-table {
-            margin: 20px auto;
-            border-collapse: collapse;
-            width: 100%;
-            max-width: 400px;
+        .results-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .result-card {
+            background: linear-gradient(135deg, #f8f9ff 0%, #e6f3ff 100%);
+            padding: 25px;
             border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-        
-        .data-table thead {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        }
-        
-        .data-table th {
-            color: white;
-            padding: 15px;
+            border: 2px solid rgba(79, 172, 254, 0.2);
             text-align: center;
+        }
+        
+        .result-card h3 {
+            color: #4facfe;
+            font-size: 1.1rem;
             font-weight: 600;
-            font-size: 1rem;
+            margin: 0 0 15px 0;
         }
         
-        .data-table td {
-            padding: 12px 15px;
-            text-align: center;
-            font-weight: 500;
-            border-bottom: 1px solid rgba(79, 172, 254, 0.1);
+        .result-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+            margin: 0;
         }
-        
-        .data-table tr:last-child td {
-            border-bottom: none;
-        }
-        
-        .group-1 { background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%); }
-        .group-2 { background: linear-gradient(135deg, #e6f2ff 0%, #ddeeff 100%); }
-        .group-3 { background: linear-gradient(135deg, #ddeeff 0%, #d4e9ff 100%); }
-        .group-4 { background: linear-gradient(135deg, #d4e9ff 0%, #cae4ff 100%); }
-        .group-5 { background: linear-gradient(135deg, #cae4ff 0%, #c1dfff 100%); }
-        .group-6 { background: linear-gradient(135deg, #c1dfff 0%, #b8daff 100%); }
-        .group-7 { background: linear-gradient(135deg, #b8daff 0%, #aed5ff 100%); }
-        .group-8 { background: linear-gradient(135deg, #aed5ff 0%, #a5d0ff 100%); }
-        .group-9 { background: linear-gradient(135deg, #a5d0ff 0%, #9ccbff 100%); }
-        .group-10 { background: linear-gradient(135deg, #9ccbff 0%, #92c6ff 100%); }
-        .group-11 { background: linear-gradient(135deg, #92c6ff 0%, #89c1ff 100%); }
-        .group-12 { background: linear-gradient(135deg, #89c1ff 0%, #80bcff 100%); }
-        .group-13 { background: linear-gradient(135deg, #80bcff 0%, #76b7ff 100%); }
-        .group-14 { background: linear-gradient(135deg, #76b7ff 0%, #6db2ff 100%); }
-        .group-15 { background: linear-gradient(135deg, #6db2ff 0%, #64adff 100%); }
         
         @media (max-width: 768px) {
             body {
                 padding: 10px;
             }
             
-            .content-wrapper {
-                padding: 15px;
+            .page-container {
+                border-radius: 15px;
             }
             
-            .calculator-section {
-                padding: 20px 15px;
+            .header {
+                padding: 25px 20px;
             }
             
             .header h1 {
-                font-size: 1.8rem;
+                font-size: 2rem;
+            }
+            
+            .content-wrapper {
+                padding: 20px;
+            }
+            
+            .calculator-section {
+                padding: 20px;
+                margin-bottom: 20px;
             }
             
             .section-title {
@@ -394,7 +347,6 @@
             
             .controls-row {
                 grid-template-columns: 1fr;
-                gap: 15px;
             }
             
             .control-group {
@@ -613,7 +565,7 @@
                         </tbody>
                     </table>
                     
-                    <!-- 手機版表格（轉置）-->
+                    <!-- 手機版表格（轉置）- 修正：給手機版表格加上對應的 ID -->
                     <table class="stats-table stats-table-mobile">
                         <thead>
                             <tr>
@@ -626,33 +578,33 @@
                         <tbody>
                             <tr>
                                 <td>接觸</td>
-                                <td><input type="number" class="mobile-gi-contact" min="0" max="30"></td>
-                                <td><input type="number" class="mobile-base-contact"></td>
-                                <td><span class="dev-box mobile-dev-contact">0</span></td>
+                                <td><input type="number" id="mobile_GI_contact" class="mobile-gi-contact" min="0" max="30"></td>
+                                <td><input type="number" id="mobile_base_contact" class="mobile-base-contact"></td>
+                                <td><span class="dev-box" id="mobile_dev_contact">0</span></td>
                             </tr>
                             <tr>
                                 <td>力量</td>
-                                <td><input type="number" class="mobile-gi-power" min="0" max="30"></td>
-                                <td><input type="number" class="mobile-base-power"></td>
-                                <td><span class="dev-box mobile-dev-power">0</span></td>
+                                <td><input type="number" id="mobile_GI_power" class="mobile-gi-power" min="0" max="30"></td>
+                                <td><input type="number" id="mobile_base_power" class="mobile-base-power"></td>
+                                <td><span class="dev-box" id="mobile_dev_power">0</span></td>
                             </tr>
                             <tr>
                                 <td>選球</td>
-                                <td><input type="number" class="mobile-gi-selection" min="0" max="30"></td>
-                                <td><input type="number" class="mobile-base-selection"></td>
-                                <td><span class="dev-box mobile-dev-selection">0</span></td>
+                                <td><input type="number" id="mobile_GI_selection" class="mobile-gi-selection" min="0" max="30"></td>
+                                <td><input type="number" id="mobile_base_selection" class="mobile-base-selection"></td>
+                                <td><span class="dev-box" id="mobile_dev_selection">0</span></td>
                             </tr>
                             <tr>
                                 <td>速度</td>
-                                <td><input type="number" class="mobile-gi-speed" min="0" max="30"></td>
-                                <td><input type="number" class="mobile-base-speed"></td>
-                                <td><span class="dev-box mobile-dev-speed">0</span></td>
+                                <td><input type="number" id="mobile_GI_speed" class="mobile-gi-speed" min="0" max="30"></td>
+                                <td><input type="number" id="mobile_base_speed" class="mobile-base-speed"></td>
+                                <td><span class="dev-box" id="mobile_dev_speed">0</span></td>
                             </tr>
                             <tr>
                                 <td>守備</td>
-                                <td><input type="number" class="mobile-gi-defense" min="0" max="30"></td>
-                                <td><input type="number" class="mobile-base-defense"></td>
-                                <td><span class="dev-box mobile-dev-defense">0</span></td>
+                                <td><input type="number" id="mobile_GI_defense" class="mobile-gi-defense" min="0" max="30"></td>
+                                <td><input type="number" id="mobile_base_defense" class="mobile-base-defense"></td>
+                                <td><span class="dev-box" id="mobile_dev_defense">0</span></td>
                             </tr>
                         </tbody>
                     </table>
@@ -707,6 +659,11 @@
                                 <label for="training2">特訓2</label>
                                 <select id="training2" onchange="updateTrainingOptions()">
                                     <option value="0">請選擇屬性</option>
+                                    <option value="contact">接觸</option>
+                                    <option value="power">力量</option>
+                                    <option value="selection">選球</option>
+                                    <option value="speed">速度</option>
+                                    <option value="defense">守備</option>
                                 </select>
                             </div>
                             
@@ -714,71 +671,47 @@
                                 <label for="training3">特訓3</label>
                                 <select id="training3">
                                     <option value="0">請選擇屬性</option>
+                                    <option value="contact">接觸</option>
+                                    <option value="power">力量</option>
+                                    <option value="selection">選球</option>
+                                    <option value="speed">速度</option>
+                                    <option value="defense">守備</option>
                                 </select>
                             </div>
                         </div>
                     </div>
                     
-                    <button class="calculate-btn" onclick="calculate()">開始計算</button>
-                    
+                    <button class="calculate-btn" onclick="calculate()">計算</button>
+                </div>
+                
+                <div class="data-section">
+                    <div class="section-title">計算結果</div>
                     <div class="results-section">
                         <div class="result-card">
-                            <h3>五拍等級</h3>
-                            <div class="result-value" id="result">0</div>
+                            <h3>最大可達等級</h3>
+                            <p class="result-value" id="result">-</p>
                         </div>
                         <div class="result-card">
                             <h3>剩餘自由點數</h3>
-                            <div class="result-value" id="freepoint">0</div>
+                            <p class="result-value" id="freepoint">-</p>
                         </div>
                     </div>
-                </div>
-
-                <div class="data-section">
-                    <div class="section-title">等級對應參考表</div>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>等級範圍</th>
-                                <th>LV7</th>
-                                <th>LV8</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="group-1"><td>80-82</td><td>7</td><td>8</td></tr>
-                            <tr class="group-2"><td>83-84</td><td>8</td><td>9</td></tr>
-                            <tr class="group-3"><td>85</td><td>8</td><td>10</td></tr>
-                            <tr class="group-4"><td>86-87</td><td>9</td><td>10</td></tr>
-                            <tr class="group-5"><td>88</td><td>9</td><td>11</td></tr>
-                            <tr class="group-6"><td>89</td><td>10</td><td>11</td></tr>
-                            <tr class="group-7"><td>90-92</td><td>10</td><td>12</td></tr>
-                            <tr class="group-8"><td>93-94</td><td>11</td><td>13</td></tr>
-                            <tr class="group-9"><td>95-97</td><td>12</td><td>14</td></tr>
-                            <tr class="group-10"><td>98-99</td><td>13</td><td>15</td></tr>
-                            <tr class="group-11"><td>100-102</td><td>14</td><td>16</td></tr>
-                            <tr class="group-12"><td>103-104</td><td>15</td><td>17</td></tr>
-                            <tr class="group-13"><td>105-107</td><td>16</td><td>18</td></tr>
-                            <tr class="group-14"><td>108-109</td><td>17</td><td>19</td></tr>
-                            <tr class="group-15"><td>110</td><td>18</td><td>20</td></tr>
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="navigation.js"></script>
     <script>
         function calculate() {
-            let selected_level = select_level()
-            let grade_array
-            let max_level
-            let free_point
-            let dev
-            if (selected_level == "max") {
+            selected_level = select_level();
+
+            let grade_array;
+            let max_level;
+            let free_point;
+            let dev;
+
+            if (selected_level == "max"){
                 grade_array = max_grade()
-                if (grade_array == [0,0,0,0,0,0,0]){
-                    grade_array = [0,0,0,0,0,"無法達成此階級",0]
-                }
                 max_level = grade_array[5]
                 free_point = grade_array[6]
                 dev = grade_array.slice(0,5)
@@ -803,9 +736,15 @@
             }
             else{
                 stats.forEach((stat, index) => {
+                    // 桌面版強化量顯示
                     let span = document.getElementById(`dev_${stat}`);
                     if (span) {
                         span.textContent = dev[index];
+                    }
+                    // 手機版強化量顯示
+                    let mobileSpan = document.getElementById(`mobile_dev_${stat}`);
+                    if (mobileSpan) {
+                        mobileSpan.textContent = dev[index];
                     }
                 });
                 
@@ -930,16 +869,25 @@
             }
         }
 
+        // 修正：檢測螢幕寬度並返回對應的輸入欄位
         function getGIValues() {
+            const isMobile = window.innerWidth <= 480;
+            const prefix = isMobile ? 'mobile_GI_' : 'GI_';
+            
             return ['contact', 'power', 'selection', 'speed', 'defense'].map(stat => {
-                let GI = parseFloat(document.getElementById(`GI_${stat}`).value) || 0;
+                let element = document.getElementById(`${prefix}${stat}`);
+                let GI = parseFloat(element?.value) || 0;
                 return GI;
             });
         }
 
         function getBaseValues() {
+            const isMobile = window.innerWidth <= 480;
+            const prefix = isMobile ? 'mobile_base_' : 'base_';
+            
             return ['contact', 'power', 'selection', 'speed', 'defense'].map(stat => {
-                let base = parseFloat(document.getElementById(`base_${stat}`).value) || 0;
+                let element = document.getElementById(`${prefix}${stat}`);
+                let base = parseFloat(element?.value) || 0;
                 return base;
             });
         }
@@ -971,38 +919,40 @@
         }
         
         // 同步桌面版和手機版表格數據
-        function syncMobileInputs() {
+        function syncInputs() {
             const stats = ['contact', 'power', 'selection', 'speed', 'defense'];
             
             stats.forEach(stat => {
                 // 同步 GI 輸入
-                const desktopGI = document.getElementById(`GI_${stat}`);
-                const mobileGI = document.querySelector(`.mobile-gi-${stat}`);
-                if (desktopGI && mobileGI) {
-                    desktopGI.addEventListener('input', (e) => {
-                        mobileGI.value = e.target.value;
+                const desktop_GI = document.getElementById(`GI_${stat}`);
+                const mobile_GI = document.getElementById(`mobile_GI_${stat}`);
+                
+                if (desktop_GI && mobile_GI) {
+                    desktop_GI.addEventListener('input', (e) => {
+                        mobile_GI.value = e.target.value;
                     });
-                    mobileGI.addEventListener('input', (e) => {
-                        desktopGI.value = e.target.value;
+                    mobile_GI.addEventListener('input', (e) => {
+                        desktop_GI.value = e.target.value;
                     });
                 }
                 
                 // 同步 base 輸入
-                const desktopBase = document.getElementById(`base_${stat}`);
-                const mobileBase = document.querySelector(`.mobile-base-${stat}`);
-                if (desktopBase && mobileBase) {
-                    desktopBase.addEventListener('input', (e) => {
-                        mobileBase.value = e.target.value;
+                const desktop_base = document.getElementById(`base_${stat}`);
+                const mobile_base = document.getElementById(`mobile_base_${stat}`);
+                
+                if (desktop_base && mobile_base) {
+                    desktop_base.addEventListener('input', (e) => {
+                        mobile_base.value = e.target.value;
                     });
-                    mobileBase.addEventListener('input', (e) => {
-                        desktopBase.value = e.target.value;
+                    mobile_base.addEventListener('input', (e) => {
+                        desktop_base.value = e.target.value;
                     });
                 }
             });
         }
         
         // 頁面載入時執行同步
-        window.addEventListener('DOMContentLoaded', syncMobileInputs);
+        window.addEventListener('DOMContentLoaded', syncInputs);
     </script>
     <script src="navigation.js"></script>
 </body>
