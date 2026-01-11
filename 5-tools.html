@@ -282,6 +282,7 @@
             background: white;
             border-radius: 15px;
             padding: 30px;
+            margin-bottom: 30px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(79, 172, 254, 0.2);
         }
@@ -313,6 +314,103 @@
             font-weight: 700;
             color: #667eea;
             margin: 0;
+        }
+        
+        /* 等級對應參考表樣式 */
+        .data-table {
+            width: 70%;
+            border-collapse: collapse;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            background: white;
+            margin: 20px auto 0;
+        }
+        
+        .data-table thead {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        
+        .data-table th {
+            padding: 15px;
+            font-weight: 600;
+            text-align: center;
+            font-size: 1rem;
+        }
+        
+        .data-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #f0f0f0;
+            font-weight: 500;
+            background: #fafafa;
+        }
+        
+        .data-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .data-table tbody tr:hover {
+            background: linear-gradient(135deg, #f8f9ff 0%, #e6f3ff 100%);
+            transition: background 0.3s ease;
+        }
+        
+        /* 等級範圍列樣式 */
+        .data-table td:first-child {
+            background: linear-gradient(135deg, #f8f9ff 0%, #e6f3ff 100%);
+            font-weight: 600;
+            color: #4facfe;
+        }
+        
+        /* 為不同等級組添加微妙的顏色區分 */
+        .data-table .group-1,
+        .data-table .group-2,
+        .data-table .group-3 {
+            background: #fafcff;
+        }
+        
+        .data-table .group-4,
+        .data-table .group-5,
+        .data-table .group-6 {
+            background: #f8fbff;
+        }
+        
+        .data-table .group-7,
+        .data-table .group-8,
+        .data-table .group-9 {
+            background: #f6faff;
+        }
+        
+        .data-table .group-10,
+        .data-table .group-11,
+        .data-table .group-12 {
+            background: #f4f9ff;
+        }
+        
+        .data-table .group-13,
+        .data-table .group-14,
+        .data-table .group-15 {
+            background: #f2f8ff;
+        }
+        
+        /* 高亮當前等級的樣式 */
+        .data-table tbody tr.highlighted {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%) !important;
+            font-weight: 700;
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .data-table tbody tr.highlighted td {
+            background: transparent !important;
+            color: #2c3e50;
+        }
+        
+        .data-table tbody tr.highlighted td:first-child {
+            color: #2c3e50;
+            font-weight: 700;
         }
         
         @media (max-width: 768px) {
@@ -405,6 +503,20 @@
             .data-section {
                 padding: 20px 15px;
             }
+            
+            .data-table {
+                width: 100%;
+            }
+            
+            .data-table th,
+            .data-table td {
+                padding: 10px 8px;
+                font-size: 0.9rem;
+            }
+            
+            .data-table th {
+                font-size: 0.95rem;
+            }
         }
         
         @media (max-width: 480px) {
@@ -416,6 +528,7 @@
             .stats-table-mobile {
                 display: table !important;
             }
+            
             body {
                 padding: 5px;
             }
@@ -445,8 +558,6 @@
                 font-size: 1rem;
                 margin-bottom: 15px;
             }
-            
-            
             
             input[type="number"] {
                 max-width: 45px;
@@ -489,6 +600,25 @@
             
             .result-value {
                 font-size: 1.3rem;
+            }
+            
+            .data-table {
+                width: 100%;
+            }
+            
+            .data-table th,
+            .data-table td {
+                padding: 8px 6px;
+                font-size: 0.85rem;
+            }
+            
+            .data-table th {
+                font-size: 0.9rem;
+                padding: 12px 8px;
+            }
+            
+            .data-table td:first-child {
+                font-size: 0.8rem;
             }
         }
         
@@ -565,7 +695,7 @@
                         </tbody>
                     </table>
                     
-                    <!-- 手機版表格（轉置）- 修正：給手機版表格加上對應的 ID -->
+                    <!-- 手機版表格（轉置） -->
                     <table class="stats-table stats-table-mobile">
                         <thead>
                             <tr>
@@ -697,11 +827,72 @@
                         </div>
                     </div>
                 </div>
+                
+                <div class="data-section">
+                    <div class="section-title">等級對應參考表</div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>等級範圍</th>
+                                <th>LV7</th>
+                                <th>LV8</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="group-1" data-level-range="80-82"><td>80-82</td><td>7</td><td>8</td></tr>
+                            <tr class="group-2" data-level-range="83-84"><td>83-84</td><td>8</td><td>9</td></tr>
+                            <tr class="group-3" data-level-range="85"><td>85</td><td>8</td><td>10</td></tr>
+                            <tr class="group-4" data-level-range="86-87"><td>86-87</td><td>9</td><td>10</td></tr>
+                            <tr class="group-5" data-level-range="88"><td>88</td><td>9</td><td>11</td></tr>
+                            <tr class="group-6" data-level-range="89"><td>89</td><td>10</td><td>11</td></tr>
+                            <tr class="group-7" data-level-range="90-92"><td>90-92</td><td>10</td><td>12</td></tr>
+                            <tr class="group-8" data-level-range="93-94"><td>93-94</td><td>11</td><td>13</td></tr>
+                            <tr class="group-9" data-level-range="95-97"><td>95-97</td><td>12</td><td>14</td></tr>
+                            <tr class="group-10" data-level-range="98-99"><td>98-99</td><td>13</td><td>15</td></tr>
+                            <tr class="group-11" data-level-range="100-102"><td>100-102</td><td>14</td><td>16</td></tr>
+                            <tr class="group-12" data-level-range="103-104"><td>103-104</td><td>15</td><td>17</td></tr>
+                            <tr class="group-13" data-level-range="105-107"><td>105-107</td><td>16</td><td>18</td></tr>
+                            <tr class="group-14" data-level-range="108-109"><td>108-109</td><td>17</td><td>19</td></tr>
+                            <tr class="group-15" data-level-range="110"><td>110</td><td>18</td><td>20</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
+        // 高亮顯示等級對應表中的對應列
+        function highlightLevelRow(level) {
+            // 移除所有高亮
+            const allRows = document.querySelectorAll('.data-table tbody tr');
+            allRows.forEach(row => row.classList.remove('highlighted'));
+            
+            // 如果等級無效,不高亮任何行
+            if (!level || level === "無法達成此階級") {
+                return;
+            }
+            
+            // 找到對應的行並高亮
+            allRows.forEach(row => {
+                const range = row.getAttribute('data-level-range');
+                if (range) {
+                    if (range.includes('-')) {
+                        // 範圍格式 "80-82"
+                        const [min, max] = range.split('-').map(Number);
+                        if (level >= min && level <= max) {
+                            row.classList.add('highlighted');
+                        }
+                    } else {
+                        // 單一值格式 "85"
+                        if (level == parseInt(range)) {
+                            row.classList.add('highlighted');
+                        }
+                    }
+                }
+            });
+        }
+        
         function calculate() {
             selected_level = select_level();
 
@@ -752,6 +943,9 @@
                 point = document.getElementById('freepoint');
                 level.textContent = max_level;
                 point.textContent = free_point;
+                
+                // 高亮顯示等級對應表中的對應行
+                highlightLevelRow(max_level);
             }
         }
 
