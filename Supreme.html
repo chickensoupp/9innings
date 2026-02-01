@@ -314,7 +314,7 @@
             right: 10px;
             background: linear-gradient(135deg, #f39c12, #e67e22);
             color: white;
-            padding: 10px 12px;  /* 增加 padding */
+            padding: 8px 12px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(243, 156, 18, 0.4);
             font-weight: bold;
@@ -322,17 +322,51 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;  /* 增加間距 */
-            min-width: 70px;  /* 加寬 */
+            gap: 2px;
+            min-width: 60px;
         }
 
         .base-avg-label {
-            font-size: 0.7rem;
+            font-size: 1.0rem;
             opacity: 0.9;
         }
 
         .base-avg-value {
-            font-size: 1.2rem;
+            font-size: 1.0rem;
+            letter-spacing: 0.5px;
+        }
+
+        .additional-badges {
+            position: absolute;
+            top: 80px;
+            right: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .stat-badge {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+            font-weight: bold;
+            font-size: 0.95rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            min-width: 60px;
+        }
+
+        .stat-badge-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .stat-badge-value {
+            font-size: 1rem;
             letter-spacing: 0.5px;
         }
 
@@ -554,30 +588,7 @@
                 grid-template-columns: 1fr;
             }
         }
-        .secondary-stat {
-            font-size: 0.75rem;
-            opacity: 0.95;
-            display: flex;
-            gap: 8px;
-            margin-top: 2px;
-        }
-
-        .secondary-stat-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .secondary-stat-label {
-            font-size: 0.65rem;
-            opacity: 0.85;
-        }
-
-        .secondary-stat-value {
-            font-size: 0.9rem;
-            font-weight: bold;
-        }
-    </style>
+</style>
 </head>
 <body>
 
@@ -917,40 +928,41 @@
 
         function createPlayerCard(player) {
             const labels = getStatLabel(player.position);
-            const isPitcher = ['SP', 'CP', 'RP'].some(p => player.position.includes(p));
-            
             const total1 = player.stats.con + player.stats.conUp;
             const total2 = player.stats.pow + player.stats.powUp;
             const total3 = player.stats.eye + player.stats.eyeUp;
             const total4 = player.stats.spd + player.stats.spdUp;
             const total5 = player.stats.fld + player.stats.fldUp;
             
-            // 計算額外數值
-            let additionalStats = '';
+            // 判斷是否為投手
+            const isPitcher = ['SP', 'CP', 'RP'].some(p => player.position.includes(p));
+            
+            // 計算3圍和4圍（打者）或控威總合（投手）
+            let additionalBadges = '';
             if (isPitcher) {
-                // 投手:控威總合
+                // 投手：控威總合
                 const controlPower = total1 + total2;
-                additionalStats = `
-                    <div class="secondary-stat">
-                        <div class="secondary-stat-item">
-                            <div class="secondary-stat-label">控威</div>
-                            <div class="secondary-stat-value">${controlPower}</div>
+                additionalBadges = `
+                    <div class="additional-badges">
+                        <div class="stat-badge">
+                            <div class="stat-badge-label">控威</div>
+                            <div class="stat-badge-value">${controlPower}</div>
                         </div>
                     </div>
                 `;
             } else {
-                // 打者:3圍和4圍
-                const threeStats = total1 + total2 + total3;
-                const fourStats = threeStats + total4;
-                additionalStats = `
-                    <div class="secondary-stat">
-                        <div class="secondary-stat-item">
-                            <div class="secondary-stat-label">3圍</div>
-                            <div class="secondary-stat-value">${threeStats}</div>
+                // 打者：3圍和4圍
+                const threeDim = total1 + total2 + total3;
+                const fourDim = total1 + total2 + total3 + total4;
+                additionalBadges = `
+                    <div class="additional-badges">
+                        <div class="stat-badge">
+                            <div class="stat-badge-label">3圍</div>
+                            <div class="stat-badge-value">${threeDim}</div>
                         </div>
-                        <div class="secondary-stat-item">
-                            <div class="secondary-stat-label">4圍</div>
-                            <div class="secondary-stat-value">${fourStats}</div>
+                        <div class="stat-badge">
+                            <div class="stat-badge-label">4圍</div>
+                            <div class="stat-badge-value">${fourDim}</div>
                         </div>
                     </div>
                 `;
@@ -960,12 +972,12 @@
                 <div class="player-card" data-team="${player.team}" data-position="${player.position}" data-league="${player.league}" data-ovr="${player.ovr}">
                     <div class="player-image-container">
                         <img class="player-image" src="${player.image}" alt="${player.name}" 
-                            onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDI4MCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyODAiIGhlaWdodD0iMjgwIiBmaWxsPSIjZjhmOWZhIi8+CjxjaXJjbGUgY3g9IjE0MCIgY3k9IjEyMCIgcj0iNDAiIGZpbGw9IiNkZGQiLz4KPHJlY3QgeD0iMTAwIiB5PSIxODAiIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgcng9IjEwIiBmaWxsPSIjZGRkIi8+Cjx0ZXh0IHg9IjUwJSIgeT0iMjYwIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5IiBmb250LXNpemU9IjEyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiPuWcluePh+eEoeazleWKoOi8ijwvdGV4dD4KPC9zdmc+'>
+                             onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDI4MCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyODAiIGhlaWdodD0iMjgwIiBmaWxsPSIjZjhmOWZhIi8+CjxjaXJjbGUgY3g9IjE0MCIgY3k9IjEyMCIgcj0iNDAiIGZpbGw9IiNkZGQiLz4KPHJlY3QgeD0iMTAwIiB5PSIxODAiIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgcng9IjEwIiBmaWxsPSIjZGRkIi8+Cjx0ZXh0IHg9IjUwJSIgeT0iMjYwIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5IiBmb250LXNpemU9IjEyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiPuWcluePh+eEoeazleWKoOi8ijwvdGV4dD4KPC9zdmc+';">
                         <div class="base-avg-badge">
                             <div class="base-avg-label">OVR</div>
                             <div class="base-avg-value">${player.ovr}</div>
-                            ${additionalStats}
                         </div>
+                        ${additionalBadges}
                     </div>
                     <div class="player-info">
                         <div class="team-colors ${player.teamClass}"></div>
@@ -1013,6 +1025,7 @@
                 </div>
             `;
         }
+
         function renderPlayers(playersToRender = filteredPlayers) {
             const grid = document.getElementById('playersGrid');
             const noResults = document.getElementById('noResults');
