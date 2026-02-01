@@ -314,7 +314,7 @@
             right: 10px;
             background: linear-gradient(135deg, #f39c12, #e67e22);
             color: white;
-            padding: 8px 12px;
+            padding: 10px 12px;  /* 增加 padding */
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(243, 156, 18, 0.4);
             font-weight: bold;
@@ -322,8 +322,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 2px;
-            min-width: 60px;
+            gap: 4px;  /* 增加間距 */
+            min-width: 70px;  /* 加寬 */
         }
 
         .base-avg-label {
@@ -470,6 +470,7 @@
         .bluejays { background: linear-gradient(90deg, #134A8E, #1D2D5C); }
         .diamondbacks { background: linear-gradient(90deg, #A71930, #000000); }
         .rockies { background: linear-gradient(90deg, #33006F, #C4CED4); }
+        .marlins { background: linear-gradient(90deg, #00A3E0, #EF3340); }
         .no-results {
             text-align: center;
             padding: 80px 20px;
@@ -553,6 +554,29 @@
                 grid-template-columns: 1fr;
             }
         }
+        .secondary-stat {
+            font-size: 0.75rem;
+            opacity: 0.95;
+            display: flex;
+            gap: 8px;
+            margin-top: 2px;
+        }
+
+        .secondary-stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .secondary-stat-label {
+            font-size: 0.65rem;
+            opacity: 0.85;
+        }
+
+        .secondary-stat-value {
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -604,6 +628,7 @@
                         <option value="藍鳥">藍鳥 (bluejays)</option>
                         <option value="響尾蛇">響尾蛇 (diamondbacks)</option>
                         <option value="落磯">落磯 (rockies)</option>
+                        <option value="馬林魚">馬林魚 (marlins)</option>
                         
                     </select>
                 </div>
@@ -814,7 +839,8 @@
             { name: "Warren Spahn", team: "勇士", position: "SP", image: "pic/ATL-Warren_Spahn.png", teamClass: "braves", league: "NL", stats: {con: 78, pow: 72, eye: 79, spd: 73, fld: 74, conUp: 17, powUp: 13, eyeUp: 17, spdUp: 14, fldUp: 14} },
             { name: "Willie Mays", team: "巨人", position: "CF", image: "pic/SF-Willie_Mays.png", teamClass: "giants", league: "NL", stats: {con: 80, pow: 88, eye: 76, spd: 72, fld: 72, conUp: 16, powUp: 20, eyeUp: 15, spdUp: 12, fldUp: 12} },
             { name: "Yogi Berra", team: "洋基", position: "C", image: "pic/NYY-Yogi_Berra.png", teamClass: "yankees", league: "AL", stats: {con: 78, pow: 77, eye: 77, spd: 63, fld: 78, conUp: 17, powUp: 17, eyeUp: 16, spdUp: 9, fldUp: 16} },
-            { name: "Dwight Gooden", team: "大都會", position: "SP", image: "pic/NYM-Dwight_Gooden.png", teamClass: "mets", league: "NL", stats: {con: 79, pow: 78, eye: 78, spd: 80, fld: 77, conUp: 16, powUp: 15, eyeUp: 14, spdUp: 16, fldUp: 14} }
+            { name: "Dwight Gooden", team: "大都會", position: "SP", image: "pic/NYM-Dwight_Gooden.png", teamClass: "mets", league: "NL", stats: {con: 79, pow: 78, eye: 78, spd: 80, fld: 77, conUp: 16, powUp: 15, eyeUp: 14, spdUp: 16, fldUp: 14} },
+            { name: "Gary Sheffield", team: "馬林魚", position: "RF", image: "pic/MIA-Gary_Sheffield.png", teamClass: "marlins", league: "NL", stats: {con: 82, pow: 85, eye: 86, spd: 67, fld: 68, conUp: 17, powUp: 18, eyeUp: 19, spdUp: 10, fldUp: 11} }
         ];
 
         // 為每個球員計算 OVR
@@ -891,20 +917,54 @@
 
         function createPlayerCard(player) {
             const labels = getStatLabel(player.position);
+            const isPitcher = ['SP', 'CP', 'RP'].some(p => player.position.includes(p));
+            
             const total1 = player.stats.con + player.stats.conUp;
             const total2 = player.stats.pow + player.stats.powUp;
             const total3 = player.stats.eye + player.stats.eyeUp;
             const total4 = player.stats.spd + player.stats.spdUp;
             const total5 = player.stats.fld + player.stats.fldUp;
             
+            // 計算額外數值
+            let additionalStats = '';
+            if (isPitcher) {
+                // 投手:控威總合
+                const controlPower = total1 + total2;
+                additionalStats = `
+                    <div class="secondary-stat">
+                        <div class="secondary-stat-item">
+                            <div class="secondary-stat-label">控威</div>
+                            <div class="secondary-stat-value">${controlPower}</div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // 打者:3圍和4圍
+                const threeStats = total1 + total2 + total3;
+                const fourStats = threeStats + total4;
+                additionalStats = `
+                    <div class="secondary-stat">
+                        <div class="secondary-stat-item">
+                            <div class="secondary-stat-label">3圍</div>
+                            <div class="secondary-stat-value">${threeStats}</div>
+                        </div>
+                        <div class="secondary-stat-item">
+                            <div class="secondary-stat-label">4圍</div>
+                            <div class="secondary-stat-value">${fourStats}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
             return `
                 <div class="player-card" data-team="${player.team}" data-position="${player.position}" data-league="${player.league}" data-ovr="${player.ovr}">
                     <div class="player-image-container">
                         <img class="player-image" src="${player.image}" alt="${player.name}" 
-                             onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDI4MCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyODAiIGhlaWdodD0iMjgwIiBmaWxsPSIjZjhmOWZhIi8+CjxjaXJjbGUgY3g9IjE0MCIgY3k9IjEyMCIgcj0iNDAiIGZpbGw9IiNkZGQiLz4KPHJlY3QgeD0iMTAwIiB5PSIxODAiIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgcng9IjEwIiBmaWxsPSIjZGRkIi8+Cjx0ZXh0IHg9IjUwJSIgeT0iMjYwIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5IiBmb250LXNpemU9IjEyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiPuWcluePh+eEoeazleWKoOi8ijwvdGV4dD4KPC9zdmc+';">
+                            onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDI4MCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyODAiIGhlaWdodD0iMjgwIiBmaWxsPSIjZjhmOWZhIi8+CjxjaXJjbGUgY3g9IjE0MCIgY3k9IjEyMCIgcj0iNDAiIGZpbGw9IiNkZGQiLz4KPHJlY3QgeD0iMTAwIiB5PSIxODAiIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgcng9IjEwIiBmaWxsPSIjZGRkIi8+Cjx0ZXh0IHg9IjUwJSIgeT0iMjYwIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5IiBmb250LXNpemU9IjEyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiPuWcluePh+eEoeazleWKoOi8ijwvdGV4dD4KPC9zdmc+'>
                         <div class="base-avg-badge">
                             <div class="base-avg-label">OVR</div>
                             <div class="base-avg-value">${player.ovr}</div>
+                            ${additionalStats}
                         </div>
                     </div>
                     <div class="player-info">
@@ -953,7 +1013,6 @@
                 </div>
             `;
         }
-
         function renderPlayers(playersToRender = filteredPlayers) {
             const grid = document.getElementById('playersGrid');
             const noResults = document.getElementById('noResults');
