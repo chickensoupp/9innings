@@ -1509,7 +1509,7 @@
                     <label for="excellenceFilter">🌟 卓越期數:</label>
                     <select id="excellenceFilter">
                         <option value="">全部期數</option>
-                        <optgroup label="📜 舊版">
+                        <optgroup label="📜舊版">
                             <option value="old-1">舊版第1期</option>
                             <option value="old-2">舊版第2期</option>
                             <option value="old-3">舊版第3期</option>
@@ -1518,7 +1518,7 @@
                             <option value="old-6">舊版第6期</option>
                             <option value="old-7">舊版第7期</option>
                         </optgroup>
-                        <optgroup label="✨ 新版">
+                        <optgroup label="✨新版">
                             <option value="new-1">新版第1期</option>
                             <option value="new-2">新版第2期</option>
                             <option value="new-3">新版第3期</option>
@@ -1836,10 +1836,10 @@
             
             if (period.startsWith('old-')) {
                 const num = period.split('-')[1];
-                return `📜 舊${num}期`;
+                return `舊${num}期`;
             } else if (period.startsWith('new-')) {
                 const num = period.split('-')[1];
-                return `✨ 新${num}期`;
+                return `新${num}期`;
             }
             return '';
         }
@@ -2585,4 +2585,5 @@
 
   <script src="navigation.js"></script>
 </body>
+
 </html>
