@@ -1419,6 +1419,61 @@
                 padding: 15px;
             }
         }
+        .compare-mode-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 12px;
+        }
+
+        .mode-btn {
+            padding: 10px 24px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            color: #64748b;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mode-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        /* 基礎值模式下的長條樣式 */
+        .base-mode .stat-bar-increase {
+            display: none;
+        }
+
+        .base-mode .stat-increase-text {
+            display: none;
+        }
+
+        /* 響應式 */
+        @media (max-width: 480px) {
+            .compare-mode-toggle {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .mode-btn {
+                width: 100%;
+                padding: 12px 20px;
+            }
+        }
 
 </style>
 </head>
@@ -1509,7 +1564,7 @@
                     <label for="excellenceFilter">🌟 卓越期數:</label>
                     <select id="excellenceFilter">
                         <option value="">全部期數</option>
-                        <optgroup label="📜舊版">
+                        <optgroup label="📜 舊版">
                             <option value="old-1">舊版第1期</option>
                             <option value="old-2">舊版第2期</option>
                             <option value="old-3">舊版第3期</option>
@@ -1518,7 +1573,7 @@
                             <option value="old-6">舊版第6期</option>
                             <option value="old-7">舊版第7期</option>
                         </optgroup>
-                        <optgroup label="✨新版">
+                        <optgroup label="✨ 新版">
                             <option value="new-1">新版第1期</option>
                             <option value="new-2">新版第2期</option>
                             <option value="new-3">新版第3期</option>
@@ -1637,6 +1692,14 @@
             <!-- 比較結果 -->
             <div id="compareResult" class="compare-result" style="display: none;">
                 <h3>📊數據比較</h3>
+                <div class="compare-mode-toggle">
+                <button class="mode-btn active" onclick="switchCompareMode('total')">
+                    💪 總能力比較
+                </button>
+                <button class="mode-btn" onclick="switchCompareMode('base')">
+                    📋 基礎能力比較
+                </button>
+            </div>
                 <div class="stats-comparison"></div>
             </div>
 
@@ -2449,48 +2512,75 @@
                 </div>
             `;
         }
-        // 在 performCompare() 函數中修改
-        function performCompare() {
-            if (!selectedPlayerA || !selectedPlayerB) {
-                alert('請選擇兩位球員進行比較！');
-                return;
-            }
+        // 在全局變量區域添加
+        let currentCompareMode = 'total'; // 'total' 或 'base'
+
+        // 切換比較模式函數
+        function switchCompareMode(mode) {
+            currentCompareMode = mode;
             
-            // 只隱藏搜尋和選擇列表部分
-            document.querySelectorAll('.player-search-input').forEach(input => {
-                input.style.display = 'none';
+            // 更新按鈕狀態
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
             });
-            document.querySelectorAll('.player-list').forEach(list => {
-                list.style.display = 'none';
-            });
+            event.target.classList.add('active');
             
-            const resultContainer = document.getElementById('compareResult');
-            const statsComparison = resultContainer.querySelector('.stats-comparison');
+            // 重新渲染比較結果
+            renderComparisonStats();
+        }
+
+        // 專門的渲染比較統計函數
+        function renderComparisonStats() {
+            if (!selectedPlayerA || !selectedPlayerB) return;
             
+            const statsComparison = document.querySelector('.stats-comparison');
             const playerA = selectedPlayerA;
             const playerB = selectedPlayerB;
             
-            // 計算總數值
-            const statsA = {
-                '接觸/控球': playerA.stats.con + playerA.stats.conUp,
-                '力量/球威': playerA.stats.pow + playerA.stats.powUp,
-                '選球/體力': playerA.stats.eye + playerA.stats.eyeUp,
-                '速度/直球': playerA.stats.spd + playerA.stats.spdUp,
-                '守備/變化': playerA.stats.fld + playerA.stats.fldUp,
-                'OVR': parseFloat(playerA.ovr.toFixed(1))
-            };
+            let statsA, statsB, maxValue;
             
-            const statsB = {
-                '接觸/控球': playerB.stats.con + playerB.stats.conUp,
-                '力量/球威': playerB.stats.pow + playerB.stats.powUp,
-                '選球/體力': playerB.stats.eye + playerB.stats.eyeUp,
-                '速度/直球': playerB.stats.spd + playerB.stats.spdUp,
-                '守備/變化': playerB.stats.fld + playerB.stats.fldUp,
-                'OVR': parseFloat(playerB.ovr.toFixed(1))
-            };
+            if (currentCompareMode === 'base') {
+                // 基礎能力模式
+                statsA = {
+                    '接觸/控球': playerA.stats.con,
+                    '力量/球威': playerA.stats.pow,
+                    '選球/體力': playerA.stats.eye,
+                    '速度/直球': playerA.stats.spd,
+                    '守備/變化': playerA.stats.fld,
+                    '基礎OVR': parseFloat(((playerA.stats.con + playerA.stats.pow + playerA.stats.eye + playerA.stats.spd + playerA.stats.fld) / 5).toFixed(1))
+                };
+                
+                statsB = {
+                    '接觸/控球': playerB.stats.con,
+                    '力量/球威': playerB.stats.pow,
+                    '選球/體力': playerB.stats.eye,
+                    '速度/直球': playerB.stats.spd,
+                    '守備/變化': playerB.stats.fld,
+                    '基礎OVR': parseFloat(((playerB.stats.con + playerB.stats.pow + playerB.stats.eye + playerB.stats.spd + playerB.stats.fld) / 5).toFixed(1))
+                };
+            } else {
+                // 總能力模式
+                statsA = {
+                    '接觸/控球': playerA.stats.con + playerA.stats.conUp,
+                    '力量/球威': playerA.stats.pow + playerA.stats.powUp,
+                    '選球/體力': playerA.stats.eye + playerA.stats.eyeUp,
+                    '速度/直球': playerA.stats.spd + playerA.stats.spdUp,
+                    '守備/變化': playerA.stats.fld + playerA.stats.fldUp,
+                    'OVR': parseFloat(playerA.ovr.toFixed(1))
+                };
+                
+                statsB = {
+                    '接觸/控球': playerB.stats.con + playerB.stats.conUp,
+                    '力量/球威': playerB.stats.pow + playerB.stats.powUp,
+                    '選球/體力': playerB.stats.eye + playerB.stats.eyeUp,
+                    '速度/直球': playerB.stats.spd + playerB.stats.spdUp,
+                    '守備/變化': playerB.stats.fld + playerB.stats.fldUp,
+                    'OVR': parseFloat(playerB.ovr.toFixed(1))
+                };
+            }
             
-            // 找出最大值用於計算長條寬度比例
-            const maxValue = Math.max(
+            // 找出最大值
+            maxValue = Math.max(
                 ...Object.values(statsA),
                 ...Object.values(statsB)
             );
@@ -2499,8 +2589,7 @@
             statsComparison.innerHTML = Object.keys(statsA).map(stat => {
                 const valueA = statsA[stat];
                 const valueB = statsB[stat];
-
-                // 計算長條寬度百分比
+                
                 const widthA = (valueA / maxValue) * 100;
                 const widthB = (valueB / maxValue) * 100;
                 
@@ -2516,9 +2605,9 @@
                     classB += ' tie';
                 }
                 
-                // 格式化顯示（OVR 顯示小數）
-                const displayA = stat === 'OVR' ? valueA.toFixed(1) : valueA;
-                const displayB = stat === 'OVR' ? valueB.toFixed(1) : valueB;
+                // 格式化顯示
+                const displayA = (stat === 'OVR' || stat === '基礎OVR') ? valueA.toFixed(1) : valueA;
+                const displayB = (stat === 'OVR' || stat === '基礎OVR') ? valueB.toFixed(1) : valueB;
                 
                 return `
                     <div class="stat-compare-row">
@@ -2538,19 +2627,46 @@
                     </div>
                 `;
             }).join('');
+        }
+
+        // 修改 performCompare() 函數
+        function performCompare() {
+            if (!selectedPlayerA || !selectedPlayerB) {
+                alert('請選擇兩位球員進行比較！');
+                return;
+            }
+            
+            // 隱藏搜尋和選擇列表
+            document.querySelectorAll('.player-search-input').forEach(input => {
+                input.style.display = 'none';
+            });
+            document.querySelectorAll('.player-list').forEach(list => {
+                list.style.display = 'none';
+            });
+            
+            const resultContainer = document.getElementById('compareResult');
+            
+            // 重置為總能力模式
+            currentCompareMode = 'total';
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector('.mode-btn:first-child').classList.add('active');
+            
+            // 渲染比較結果
+            renderComparisonStats();
             
             resultContainer.style.display = 'block';
-            
-            // 滾動到結果區域
             resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
-        // 重置比較
+        // 修改 resetCompare() 函數
         function resetCompare() {
             selectedPlayerA = null;
             selectedPlayerB = null;
             filteredPlayersA = [...players];
             filteredPlayersB = [...players];
+            currentCompareMode = 'total'; // 重置模式
             
             document.getElementById('searchPlayerA').value = '';
             document.getElementById('searchPlayerB').value = '';
@@ -2569,21 +2685,9 @@
             renderPlayerList('A');
             renderPlayerList('B');
         }
-        
-
-        // 關閉面板時按 ESC 鍵
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                const panel = document.getElementById('comparePanel');
-                if (panel.classList.contains('active')) {
-                    closeComparePanel();
-                }
-            }
-        });
     </script>
   </div>
 
   <script src="navigation.js"></script>
 </body>
-
 </html>
