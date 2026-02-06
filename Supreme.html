@@ -194,7 +194,7 @@
             pointer-events: all;
             box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
-        
+
         input[type="range"]::-moz-range-track {
             background: transparent;
             border: none;
@@ -307,6 +307,7 @@
             height: 100%;
             object-fit: contain;
         }
+
         /* 卓越期數徽章樣式 */
         .excellence-badge {
             position: absolute;
@@ -327,12 +328,14 @@
         .excellence-badge.old {
             background: linear-gradient(135deg, #e67e22, #d35400);
             box-shadow: 0 4px 12px rgba(230, 126, 34, 0.5);
+            animation: badgeGlowOld 2s ease-in-out infinite;
         }
 
         /* 新版徽章 */
         .excellence-badge.new {
             background: linear-gradient(135deg, #3498db, #2980b9);
             box-shadow: 0 4px 12px rgba(52, 152, 219, 0.5);
+            animation: badgeGlowNew 2s ease-in-out infinite;
         }
 
         @keyframes badgeGlow {
@@ -342,14 +345,6 @@
             50% {
                 box-shadow: 0 4px 20px rgba(155, 89, 182, 0.8);
             }
-        }
-
-        .excellence-badge.old {
-            animation: badgeGlowOld 2s ease-in-out infinite;
-        }
-
-        .excellence-badge.new {
-            animation: badgeGlowNew 2s ease-in-out infinite;
         }
 
         @keyframes badgeGlowOld {
@@ -369,6 +364,7 @@
                 box-shadow: 0 4px 20px rgba(52, 152, 219, 0.8);
             }
         }
+
         .base-avg-badge {
             position: absolute;
             top: 10px;
@@ -537,6 +533,7 @@
             padding: 4px;
         }
 
+        /* 球隊顏色 */
         .giants { background: linear-gradient(90deg, #FD5A1E, #27251F); }
         .dodgers { background: linear-gradient(90deg, #005A9C, #FFFFFF); }
         .yankees { background: linear-gradient(90deg, #132448, #C4CED4); }
@@ -566,6 +563,7 @@
         .diamondbacks { background: linear-gradient(90deg, #A71930, #000000); }
         .rockies { background: linear-gradient(90deg, #33006F, #C4CED4); }
         .marlins { background: linear-gradient(90deg, #00A3E0, #EF3340); }
+
         .no-results {
             text-align: center;
             padding: 80px 20px;
@@ -612,6 +610,7 @@
         .filter-tag .remove:hover {
             opacity: 1;
         }
+
         /* ==================== 球員比較功能樣式 ==================== */
 
         .floating-compare-btn {
@@ -679,7 +678,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 25px 30px;
+            padding: 15px 20px;
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border-radius: 20px 20px 0 0;
@@ -711,7 +710,7 @@
             display: grid;
             grid-template-columns: 1fr auto 1fr;
             gap: 20px;
-            padding: 30px;
+            padding: 20px;
             color: #000000;
         }
 
@@ -832,8 +831,8 @@
         }
 
         .selected-player-image {
-            width: 200px;
-            height: 200px;
+            width: 150px;
+            height: 150px;
             border-radius:12px;
             object-fit: contain;
             border: 3px solid #667eea;
@@ -872,21 +871,21 @@
         }
 
         .compare-result {
-            padding: 30px;
+            padding: 20px 30px;
             border-top: 2px solid #e2e8f0;
         }
 
         .compare-result h3 {
-            margin: 0 0 20px 0;
+            margin: 0 0 15px 0;
             color: #2c3e50;
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             text-align: center;
         }
 
         .stats-comparison {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 12px;
         }
 
         .stat-compare-row {
@@ -920,13 +919,13 @@
             text-align: center;
         }
 
-        /* 左側數值（紅色） */
+        /* 左側數值 */
         .stat-compare-value.left .stat-value-text {
             order: 1;
             color: #000000;
         }
 
-        /* 右側數值（藍色） */
+        /* 右側數值 */
         .stat-compare-value.right .stat-value-text {
             order: 2;
             color: #000000;
@@ -974,14 +973,6 @@
         .stat-compare-value.winner .stat-bar {
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
         }
-
-        /* .stat-compare-value.left.winner .stat-bar {
-            background: linear-gradient(270deg, #c0392b, #e74c3c);
-        }
-
-        .stat-compare-value.right.winner .stat-bar {
-            background: linear-gradient(90deg, #2980b9, #3498db);
-        } */
 
         .stat-compare-value.winner .stat-value-text {
             font-size: 1.5rem;
@@ -1057,27 +1048,6 @@
             box-shadow: 0 8px 20px rgba(149, 165, 166, 0.4);
         }
 
-        /* 響應式設計 */
-        @media (max-width: 768px) {
-            .compare-content {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-            
-            .vs-divider {
-                order: 2;
-            }
-            
-            .vs-circle {
-                transform: rotate(90deg);
-            }
-            
-            .compare-container {
-                width: 95%;
-                max-height: 95vh;
-            }
-        }
-
         /* 滾動條樣式 */
         .player-list::-webkit-scrollbar {
             width: 8px;
@@ -1097,7 +1067,21 @@
             background: #764ba2;
         }
 
+        /* ==================== 響應式設計 ==================== */
+
+        @media (max-width: 1024px) {
+            .players-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 20px;
+            }
+        }
+
         @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+                margin-bottom: 20px;
+            }
+
             .filter-controls {
                 grid-template-columns: 1fr;
                 gap: 15px;
@@ -1110,11 +1094,17 @@
             .ovr-controls-row {
                 flex-direction: column;
                 align-items: stretch;
+                gap: 20px;
             }
             
             .action-buttons {
                 flex-direction: column;
                 width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+                padding: 14px 24px;
             }
             
             .stats-summary {
@@ -1123,16 +1113,313 @@
             }
             
             .players-grid {
-                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                grid-template-columns: 1fr;
                 gap: 20px;
+            }
+
+            .player-card {
+                max-width: 100%;
+            }
+
+            /* 球員比較面板優化 */
+            .compare-container {
+                width: 95%;
+                max-width: 95vw;
+                max-height: 95vh;
+                padding: 0;
+            }
+
+            .compare-header {
+                padding: 20px;
+                border-radius: 15px 15px 0 0;
+            }
+
+            .compare-header h2 {
+                font-size: 1.4rem;
+            }
+
+            .close-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 1.2rem;
+            }
+
+            .compare-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .vs-divider {
+                order: 2;
+                padding: 10px 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .vs-circle {
+                width: 60px;
+                height: 60px;
+                font-size: 1.2rem;
+                display: none;
+                /* transform: rotate(90deg); */
+            }
+            
+
+            .player-select-panel h3 {
+                font-size: 1.1rem;
+            }
+
+            .player-list {
+                max-height: 200px;
+            }
+
+            .selected-player-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .selected-player-image {
+                width: 120px;
+                height: 120px;
+            }
+
+            .selected-player-info h4 {
+                font-size: 1.3rem;
+            }
+
+            .selected-player-info p {
+                font-size: 1rem;
+            }
+
+            .compare-result {
+                padding: 20px;
+            }
+
+            .compare-result h3 {
+                font-size: 1.2rem;
+                margin-bottom: 15px;
+            }
+
+            .stats-comparison {
+                gap: 15px;
+            }
+
+            .stat-compare-row {
+                gap: 8px;
+            }
+
+            .stat-compare-label {
+                font-size: 0.85rem;
+                padding: 0 10px;
+                min-width: 80px;
+            }
+
+            .stat-value-text {
+                font-size: 1rem;
+                min-width: 35px;
+            }
+
+            .stat-compare-value.winner .stat-value-text {
+                font-size: 1.2rem;
+            }
+
+            .stat-bar {
+                height: 25px;
+            }
+
+            .compare-footer {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn-compare,
+            .btn-reset-compare {
+                width: 100%;
+                padding: 14px 30px;
+            }
+
+            .floating-compare-btn {
+                bottom: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                font-size: 1rem;
             }
         }
 
         @media (max-width: 480px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            .filter-section {
+                padding: 15px;
+            }
+
             .stats-summary {
                 grid-template-columns: 1fr;
             }
+
+            .stat-item {
+                padding: 12px;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+
+            .player-image-container {
+                height: 240px;
+            }
+
+            .excellence-badge {
+                font-size: 0.75rem;
+                padding: 5px 10px;
+            }
+
+            .base-avg-badge {
+                padding: 6px 10px;
+            }
+
+            .base-avg-label,
+            .base-avg-value,
+            .stat-badge-label,
+            .stat-badge-value {
+                font-size: 0.85rem;
+            }
+
+            .additional-badges {
+                top: 70px;
+            }
+
+            .stat-badge {
+                padding: 6px 10px;
+                min-width: 50px;
+            }
+
+            .player-info {
+                padding: 15px;
+            }
+
+            .player-name {
+                font-size: 1.1rem;
+            }
+
+            .stats-grid {
+                gap: 6px;
+            }
+
+            .stat-value {
+                font-size: 0.85rem;
+                padding: 5px 3px;
+            }
+
+            .stat-total {
+                font-size: 0.95rem;
+            }
+
+            .stat-label {
+                font-size: 0.75rem;
+            }
+
+            /* 比較面板小屏優化 */
+            .compare-header h2 {
+                font-size: 1.2rem;
+            }
+
+            .player-search-input {
+                padding: 10px 12px;
+                font-size: 0.9rem;
+            }
+
+            .player-list-item {
+                padding: 10px 12px;
+            }
+
+            .player-info-brief .name {
+                font-size: 0.9rem;
+            }
+
+            .player-info-brief .details {
+                font-size: 0.75rem;
+            }
+
+            .player-ovr-badge {
+                font-size: 0.8rem;
+                padding: 3px 8px;
+            }
+
+            .selected-player-image {
+                width: 100px;
+                height: 100px;
+            }
+
+            .selected-player-info h4 {
+                font-size: 1.1rem;
+            }
+
+            .selected-player-info p {
+                font-size: 0.85rem;
+            }
+
+            .stat-compare-label {
+                font-size: 0.75rem;
+                min-width: 60px;
+                padding: 0 5px;
+            }
+
+            .stat-value-text {
+                font-size: 0.9rem;
+                min-width: 30px;
+            }
+
+            .stat-compare-value.winner .stat-value-text {
+                font-size: 1.1rem;
+            }
+
+            .stat-bar {
+                height: 20px;
+            }
+
+            .floating-compare-btn {
+                bottom: 15px;
+                right: 15px;
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
         }
+
+        /* 橫向滾動優化（極小屏幕） */
+        @media (max-width: 360px) {
+            .compare-container {
+                width: 100%;
+                height: 100%;
+                max-height: 100vh;
+                border-radius: 0;
+            }
+
+            .compare-header {
+                border-radius: 0;
+                padding: 15px;
+            }
+
+            .compare-content {
+                padding: 15px;
+            }
+
+            .compare-result {
+                padding: 15px;
+            }
+
+            .compare-footer {
+                padding: 15px;
+            }
+        }
+
 </style>
 </head>
 <body>
@@ -1327,7 +1614,7 @@
             <div class="compare-content">
                 <!-- 左側球員選擇 -->
                 <div class="player-select-panel">
-                    <h3>選擇球員 A</h3>
+                    <!-- <h3>選擇球員 A</h3> -->
                     <input type="text" id="searchPlayerA" class="player-search-input" placeholder="搜尋球員..." oninput="searchPlayer('A')">
                     <div id="playerListA" class="player-list"></div>
                     <div id="selectedPlayerA" class="selected-player-display"></div>
@@ -1340,7 +1627,7 @@
 
                 <!-- 右側球員選擇 -->
                 <div class="player-select-panel">
-                    <h3>選擇球員 B</h3>
+                    <!-- <h3>選擇球員 B</h3> -->
                     <input type="text" id="searchPlayerB" class="player-search-input" placeholder="搜尋球員..." oninput="searchPlayer('B')">
                     <div id="playerListB" class="player-list"></div>
                     <div id="selectedPlayerB" class="selected-player-display"></div>
@@ -1349,7 +1636,7 @@
 
             <!-- 比較結果 -->
             <div id="compareResult" class="compare-result" style="display: none;">
-                <h3>📊 數據比較</h3>
+                <h3>📊數據比較</h3>
                 <div class="stats-comparison"></div>
             </div>
 
@@ -2162,12 +2449,20 @@
                 </div>
             `;
         }
-        // 執行比較
+        // 在 performCompare() 函數中修改
         function performCompare() {
             if (!selectedPlayerA || !selectedPlayerB) {
                 alert('請選擇兩位球員進行比較！');
                 return;
             }
+            
+            // 只隱藏搜尋和選擇列表部分
+            document.querySelectorAll('.player-search-input').forEach(input => {
+                input.style.display = 'none';
+            });
+            document.querySelectorAll('.player-list').forEach(list => {
+                list.style.display = 'none';
+            });
             
             const resultContainer = document.getElementById('compareResult');
             const statsComparison = resultContainer.querySelector('.stats-comparison');
@@ -2208,7 +2503,7 @@
                 // 計算長條寬度百分比
                 const widthA = (valueA / maxValue) * 100;
                 const widthB = (valueB / maxValue) * 100;
-                console.log(widthA,widthB)
+                
                 let classA = 'stat-compare-value left';
                 let classB = 'stat-compare-value right';
                 
@@ -2249,6 +2544,7 @@
             // 滾動到結果區域
             resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
+
         // 重置比較
         function resetCompare() {
             selectedPlayerA = null;
@@ -2260,11 +2556,20 @@
             document.getElementById('searchPlayerB').value = '';
             document.getElementById('compareResult').style.display = 'none';
             
+            // 重新顯示搜尋和列表
+            document.querySelectorAll('.player-search-input').forEach(input => {
+                input.style.display = 'block';
+            });
+            document.querySelectorAll('.player-list').forEach(list => {
+                list.style.display = 'block';
+            });
+            
             updateSelectedPlayerDisplay('A');
             updateSelectedPlayerDisplay('B');
             renderPlayerList('A');
             renderPlayerList('B');
         }
+        
 
         // 關閉面板時按 ESC 鍵
         document.addEventListener('keydown', function(e) {
@@ -2280,5 +2585,4 @@
 
   <script src="navigation.js"></script>
 </body>
-
 </html>
