@@ -308,7 +308,6 @@
             object-fit: contain;
         }
 
-        /* 卓越期數徽章樣式 */
         .excellence-badge {
             position: absolute;
             top: 10px;
@@ -324,14 +323,12 @@
             z-index: 10;
         }
 
-        /* 舊版徽章 */
         .excellence-badge.old {
             background: linear-gradient(135deg, #e67e22, #d35400);
             box-shadow: 0 4px 12px rgba(230, 126, 34, 0.5);
             animation: badgeGlowOld 2s ease-in-out infinite;
         }
 
-        /* 新版徽章 */
         .excellence-badge.new {
             background: linear-gradient(135deg, #3498db, #2980b9);
             box-shadow: 0 4px 12px rgba(52, 152, 219, 0.5);
@@ -533,7 +530,6 @@
             padding: 4px;
         }
 
-        /* 球隊顏色 */
         .giants { background: linear-gradient(90deg, #FD5A1E, #27251F); }
         .dodgers { background: linear-gradient(90deg, #005A9C, #FFFFFF); }
         .yankees { background: linear-gradient(90deg, #132448, #C4CED4); }
@@ -611,8 +607,6 @@
             opacity: 1;
         }
 
-        /* ==================== 球員比較功能樣式 ==================== */
-
         .floating-compare-btn {
             position: fixed;
             bottom: 30px;
@@ -635,7 +629,6 @@
             box-shadow: 0 12px 35px rgba(231, 76, 60, 0.6);
         }
 
-        /* 比較面板 */
         .compare-panel {
             display: none;
             position: fixed;
@@ -750,7 +743,7 @@
 
         .player-list-item {
             padding: 12px 15px;
-            border-bottom: 1px solid #000000;
+            border-bottom: 1px solid #e2e8f0;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
@@ -895,7 +888,6 @@
             align-items: center;
         }
 
-        /* 左側區域（數值在左，長條在右向中心） */
         .stat-compare-value.left {
             display: flex;
             align-items: center;
@@ -903,7 +895,6 @@
             gap: 10px;
         }
 
-        /* 右側區域（長條在左向中心，數值在右） */
         .stat-compare-value.right {
             display: flex;
             align-items: center;
@@ -911,7 +902,6 @@
             gap: 10px;
         }
 
-        /* 數值文字 */
         .stat-value-text {
             font-weight: bold;
             font-size: 1.1rem;
@@ -919,19 +909,16 @@
             text-align: center;
         }
 
-        /* 左側數值 */
         .stat-compare-value.left .stat-value-text {
             order: 1;
             color: #000000;
         }
 
-        /* 右側數值 */
         .stat-compare-value.right .stat-value-text {
             order: 2;
             color: #000000;
         }
 
-        /* 長條圖容器 */
         .stat-bar-container {
             height: 30px;
             position: relative;
@@ -946,7 +933,6 @@
             order: 1;
         }
 
-        /* 長條圖 */
         .stat-bar {
             height: 100%;
             background: #4caf50;
@@ -955,21 +941,18 @@
             position: relative;
         }
 
-        /* 左側長條（從中心向左延伸，紅色） */
         .stat-compare-value.left .stat-bar {
             background: linear-gradient(270deg, #e74c3c, #ec7063);
             margin-left: auto;
             border-radius: 15px 0 0 15px;
         }
 
-        /* 右側長條（從中心向右延伸，藍色） */
         .stat-compare-value.right .stat-bar {
             background: linear-gradient(90deg, #3498db, #5dade2);
             margin-right: auto;
             border-radius: 0 15px 15px 0;
         }
 
-        /* 優勢方效果 */
         .stat-compare-value.winner .stat-bar {
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
         }
@@ -980,7 +963,6 @@
             color: #D31145;
         }
 
-        /* 平手效果 */
         .stat-compare-value.tie .stat-bar {
             background: linear-gradient(90deg, #95a5a6, #bdc3c7);
         }
@@ -989,7 +971,6 @@
             color: #7f8c8d;
         }
 
-        /* 中間標籤 */
         .stat-compare-label {
             text-align: center;
             font-weight: bold;
@@ -1048,7 +1029,6 @@
             box-shadow: 0 8px 20px rgba(149, 165, 166, 0.4);
         }
 
-        /* 滾動條樣式 */
         .player-list::-webkit-scrollbar {
             width: 8px;
         }
@@ -1067,7 +1047,74 @@
             background: #764ba2;
         }
 
-        /* ==================== 響應式設計 ==================== */
+        .compare-mode-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 12px;
+        }
+
+        .mode-btn {
+            padding: 10px 24px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            color: #64748b;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mode-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .base-mode .stat-bar-increase {
+            display: none;
+        }
+
+        .base-mode .stat-increase-text {
+            display: none;
+        }
+
+        .sort-order-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+            padding: 10px 20px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .sort-order-btn:hover {
+            background: linear-gradient(135deg, #2980b9, #21618c);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        #sortOrderIcon {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .sort-order-btn.ascending #sortOrderIcon {
+            transform: rotate(180deg);
+        }
 
         @media (max-width: 1024px) {
             .players-grid {
@@ -1121,7 +1168,6 @@
                 max-width: 100%;
             }
 
-            /* 球員比較面板優化 */
             .compare-container {
                 width: 95%;
                 max-width: 95vw;
@@ -1163,9 +1209,7 @@
                 height: 60px;
                 font-size: 1.2rem;
                 display: none;
-                /* transform: rotate(90deg); */
             }
-            
 
             .player-select-panel h3 {
                 font-size: 1.1rem;
@@ -1326,7 +1370,6 @@
                 font-size: 0.75rem;
             }
 
-            /* 比較面板小屏優化 */
             .compare-header h2 {
                 font-size: 1.2rem;
             }
@@ -1391,9 +1434,18 @@
                 padding: 10px 16px;
                 font-size: 0.9rem;
             }
+
+            .compare-mode-toggle {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .mode-btn {
+                width: 100%;
+                padding: 12px 20px;
+            }
         }
 
-        /* 橫向滾動優化（極小屏幕） */
         @media (max-width: 360px) {
             .compare-container {
                 width: 100%;
@@ -1419,62 +1471,6 @@
                 padding: 15px;
             }
         }
-        .compare-mode-toggle {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.02);
-            border-radius: 12px;
-        }
-
-        .mode-btn {
-            padding: 10px 24px;
-            border: 2px solid #e2e8f0;
-            background: white;
-            color: #64748b;
-            border-radius: 20px;
-            font-size: 0.95rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .mode-btn:hover {
-            border-color: #667eea;
-            color: #667eea;
-        }
-
-        .mode-btn.active {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border-color: #667eea;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        }
-
-        /* 基礎值模式下的長條樣式 */
-        .base-mode .stat-bar-increase {
-            display: none;
-        }
-
-        .base-mode .stat-increase-text {
-            display: none;
-        }
-
-        /* 響應式 */
-        @media (max-width: 480px) {
-            .compare-mode-toggle {
-                flex-direction: column;
-                gap: 8px;
-            }
-            
-            .mode-btn {
-                width: 100%;
-                padding: 12px 20px;
-            }
-        }
-
 </style>
 </head>
 <body>
@@ -1577,21 +1573,41 @@
                             <option value="new-1">新版第1期</option>
                             <option value="new-2">新版第2期</option>
                             <option value="new-3">新版第3期</option>
-                            <!-- <option value="new-4">新版第4期</option>
-                            <option value="new-5">新版第5期</option>
-                            <option value="new-6">新版第6期</option>
-                            <option value="new-7">新版第7期</option>
-                            <option value="new-8">新版第8期</option>
-                            <option value="new-9">新版第9期</option>
-                            <option value="new-10">新版第10期</option>
-                            <option value="new-11">新版第11期</option>
-                            <option value="new-12">新版第12期</option>
-                            <option value="new-13">新版第13期</option>
-                            <option value="new-14">新版第14期</option>
-                            <option value="new-15">新版第15期</option>
-                            <option value="new-16">新版第16期</option> -->
                         </optgroup>
                     </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="sortField">📊 排序欄位:</label>
+                    <select id="sortField">
+                        <option value="ovr">OVR</option>
+                        <option value="name">姓名</option>
+                        <optgroup label="打者能力">
+                            <option value="con">接觸</option>
+                            <option value="pow">力量</option>
+                            <option value="eye">選球</option>
+                            <option value="spd">速度</option>
+                            <option value="fld">守備</option>
+                            <option value="threeDim">三圍</option>
+                            <option value="fourDim">四圍</option>
+                        </optgroup>
+                        <optgroup label="投手能力">
+                            <option value="control">控球</option>
+                            <option value="stuff">球威</option>
+                            <option value="stamina">體力</option>
+                            <option value="fastball">直球</option>
+                            <option value="breaking">變化</option>
+                            <option value="controlStuff">控威</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>🔄 排序方向:</label>
+                    <button id="sortOrderBtn" class="btn sort-order-btn" onclick="toggleSortOrder()">
+                        <span id="sortOrderIcon">⬇️</span>
+                        <span id="sortOrderText">高→低</span>
+                    </button>
                 </div>
             </div>
             
@@ -1669,7 +1685,6 @@
             <div class="compare-content">
                 <!-- 左側球員選擇 -->
                 <div class="player-select-panel">
-                    <!-- <h3>選擇球員 A</h3> -->
                     <input type="text" id="searchPlayerA" class="player-search-input" placeholder="搜尋球員..." oninput="searchPlayer('A')">
                     <div id="playerListA" class="player-list"></div>
                     <div id="selectedPlayerA" class="selected-player-display"></div>
@@ -1682,7 +1697,6 @@
 
                 <!-- 右側球員選擇 -->
                 <div class="player-select-panel">
-                    <!-- <h3>選擇球員 B</h3> -->
                     <input type="text" id="searchPlayerB" class="player-search-input" placeholder="搜尋球員..." oninput="searchPlayer('B')">
                     <div id="playerListB" class="player-list"></div>
                     <div id="selectedPlayerB" class="selected-player-display"></div>
@@ -1693,13 +1707,13 @@
             <div id="compareResult" class="compare-result" style="display: none;">
                 <h3>📊數據比較</h3>
                 <div class="compare-mode-toggle">
-                <button class="mode-btn active" onclick="switchCompareMode('total')">
-                    💪 總能力比較
-                </button>
-                <button class="mode-btn" onclick="switchCompareMode('base')">
-                    📋 基礎能力比較
-                </button>
-            </div>
+                    <button class="mode-btn active" onclick="switchCompareMode('total')">
+                        💪 總能力比較
+                    </button>
+                    <button class="mode-btn" onclick="switchCompareMode('base')">
+                        📋 基礎能力比較
+                    </button>
+                </div>
                 <div class="stats-comparison"></div>
             </div>
 
@@ -1717,7 +1731,6 @@
     <script>
         // ==================== 卓越期數資料配置 ====================
         const excellencePeriods = {
-            // 舊版 1-6期
             'old-1': [
                 "Babe Ruth",
                 "Cy Young",
@@ -1767,8 +1780,6 @@
                 "Joe DiMaggio",
                 "Satchel Paige"
             ],
-            
-            // 新版 1-16期
             'new-1': [
                 "Nolan Ryan",
                 "Roy Campanella",
@@ -1789,98 +1800,7 @@
                 "Gary Sheffield",
                 "Mike Mussina",
                 "Christy Mathewson"
-            ],
-            // 'new-4': [
-            //     "",
-            //     "",
-            //     "",
-            //     "",
-            //     ""
-            // ],
-            // 'new-5': [
-            //     "",
-            //     "",
-            //     "",
-            //     "",
-            //     ""
-            // ],
-            // 'new-6': [
-            //     "",
-            //     "",
-            //     "",
-            //     "",
-            //     ""
-            // ],
-            // 'new-7': [
-            //     "",
-            //     "",
-            //     "",
-            //     "",
-            //     ""
-            // ],
-            // 'new-8': [
-            //     "",
-            //     "",
-            //     "",
-            //     "",
-            //     ""
-            // ],
-            // 'new-9': [
-            //     "",
-            //     "",
-            //     "",
-            //     "",
-            //     ""
-            // ],
-            // 'new-10': [
-            //     "",
-            //     "",
-            //     "",
-            //     "",
-            //     ""
-            // ],
-            // 'new-11': [
-            //     "",
-            //     "",
-            //     "",
-            //     "",
-            //     ""
-            // ],
-            // 'new-12': [
-            //     "",
-            //     "",
-            //     "",
-            //     "",
-            //     ""
-            // ],
-            // 'new-13': [
-            //     "",
-            //     "",
-            //     "",
-            //     "",
-            //     ""
-            // ],
-            // 'new-14': [
-            //     "",
-            //     "",
-            //     "",
-            //     "",
-            //     ""
-            // ],
-            // 'new-15': [
-            //     "",
-            //     "",
-            //     "",
-            //     "",
-            //     ""
-            // ],
-            // 'new-16': [
-            //     "",
-            //     "",
-            //     "",
-            //     "",
-            //     ""
-            // ]
+            ]
         };
 
         function getExcellencePeriod(playerName) {
@@ -1913,6 +1833,7 @@
             if (period.startsWith('new-')) return 'new';
             return '';
         }
+
         const players = [
             { name: "Vladimir Guerrero", team: "天使", position: "RF", image: "pic/LAA-Vladimir_Guerrero.png", teamClass: "angels", league: "AL", stats: {con: 84, pow: 82, eye: 77, spd: 68, fld: 69, conUp: 19, powUp: 18, eyeUp: 15, spdUp: 11, fldUp: 12} },
             { name: "Billy Wagner", team: "太空人", position: "CP", image: "pic/HOU-Billy_Wagner.png", teamClass: "astros", league: "AL", stats: {con: 76, pow: 80, eye: 52, spd: 83, fld: 73, conUp: 16, powUp: 19, eyeUp: 5, spdUp: 20, fldUp: 15} },
@@ -2041,9 +1962,14 @@
             position: '',
             league: '',
             excellence: '',
-            minOvr: 70,
-            maxOvr: 80
+            minOvr: 60,
+            maxOvr: 95,
+            positionType: ''
         };
+
+        // 全局排序變量
+        let currentSortField = 'ovr';
+        let currentSortOrder = 'desc';
 
         // 初始化滑桿
         const minSlider = document.getElementById('minOvrSlider');
@@ -2110,19 +2036,16 @@
             const total4 = player.stats.spd + player.stats.spdUp;
             const total5 = player.stats.fld + player.stats.fldUp;
             
-            // 判斷是否為投手
             const isPitcher = ['SP', 'CP', 'RP'].some(p => player.position.includes(p));
-            // 取得卓越期數
             const excellencePeriod = getExcellencePeriod(player.name);
             const excellenceBadgeText = getExcellenceBadgeText(excellencePeriod);
             const excellenceBadgeClass = getExcellenceBadgeClass(excellencePeriod);
             const excellenceBadge = excellenceBadgeText 
                 ? `<div class="excellence-badge ${excellenceBadgeClass}">${excellenceBadgeText}</div>`
                 : '';
-            // 計算3圍和4圍（打者）或控威總合（投手）
+            
             let additionalBadges = '';
             if (isPitcher) {
-                // 投手：控威總合
                 const controlPower = total1 + total2;
                 additionalBadges = `
                     <div class="additional-badges">
@@ -2133,7 +2056,6 @@
                     </div>
                 `;
             } else {
-                // 打者：3圍和4圍
                 const threeDim = total1 + total2 + total3;
                 const fourDim = total1 + total2 + total3 + total4;
                 additionalBadges = `
@@ -2155,7 +2077,7 @@
                     <div class="player-image-container">
                         ${excellenceBadge}
                         <img class="player-image" src="${player.image}" alt="${player.name}" 
-                             onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDI4MCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyODAiIGhlaWdodD0iMjgwIiBmaWxsPSIjZjhmOWZhIi8+CjxjaXJjbGUgY3g9IjE0MCIgY3k9IjEyMCIgcj0iNDAiIGZpbGw9IiNkZGQiLz4KPHJlY3QgeD0iMTAwIiB5PSIxODAiIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgcng9IjEwIiBmaWxsPSIjZGRkIi8+Cjx0ZXh0IHg9IjUwJSIgeT0iMjYwIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5IiBmb250LXNpemU9IjEyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiPuWcluePh+eEoeazleWKoOi8ijwvdGV4dD4KPC9zdmc+';">
+                            onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDI4MCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyODAiIGhlaWdodD0iMjgwIiBmaWxsPSIjZjhmOWZhIi8+CjxjaXJjbGUgY3g9IjE0MCIgY3k9IjEyMCIgcj0iNDAiIGZpbGw9IiNkZGQiLz4KPHJlY3QgeD0iMTAwIiB5PSIxODAiIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgcng9IjEwIiBmaWxsPSIjZGRkIi8+Cjx0ZXh0IHg9IjUwJSIgeT0iMjYwIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5IiBmb250LXNpemU9IjEyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiPuWcluePh+eEoeazleWKoOi8ijwvdGV4dD4KPC9zdmc+';">
                         <div class="base-avg-badge">
                             <div class="base-avg-label">OVR</div>
                             <div class="base-avg-value">${player.ovr.toFixed(1)}</div>
@@ -2209,12 +2131,96 @@
             `;
         }
 
+        // 切換排序方向函數
+        function toggleSortOrder() {
+            currentSortOrder = currentSortOrder === 'desc' ? 'asc' : 'desc';
+            
+            const btn = document.getElementById('sortOrderBtn');
+            const icon = document.getElementById('sortOrderIcon');
+            const text = document.getElementById('sortOrderText');
+            
+            if (currentSortOrder === 'asc') {
+                btn.classList.add('ascending');
+                icon.textContent = '⬇️';
+                text.textContent = '低→高';
+            } else {
+                btn.classList.remove('ascending');
+                icon.textContent = '⬇️';
+                text.textContent = '高→低';
+            }
+            
+            renderPlayers();
+        }
+
         function renderPlayers(playersToRender = filteredPlayers) {
             const grid = document.getElementById('playersGrid');
             const noResults = document.getElementById('noResults');
             
-            // 按 OVR 由高到低排序
-            const sortedPlayers = [...playersToRender].sort((a, b) => b.ovr - a.ovr);
+            // 排序邏輯
+            const sortedPlayers = [...playersToRender].sort((a, b) => {
+                let valueA, valueB;
+                
+                switch(currentSortField) {
+                    case 'ovr':
+                        valueA = a.ovr;
+                        valueB = b.ovr;
+                        break;
+                    case 'name':
+                        valueA = a.name.toLowerCase();
+                        valueB = b.name.toLowerCase();
+                        if (currentSortOrder === 'asc') {
+                            return valueA.localeCompare(valueB);
+                        } else {
+                            return valueB.localeCompare(valueA);
+                        }
+                    case 'con':
+                    case 'control':
+                        valueA = a.stats.con + a.stats.conUp;
+                        valueB = b.stats.con + b.stats.conUp;
+                        break;
+                    case 'pow':
+                    case 'stuff':
+                        valueA = a.stats.pow + a.stats.powUp;
+                        valueB = b.stats.pow + b.stats.powUp;
+                        break;
+                    case 'eye':
+                    case 'stamina':
+                        valueA = a.stats.eye + a.stats.eyeUp;
+                        valueB = b.stats.eye + b.stats.eyeUp;
+                        break;
+                    case 'spd':
+                    case 'fastball':
+                        valueA = a.stats.spd + a.stats.spdUp;
+                        valueB = b.stats.spd + b.stats.spdUp;
+                        break;
+                    case 'fld':
+                    case 'breaking':
+                        valueA = a.stats.fld + a.stats.fldUp;
+                        valueB = b.stats.fld + b.stats.fldUp;
+                        break;
+                    case 'threeDim':
+                        valueA = (a.stats.con + a.stats.conUp) + (a.stats.pow + a.stats.powUp) + (a.stats.eye + a.stats.eyeUp);
+                        valueB = (b.stats.con + b.stats.conUp) + (b.stats.pow + b.stats.powUp) + (b.stats.eye + b.stats.eyeUp);
+                        break;
+                    case 'fourDim':
+                        valueA = (a.stats.con + a.stats.conUp) + (a.stats.pow + a.stats.powUp) + (a.stats.eye + a.stats.eyeUp) + (a.stats.spd + a.stats.spdUp);
+                        valueB = (b.stats.con + b.stats.conUp) + (b.stats.pow + b.stats.powUp) + (b.stats.eye + b.stats.eyeUp) + (b.stats.spd + b.stats.spdUp);
+                        break;
+                    case 'controlStuff':
+                        valueA = (a.stats.con + a.stats.conUp) + (a.stats.pow + a.stats.powUp);
+                        valueB = (b.stats.con + b.stats.conUp) + (b.stats.pow + b.stats.powUp);
+                        break;
+                    default:
+                        valueA = a.ovr;
+                        valueB = b.ovr;
+                }
+                
+                if (currentSortOrder === 'asc') {
+                    return valueA - valueB;
+                } else {
+                    return valueB - valueA;
+                }
+            });
             
             if (sortedPlayers.length === 0) {
                 grid.innerHTML = '';
@@ -2261,6 +2267,10 @@
                 const badgeText = getExcellenceBadgeText(currentFilters.excellence);
                 tags.push(`卓越期數: ${badgeText} <span class="remove" onclick="removeFilter('excellence')">×</span>`);
             }
+            if (currentFilters.positionType) {
+                const typeName = currentFilters.positionType === 'pitcher' ? '投手' : '打者';
+                tags.push(`類型: ${typeName} <span class="remove" onclick="removeFilter('positionType')">×</span>`);
+            }
             if (currentFilters.minOvr !== 60 || currentFilters.maxOvr !== 95) {
                 tags.push(`OVR: ${currentFilters.minOvr}-${currentFilters.maxOvr} <span class="remove" onclick="removeFilter('ovr')">×</span>`);
             }
@@ -2287,16 +2297,18 @@
                 currentFilters.league = '';
                 document.getElementById('leagueFilter').value = '';
             } else if (filterType === 'ovr') {
-                currentFilters.minOvr = 70;
-                currentFilters.maxOvr = 80;
-                minSlider.value = 70;
-                maxSlider.value = 80;
-                minOvrValue.textContent = 70;
-                maxOvrValue.textContent = 80;
+                currentFilters.minOvr = 60;
+                currentFilters.maxOvr = 95;
+                minSlider.value = 60;
+                maxSlider.value = 95;
+                minOvrValue.textContent = 60;
+                maxOvrValue.textContent = 95;
                 updateSliderFill();
             } else if (filterType === 'excellence') {
                 currentFilters.excellence = '';
                 document.getElementById('excellenceFilter').value = '';
+            } else if (filterType === 'positionType') {
+                currentFilters.positionType = '';
             }
             
             filterPlayers();
@@ -2309,9 +2321,8 @@
             currentFilters.league = document.getElementById('leagueFilter').value;
             currentFilters.minOvr = parseInt(minSlider.value);
             currentFilters.maxOvr = parseInt(maxSlider.value);
-            currentFilters.league = document.getElementById('leagueFilter').value;
-            currentFilters.excellence = document.getElementById('excellenceFilter').value;  // ← 確認這行在這裡
-            currentFilters.minOvr = parseInt(minSlider.value);
+            currentFilters.excellence = document.getElementById('excellenceFilter').value;
+            
             filteredPlayers = players.filter(player => {
                 const searchMatch = !currentFilters.search || 
                     player.name.toLowerCase().includes(currentFilters.search) ||
@@ -2332,8 +2343,21 @@
                     }
                 }
                 
+                // 新增：位置類型篩選（打者/投手）
+                let positionTypeMatch = true;
+                if (currentFilters.positionType) {
+                    const playerPositions = player.position.split('/').map(p => p.trim());
+                    const pitcherPositions = ['SP', 'CP', 'RP'];
+                    
+                    if (currentFilters.positionType === 'pitcher') {
+                        positionTypeMatch = playerPositions.some(pos => pitcherPositions.includes(pos));
+                    } else if (currentFilters.positionType === 'batter') {
+                        positionTypeMatch = !playerPositions.some(pos => pitcherPositions.includes(pos));
+                    }
+                }
+                
                 const leagueMatch = !currentFilters.league || player.league === currentFilters.league;
-                // 卓越期數篩選
+                
                 let excellenceMatch = true;
                 if (currentFilters.excellence) {
                     const periodPlayers = excellencePeriods[currentFilters.excellence] || [];
@@ -2345,7 +2369,7 @@
                 
                 const ovrMatch = player.ovr >= currentFilters.minOvr && player.ovr <= currentFilters.maxOvr;
                 
-                return searchMatch && teamMatch && positionMatch && leagueMatch && excellenceMatch && ovrMatch;
+                return searchMatch && teamMatch && positionMatch && positionTypeMatch && leagueMatch && excellenceMatch && ovrMatch;
             });
             
             renderPlayers(filteredPlayers);
@@ -2357,10 +2381,21 @@
             document.getElementById('positionFilter').value = '';
             document.getElementById('leagueFilter').value = '';
             document.getElementById('excellenceFilter').value = '';
-            minSlider.value = 70;
-            maxSlider.value = 80;
-            minOvrValue.textContent = 70;
-            maxOvrValue.textContent = 80;
+            document.getElementById('sortField').value = 'ovr';
+            minSlider.value = 60;
+            maxSlider.value = 95;
+            minOvrValue.textContent = 60;
+            maxOvrValue.textContent = 95;
+            
+            // 重置排序
+            currentSortField = 'ovr';
+            currentSortOrder = 'desc';
+            const btn = document.getElementById('sortOrderBtn');
+            const icon = document.getElementById('sortOrderIcon');
+            const text = document.getElementById('sortOrderText');
+            btn.classList.remove('ascending');
+            icon.textContent = '⬇️';
+            text.textContent = '高→低';
             
             currentFilters = {
                 search: '',
@@ -2368,8 +2403,9 @@
                 position: '',
                 league: '',
                 excellence: '',
-                minOvr: 70,
-                maxOvr: 80
+                minOvr: 60,
+                maxOvr: 95,
+                positionType: ''
             };
             
             updateSliderFill();
@@ -2393,6 +2429,37 @@
         document.getElementById('teamFilter').addEventListener('change', filterPlayers);
         document.getElementById('positionFilter').addEventListener('change', filterPlayers);
         document.getElementById('leagueFilter').addEventListener('change', filterPlayers);
+        document.getElementById('excellenceFilter').addEventListener('change', filterPlayers);
+
+        // 監聽排序欄位變更
+        document.getElementById('sortField').addEventListener('change', function() {
+            currentSortField = this.value;
+            currentSortOrder = 'desc';
+            
+            const btn = document.getElementById('sortOrderBtn');
+            const icon = document.getElementById('sortOrderIcon');
+            const text = document.getElementById('sortOrderText');
+            btn.classList.remove('ascending');
+            icon.textContent = '⬇️';
+            text.textContent = '高→低';
+            
+            // 根據選擇的排序欄位自動篩選位置
+            const batterStats = ['con', 'pow', 'eye', 'spd', 'fld', 'threeDim', 'fourDim'];
+            const pitcherStats = ['control', 'stuff', 'stamina', 'fastball', 'breaking', 'controlStuff'];
+            
+            if (batterStats.includes(this.value)) {
+                // 選擇打者能力時，自動篩選出非投手
+                currentFilters.positionType = 'batter';
+            } else if (pitcherStats.includes(this.value)) {
+                // 選擇投手能力時，自動篩選出投手
+                currentFilters.positionType = 'pitcher';
+            } else {
+                // 選擇 OVR 或姓名時，清除位置類型篩選
+                currentFilters.positionType = '';
+            }
+            
+            filterPlayers();
+        });
 
         document.addEventListener('keydown', function(e) {
             if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
@@ -2404,30 +2471,29 @@
                 document.getElementById('searchInput').blur();
             }
         });
-        document.getElementById('excellenceFilter').addEventListener('change', filterPlayers);
+
         // 初始化
         updateSliderFill();
         renderPlayers();
+
         // ==================== 球員比較功能 ====================
 
         let selectedPlayerA = null;
         let selectedPlayerB = null;
         let filteredPlayersA = [...players];
         let filteredPlayersB = [...players];
+        let currentCompareMode = 'total';
 
-        // 開啟比較面板
         function openComparePanel() {
             document.getElementById('comparePanel').classList.add('active');
             renderPlayerList('A');
             renderPlayerList('B');
         }
 
-        // 關閉比較面板
         function closeComparePanel() {
             document.getElementById('comparePanel').classList.remove('active');
         }
 
-        // 搜尋球員
         function searchPlayer(side) {
             const searchInput = document.getElementById(`searchPlayer${side}`);
             const searchValue = searchInput.value.toLowerCase();
@@ -2447,7 +2513,6 @@
             renderPlayerList(side);
         }
 
-        // 渲染球員列表
         function renderPlayerList(side) {
             const listContainer = document.getElementById(`playerList${side}`);
             const playersList = side === 'A' ? filteredPlayersA : filteredPlayersB;
@@ -2472,7 +2537,6 @@
             }).join('');
         }
 
-        // 選擇球員
         function selectPlayer(side, playerName) {
             const player = players.find(p => p.name === playerName);
             
@@ -2487,7 +2551,6 @@
             renderPlayerList(side);
         }
 
-        // 更新已選球員顯示
         function updateSelectedPlayerDisplay(side) {
             const displayContainer = document.getElementById(`selectedPlayer${side}`);
             const player = side === 'A' ? selectedPlayerA : selectedPlayerB;
@@ -2505,31 +2568,25 @@
                         <img src="${player.image}" class="selected-player-image" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjZjhmOWZhIi8+CjxjaXJjbGUgY3g9IjQwIiBjeT0iMzUiIHI9IjE1IiBmaWxsPSIjZGRkIi8+CjxyZWN0IHg9IjI1IiB5PSI1NSIgd2lkdGg9IjMwIiBoZWlnaHQ9IjMwIiByeD0iNSIgZmlsbD0iI2RkZCIvPgo8L3N2Zz4='">
                         <div class="selected-player-info">
                             <h4>${player.name}</h4>
-                            <p> ${player.team}</p>
-                            <p> ${player.position} | OVR ${player.ovr.toFixed(1)}</p>
+                            <p>${player.team}</p>
+                            <p>${player.position} | OVR ${player.ovr.toFixed(1)}</p>
                         </div>
                     </div>
                 </div>
             `;
         }
-        // 在全局變量區域添加
-        let currentCompareMode = 'total'; // 'total' 或 'base'
 
-        // 切換比較模式函數
         function switchCompareMode(mode) {
             currentCompareMode = mode;
             
-            // 更新按鈕狀態
             document.querySelectorAll('.mode-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             event.target.classList.add('active');
             
-            // 重新渲染比較結果
             renderComparisonStats();
         }
 
-        // 專門的渲染比較統計函數
         function renderComparisonStats() {
             if (!selectedPlayerA || !selectedPlayerB) return;
             
@@ -2540,7 +2597,6 @@
             let statsA, statsB, maxValue;
             
             if (currentCompareMode === 'base') {
-                // 基礎能力模式
                 statsA = {
                     '接觸/控球': playerA.stats.con,
                     '力量/球威': playerA.stats.pow,
@@ -2559,7 +2615,6 @@
                     '基礎OVR': parseFloat(((playerB.stats.con + playerB.stats.pow + playerB.stats.eye + playerB.stats.spd + playerB.stats.fld) / 5).toFixed(1))
                 };
             } else {
-                // 總能力模式
                 statsA = {
                     '接觸/控球': playerA.stats.con + playerA.stats.conUp,
                     '力量/球威': playerA.stats.pow + playerA.stats.powUp,
@@ -2579,13 +2634,8 @@
                 };
             }
             
-            // 找出最大值
-            maxValue = Math.max(
-                ...Object.values(statsA),
-                ...Object.values(statsB)
-            );
+            maxValue = Math.max(...Object.values(statsA), ...Object.values(statsB));
             
-            // 渲染比較結果
             statsComparison.innerHTML = Object.keys(statsA).map(stat => {
                 const valueA = statsA[stat];
                 const valueB = statsB[stat];
@@ -2605,7 +2655,6 @@
                     classB += ' tie';
                 }
                 
-                // 格式化顯示
                 const displayA = (stat === 'OVR' || stat === '基礎OVR') ? valueA.toFixed(1) : valueA;
                 const displayB = (stat === 'OVR' || stat === '基礎OVR') ? valueB.toFixed(1) : valueB;
                 
@@ -2629,14 +2678,12 @@
             }).join('');
         }
 
-        // 修改 performCompare() 函數
         function performCompare() {
             if (!selectedPlayerA || !selectedPlayerB) {
                 alert('請選擇兩位球員進行比較！');
                 return;
             }
             
-            // 隱藏搜尋和選擇列表
             document.querySelectorAll('.player-search-input').forEach(input => {
                 input.style.display = 'none';
             });
@@ -2646,33 +2693,29 @@
             
             const resultContainer = document.getElementById('compareResult');
             
-            // 重置為總能力模式
             currentCompareMode = 'total';
             document.querySelectorAll('.mode-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             document.querySelector('.mode-btn:first-child').classList.add('active');
             
-            // 渲染比較結果
             renderComparisonStats();
             
             resultContainer.style.display = 'block';
             resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
-        // 修改 resetCompare() 函數
         function resetCompare() {
             selectedPlayerA = null;
             selectedPlayerB = null;
             filteredPlayersA = [...players];
             filteredPlayersB = [...players];
-            currentCompareMode = 'total'; // 重置模式
+            currentCompareMode = 'total';
             
             document.getElementById('searchPlayerA').value = '';
             document.getElementById('searchPlayerB').value = '';
             document.getElementById('compareResult').style.display = 'none';
             
-            // 重新顯示搜尋和列表
             document.querySelectorAll('.player-search-input').forEach(input => {
                 input.style.display = 'block';
             });
