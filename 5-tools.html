@@ -622,17 +622,94 @@
             }
         }
         
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        /* ===== 卓越球員選擇器 ===== */
+        .player-selector-box {
+            background: linear-gradient(135deg, #f0f7ff 0%, #e0f0ff 100%);
+            border: 1.5px solid rgba(79, 172, 254, 0.35);
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin-bottom: 22px;
         }
-        
+        .player-selector-label {
+            font-weight: 600;
+            color: #4facfe;
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .player-search-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        .player-search-input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            background: white;
+            box-sizing: border-box;
+            transition: all 0.3s;
+        }
+        .player-search-input:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79,172,254,0.12);
+        }
+        .player-dropdown {
+            position: absolute;
+            top: calc(100% + 2px);
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #4facfe;
+            border-radius: 0 0 10px 10px;
+            max-height: 240px;
+            overflow-y: auto;
+            z-index: 999;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+            display: none;
+        }
+        .player-dropdown-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f4ff;
+            transition: background 0.15s;
+        }
+        .player-dropdown-item:last-child { border-bottom: none; }
+        .player-dropdown-item:hover { background: linear-gradient(135deg, #f0f7ff, #e0f0ff); }
+        .dropdown-player-name { font-weight: 600; font-size: 14px; color: #333; }
+        .dropdown-player-meta { font-size: 11px; color: #888; margin-top: 2px; }
+        .dropdown-no-result { padding: 14px; text-align: center; color: #999; font-size: 13px; }
+        .selected-player-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        .selected-player-tag .tag-clear {
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1;
+            opacity: 0.85;
+            background: none;
+            border: none;
+            color: white;
+            padding: 0;
+        }
+        .selected-player-tag .tag-clear:hover { opacity: 1; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
         .calculator-section,
         .data-section {
             animation: fadeInUp 0.6s ease-out;
@@ -655,6 +732,20 @@
                 <div class="calculator-section">
                     <div class="section-title">球員屬性設定</div>
                     
+                    <!-- 卓越球員選擇器 -->
+                    <div class="player-selector-box">
+                        <span class="player-selector-label">選擇卓越球員</span>
+                        <div class="player-search-wrapper">
+                            <input type="text" class="player-search-input" id="supremeSearch"
+                                   placeholder="輸入球員姓名、隊伍或守備位置搜尋..."
+                                   oninput="filterSupremePlayers(this.value)"
+                                   onfocus="showSupremeDropdown()"
+                                   autocomplete="off">
+                            <div class="player-dropdown" id="supremeDropdown"></div>
+                        </div>
+                        <div id="selectedPlayerTag"></div>
+                    </div>
+
                     <!-- 桌面版表格 -->
                     <table class="stats-table stats-table-desktop">
                         <thead>
@@ -1147,6 +1238,180 @@
         
         // 頁面載入時執行同步
         window.addEventListener('DOMContentLoaded', syncInputs);
+
+        // ===== 卓越球員選擇器 =====
+        const supremePlayers = [
+            { name: "Vladimir Guerrero", team: "天使", position: "RF", stats: {con: 84, pow: 82, eye: 77, spd: 68, fld: 69, conUp: 19, powUp: 18, eyeUp: 15, spdUp: 11, fldUp: 12} },
+            { name: "Craig Biggio", team: "太空人", position: "2B", stats: {con: 81, pow: 74, eye: 76, spd: 71, fld: 74, conUp: 18, powUp: 14, eyeUp: 16, spdUp: 13, fldUp: 14} },
+            { name: "Jeff Bagwell", team: "太空人", position: "1B", stats: {con: 87, pow: 86, eye: 82, spd: 65, fld: 71, conUp: 19, powUp: 19, eyeUp: 16, spdUp: 9, fldUp: 12} },
+            { name: "Rickey Henderson", team: "運動家", position: "LF", stats: {con: 81, pow: 77, eye: 81, spd: 87, fld: 73, conUp: 16, powUp: 13, eyeUp: 16, spdUp: 18, fldUp: 12} },
+            { name: "Chipper Jones", team: "勇士", position: "3B", stats: {con: 86, pow: 83, eye: 81, spd: 66, fld: 67, conUp: 19, powUp: 18, eyeUp: 17, spdUp: 10, fldUp: 11} },
+            { name: "Eddie Mathews", team: "勇士", position: "3B", stats: {con: 79, pow: 84, eye: 83, spd: 65, fld: 65, conUp: 17, powUp: 19, eyeUp: 19, spdUp: 10, fldUp: 10} },
+            { name: "Hank Aaron", team: "勇士", position: "RF", stats: {con: 80, pow: 90, eye: 80, spd: 68, fld: 72, conUp: 16, powUp: 20, eyeUp: 16, spdUp: 11, fldUp: 12} },
+            { name: "Paul Molitor", team: "釀酒人", position: "DH/3B", stats: {con: 85, pow: 72, eye: 76, spd: 71, fld: 67, conUp: 20, powUp: 15, eyeUp: 16, spdUp: 13, fldUp: 11} },
+            { name: "Robin Yount", team: "釀酒人", position: "SS/CF", stats: {con: 82, pow: 75, eye: 75, spd: 69, fld: 69, conUp: 19, powUp: 16, eyeUp: 16, spdUp: 12, fldUp: 12} },
+            { name: "Lou Brock", team: "紅雀", position: "LF", stats: {con: 77, pow: 70, eye: 72, spd: 84, fld: 63, conUp: 17, powUp: 13, eyeUp: 15, spdUp: 20, fldUp: 10} },
+            { name: "Ozzie Smith", team: "紅雀", position: "SS", stats: {con: 78, pow: 64, eye: 79, spd: 77, fld: 81, conUp: 15, powUp: 10, eyeUp: 17, spdUp: 15, fldUp: 18} },
+            { name: "Rogers Hornsby", team: "紅雀", position: "2B", stats: {con: 94, pow: 82, eye: 83, spd: 65, fld: 66, conUp: 22, powUp: 17, eyeUp: 17, spdUp: 9, fldUp: 10} },
+            { name: "Scott Rolen", team: "紅雀", position: "3B", stats: {con: 79, pow: 80, eye: 74, spd: 62, fld: 75, conUp: 18, powUp: 18, eyeUp: 15, spdUp: 9, fldUp: 15} },
+            { name: "Stan Musial", team: "紅雀", position: "LF/1B", stats: {con: 81, pow: 83, eye: 83, spd: 65, fld: 73, conUp: 16, powUp: 18, eyeUp: 18, spdUp: 10, fldUp: 13} },
+            { name: "Billy Williams", team: "小熊", position: "LF", stats: {con: 83, pow: 79, eye: 79, spd: 65, fld: 71, conUp: 19, powUp: 17, eyeUp: 16, spdUp: 10, fldUp: 13} },
+            { name: "Ron Santo", team: "小熊", position: "3B", stats: {con: 80, pow: 76, eye: 77, spd: 62, fld: 69, conUp: 19, powUp: 17, eyeUp: 16, spdUp: 10, fldUp: 13} },
+            { name: "Ryne Sandberg", team: "小熊", position: "2B", stats: {con: 79, pow: 79, eye: 75, spd: 76, fld: 78, conUp: 16, powUp: 16, eyeUp: 14, spdUp: 14, fldUp: 15} },
+            { name: "Sammy Sosa", team: "小熊", position: "RF", stats: {con: 81, pow: 91, eye: 76, spd: 69, fld: 69, conUp: 17, powUp: 21, eyeUp: 15, spdUp: 11, fldUp: 11} },
+            { name: "Duke Snider", team: "道奇", position: "CF", stats: {con: 83, pow: 84, eye: 79, spd: 67, fld: 69, conUp: 18, powUp: 19, eyeUp: 19, spdUp: 11, fldUp: 11} },
+            { name: "Jackie Robinson", team: "道奇", position: "2B/3B", stats: {con: 83, pow: 72, eye: 83, spd: 65, fld: 79, conUp: 18, powUp: 13, eyeUp: 18, spdUp: 10, fldUp: 16} },
+            { name: "Roy Campanella", team: "道奇", position: "C", stats: {con: 81, pow: 82, eye: 78, spd: 64, fld: 68, conUp: 18, powUp: 19, eyeUp: 16, spdUp: 10, fldUp: 12} },
+            { name: "Mel Ott", team: "巨人", position: "RF", stats: {con: 83, pow: 82, eye: 85, spd: 62, fld: 71, conUp: 18, powUp: 17, eyeUp: 19, spdUp: 9, fldUp: 12} },
+            { name: "Willie Mays", team: "巨人", position: "CF", stats: {con: 80, pow: 88, eye: 76, spd: 72, fld: 72, conUp: 16, powUp: 20, eyeUp: 15, spdUp: 12, fldUp: 12} },
+            { name: "Willie McCovey", team: "巨人", position: "1B", stats: {con: 81, pow: 85, eye: 86, spd: 60, fld: 65, conUp: 17, powUp: 20, eyeUp: 20, spdUp: 8, fldUp: 10} },
+            { name: "Jim Thome", team: "守護者", position: "1B", stats: {con: 79, pow: 90, eye: 79, spd: 58, fld: 67, conUp: 17, powUp: 22, eyeUp: 17, spdUp: 7, fldUp: 12} },
+            { name: "Lou Boudreau", team: "守護者", position: "SS", stats: {con: 85, pow: 71, eye: 82, spd: 64, fld: 79, conUp: 19, powUp: 12, eyeUp: 18, spdUp: 9, fldUp: 17} },
+            { name: "Tris Speaker", team: "守護者", position: "CF", stats: {con: 90, pow: 72, eye: 82, spd: 72, fld: 66, conUp: 21, powUp: 13, eyeUp: 18, spdUp: 13, fldUp: 10} },
+            { name: "Edgar Martinez", team: "水手", position: "DH/3B", stats: {con: 85, pow: 79, eye: 83, spd: 67, fld: 63, conUp: 20, powUp: 16, eyeUp: 19, spdUp: 11, fldUp: 9} },
+            { name: "Ken Griffey Jr.", team: "水手", position: "CF", stats: {con: 82, pow: 86, eye: 77, spd: 68, fld: 81, conUp: 17, powUp: 18, eyeUp: 14, spdUp: 10, fldUp: 16} },
+            { name: "Mike Piazza", team: "大都會", position: "C", stats: {con: 80, pow: 81, eye: 75, spd: 64, fld: 70, conUp: 18, powUp: 19, eyeUp: 15, spdUp: 10, fldUp: 13} },
+            { name: "Andre Dawson", team: "國民", position: "RF/CF", stats: {con: 79, pow: 83, eye: 70, spd: 73, fld: 72, conUp: 17, powUp: 19, eyeUp: 12, spdUp: 14, fldUp: 13} },
+            { name: "Gary Carter", team: "國民", position: "C", stats: {con: 77, pow: 78, eye: 76, spd: 64, fld: 78, conUp: 17, powUp: 17, eyeUp: 15, spdUp: 10, fldUp: 16} },
+            { name: "Tim Raines", team: "國民", position: "LF", stats: {con: 83, pow: 72, eye: 80, spd: 84, fld: 73, conUp: 17, powUp: 12, eyeUp: 16, spdUp: 18, fldUp: 12} },
+            { name: "Brooks Robinson", team: "金鶯", position: "3B", stats: {con: 80, pow: 74, eye: 74, spd: 65, fld: 81, conUp: 18, powUp: 15, eyeUp: 14, spdUp: 10, fldUp: 18} },
+            { name: "Cal Ripken Jr.", team: "金鶯", position: "SS", stats: {con: 78, pow: 76, eye: 79, spd: 66, fld: 81, conUp: 15, powUp: 15, eyeUp: 17, spdUp: 10, fldUp: 18} },
+            { name: "Eddie Murray", team: "金鶯", position: "1B", stats: {con: 82, pow: 77, eye: 78, spd: 65, fld: 76, conUp: 18, powUp: 15, eyeUp: 17, spdUp: 10, fldUp: 15} },
+            { name: "Dave Winfield", team: "教士", position: "RF", stats: {con: 83, pow: 81, eye: 76, spd: 68, fld: 73, conUp: 18, powUp: 17, eyeUp: 15, spdUp: 11, fldUp: 14} },
+            { name: "Tony Gwynn", team: "教士", position: "RF", stats: {con: 81, pow: 70, eye: 78, spd: 70, fld: 72, conUp: 18, powUp: 13, eyeUp: 17, spdUp: 13, fldUp: 14} },
+            { name: "Mike Schmidt", team: "費城人", position: "3B", stats: {con: 76, pow: 86, eye: 79, spd: 68, fld: 74, conUp: 15, powUp: 19, eyeUp: 16, spdUp: 11, fldUp: 14} },
+            { name: "Ralph Kiner", team: "海盜", position: "LF", stats: {con: 79, pow: 87, eye: 86, spd: 62, fld: 68, conUp: 16, powUp: 20, eyeUp: 19, spdUp: 9, fldUp: 11} },
+            { name: "Roberto Clemente", team: "海盜", position: "RF", stats: {con: 86, pow: 74, eye: 72, spd: 65, fld: 79, conUp: 20, powUp: 15, eyeUp: 13, spdUp: 10, fldUp: 17} },
+            { name: "Willie Stargell", team: "海盜", position: "LF/1B", stats: {con: 80, pow: 87, eye: 75, spd: 61, fld: 66, conUp: 18, powUp: 21, eyeUp: 16, spdUp: 9, fldUp: 11} },
+            { name: "Adrian Beltre", team: "遊騎兵", position: "3B", stats: {con: 82, pow: 82, eye: 72, spd: 62, fld: 77, conUp: 19, powUp: 19, eyeUp: 13, spdUp: 9, fldUp: 15} },
+            { name: "Ivan Rodriguez", team: "遊騎兵", position: "C", stats: {con: 82, pow: 78, eye: 71, spd: 66, fld: 79, conUp: 19, powUp: 15, eyeUp: 13, spdUp: 11, fldUp: 17} },
+            { name: "Barry Larkin", team: "紅人", position: "SS", stats: {con: 80, pow: 79, eye: 80, spd: 75, fld: 76, conUp: 16, powUp: 16, eyeUp: 16, spdUp: 13, fldUp: 14} },
+            { name: "Johnny Bench", team: "紅人", position: "C", stats: {con: 77, pow: 82, eye: 78, spd: 67, fld: 71, conUp: 15, powUp: 19, eyeUp: 17, spdUp: 11, fldUp: 13} },
+            { name: "Joe Morgan", team: "紅人", position: "2B", stats: {con: 82, pow: 71, eye: 87, spd: 73, fld: 76, conUp: 17, powUp: 12, eyeUp: 19, spdUp: 13, fldUp: 14} },
+            { name: "Tony Perez", team: "紅人", position: "1B/3B", stats: {con: 80, pow: 80, eye: 72, spd: 68, fld: 69, conUp: 18, powUp: 18, eyeUp: 15, spdUp: 12, fldUp: 12} },
+            { name: "David Ortiz", team: "紅襪", position: "DH/1B", stats: {con: 82, pow: 88, eye: 79, spd: 59, fld: 60, conUp: 19, powUp: 22, eyeUp: 18, spdUp: 8, fldUp: 8} },
+            { name: "Jim Rice", team: "紅襪", position: "LF", stats: {con: 81, pow: 80, eye: 72, spd: 67, fld: 71, conUp: 18, powUp: 18, eyeUp: 15, spdUp: 11, fldUp: 13} },
+            { name: "Jimmie Foxx", team: "紅襪", position: "1B", stats: {con: 85, pow: 87, eye: 82, spd: 64, fld: 72, conUp: 18, powUp: 19, eyeUp: 17, spdUp: 9, fldUp: 12} },
+            { name: "Wade Boggs", team: "紅襪", position: "3B", stats: {con: 87, pow: 74, eye: 84, spd: 65, fld: 68, conUp: 20, powUp: 15, eyeUp: 19, spdUp: 10, fldUp: 11} },
+            { name: "George Brett", team: "皇家", position: "3B", stats: {con: 90, pow: 77, eye: 81, spd: 71, fld: 64, conUp: 21, powUp: 16, eyeUp: 17, spdUp: 12, fldUp: 9} },
+            { name: "Al Kaline", team: "老虎", position: "RF", stats: {con: 83, pow: 81, eye: 80, spd: 67, fld: 81, conUp: 17, powUp: 17, eyeUp: 15, spdUp: 10, fldUp: 16} },
+            { name: "Alan Trammell", team: "老虎", position: "SS", stats: {con: 84, pow: 74, eye: 75, spd: 71, fld: 76, conUp: 19, powUp: 14, eyeUp: 14, spdUp: 12, fldUp: 16} },
+            { name: "Ty Cobb", team: "老虎", position: "CF", stats: {con: 93, pow: 71, eye: 83, spd: 77, fld: 66, conUp: 21, powUp: 12, eyeUp: 17, spdUp: 15, fldUp: 10} },
+            { name: "Harmon Killebrew", team: "雙城", position: "1B/3B", stats: {con: 75, pow: 87, eye: 85, spd: 59, fld: 67, conUp: 15, powUp: 21, eyeUp: 20, spdUp: 8, fldUp: 11} },
+            { name: "Joe Mauer", team: "雙城", position: "C/1B", stats: {con: 87, pow: 75, eye: 78, spd: 65, fld: 71, conUp: 21, powUp: 14, eyeUp: 17, spdUp: 10, fldUp: 13} },
+            { name: "Kirby Puckett", team: "雙城", position: "CF", stats: {con: 86, pow: 74, eye: 72, spd: 65, fld: 80, conUp: 20, powUp: 15, eyeUp: 13, spdUp: 10, fldUp: 17} },
+            { name: "Rod Carew", team: "雙城", position: "2B/1B", stats: {con: 90, pow: 70, eye: 79, spd: 72, fld: 74, conUp: 21, powUp: 12, eyeUp: 16, spdUp: 12, fldUp: 14} },
+            { name: "Frank Thomas", team: "白襪", position: "DH/1B", stats: {con: 85, pow: 86, eye: 85, spd: 59, fld: 60, conUp: 20, powUp: 20, eyeUp: 19, spdUp: 8, fldUp: 8} },
+            { name: "Babe Ruth", team: "洋基", position: "RF", stats: {con: 82, pow: 90, eye: 88, spd: 64, fld: 67, conUp: 17, powUp: 20, eyeUp: 19, spdUp: 9, fldUp: 10} },
+            { name: "Derek Jeter", team: "洋基", position: "SS", stats: {con: 84, pow: 72, eye: 74, spd: 70, fld: 75, conUp: 19, powUp: 13, eyeUp: 15, spdUp: 12, fldUp: 16} },
+            { name: "Joe DiMaggio", team: "洋基", position: "CF", stats: {con: 88, pow: 81, eye: 79, spd: 65, fld: 68, conUp: 20, powUp: 17, eyeUp: 17, spdUp: 10, fldUp: 11} },
+            { name: "Lou Gehrig", team: "洋基", position: "1B", stats: {con: 87, pow: 84, eye: 87, spd: 64, fld: 70, conUp: 19, powUp: 17, eyeUp: 19, spdUp: 9, fldUp: 11} },
+            { name: "Mickey Mantle", team: "洋基", position: "CF", stats: {con: 80, pow: 89, eye: 88, spd: 64, fld: 70, conUp: 16, powUp: 20, eyeUp: 19, spdUp: 9, fldUp: 11} },
+            { name: "Yogi Berra", team: "洋基", position: "C", stats: {con: 78, pow: 77, eye: 77, spd: 63, fld: 78, conUp: 17, powUp: 17, eyeUp: 16, spdUp: 9, fldUp: 16} },
+            { name: "Larry Walker", team: "落磯", position: "RF", stats: {con: 80, pow: 84, eye: 78, spd: 71, fld: 72, conUp: 17, powUp: 18, eyeUp: 16, spdUp: 12, fldUp: 12} },
+            { name: "Gary Sheffield", team: "馬林魚", position: "RF", stats: {con: 82, pow: 85, eye: 86, spd: 67, fld: 68, conUp: 17, powUp: 18, eyeUp: 19, spdUp: 10, fldUp: 11} }
+        ];
+
+        let currentSupremeList = [...supremePlayers];
+
+        function filterSupremePlayers(query) {
+            query = query.trim().toLowerCase();
+            if (!query) {
+                currentSupremeList = [...supremePlayers];
+            } else {
+                currentSupremeList = supremePlayers.filter(p =>
+                    p.name.toLowerCase().includes(query) ||
+                    p.team.includes(query) ||
+                    p.position.toLowerCase().includes(query)
+                );
+            }
+            renderSupremeDropdown();
+            document.getElementById('supremeDropdown').style.display = 'block';
+        }
+
+        function showSupremeDropdown() {
+            filterSupremePlayers(document.getElementById('supremeSearch').value);
+        }
+
+        function renderSupremeDropdown() {
+            const dropdown = document.getElementById('supremeDropdown');
+            if (currentSupremeList.length === 0) {
+                dropdown.innerHTML = '<div class="dropdown-no-result">找不到符合的球員</div>';
+            } else {
+                dropdown.innerHTML = currentSupremeList.map((p, i) => {
+                    const idx = supremePlayers.indexOf(p);
+                    return `<div class="player-dropdown-item" onclick="applySupremePlayer(${idx})">
+                        <div class="dropdown-player-name">${p.name} <span style="color:#4facfe;font-weight:400;font-size:12px;">${p.team}</span></div>
+                        <div class="dropdown-player-meta">${p.position} | 接${p.stats.con} (+${p.stats.conUp}) 力${p.stats.pow} (+${p.stats.powUp}) 選${p.stats.eye} (+${p.stats.eyeUp}) 速${p.stats.spd} (+${p.stats.spdUp}) 守${p.stats.fld} (+${p.stats.fldUp})</div>
+                    </div>`;
+                }).join('');
+            }
+        }
+
+        function applySupremePlayer(idx) {
+            const p = supremePlayers[idx];
+            const s = p.stats;
+
+            // 自動設為卓越
+            document.getElementById('player_type').value = 'supreme';
+
+            // 填入桌面版
+            document.getElementById('base_contact').value   = s.con;
+            document.getElementById('base_power').value     = s.pow;
+            document.getElementById('base_selection').value = s.eye;
+            document.getElementById('base_speed').value     = s.spd;
+            document.getElementById('base_defense').value   = s.fld;
+            document.getElementById('GI_contact').value     = s.conUp;
+            document.getElementById('GI_power').value       = s.powUp;
+            document.getElementById('GI_selection').value   = s.eyeUp;
+            document.getElementById('GI_speed').value       = s.spdUp;
+            document.getElementById('GI_defense').value     = s.fldUp;
+
+            // 填入手機版
+            document.getElementById('mobile_base_contact').value   = s.con;
+            document.getElementById('mobile_base_power').value     = s.pow;
+            document.getElementById('mobile_base_selection').value = s.eye;
+            document.getElementById('mobile_base_speed').value     = s.spd;
+            document.getElementById('mobile_base_defense').value   = s.fld;
+            document.getElementById('mobile_GI_contact').value     = s.conUp;
+            document.getElementById('mobile_GI_power').value       = s.powUp;
+            document.getElementById('mobile_GI_selection').value   = s.eyeUp;
+            document.getElementById('mobile_GI_speed').value       = s.spdUp;
+            document.getElementById('mobile_GI_defense').value     = s.fldUp;
+
+            // 隱藏下拉選單，顯示已選標籤
+            document.getElementById('supremeDropdown').style.display = 'none';
+            document.getElementById('supremeSearch').value = '';
+            document.getElementById('selectedPlayerTag').innerHTML =
+                `<div class="selected-player-tag">${p.name}（${p.team}｜${p.position}）
+                    <button class="tag-clear" onclick="clearSupremePlayer()" title="清除">✕</button>
+                </div>`;
+        }
+
+        function clearSupremePlayer() {
+            const fields = ['contact','power','selection','speed','defense'];
+            fields.forEach(f => {
+                const base   = document.getElementById('base_' + f);
+                const gi     = document.getElementById('GI_' + f);
+                const mbase  = document.getElementById('mobile_base_' + f);
+                const mgi    = document.getElementById('mobile_GI_' + f);
+                if (base)  base.value  = '';
+                if (gi)    gi.value    = '';
+                if (mbase) mbase.value = '';
+                if (mgi)   mgi.value   = '';
+            });
+            document.getElementById('player_type').value = 'type';
+            document.getElementById('selectedPlayerTag').innerHTML = '';
+        }
+
+        // 點擊外部關閉下拉選單
+        document.addEventListener('click', function(e) {
+            const wrapper = document.querySelector('.player-search-wrapper');
+            if (wrapper && !wrapper.contains(e.target)) {
+                document.getElementById('supremeDropdown').style.display = 'none';
+            }
+        });
+
     </script>
     <script src="navigation.js"></script>
 </body>
