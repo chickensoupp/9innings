@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>強化計算機</title>
+    <link rel="stylesheet" href="navigation.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .page-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .content-wrapper {
+            padding: 30px 40px 40px;
+        }
+
+        /* ===== 主表格區塊 ===== */
+        .calculator-section {
+            background: white;
+            border-radius: 15px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            border: 1px solid rgba(79,172,254,0.2);
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #4facfe;
+            margin-bottom: 22px;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 55px;
+            height: 3px;
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+            border-radius: 2px;
+        }
+
+        /* ===== 屬性表格 ===== */
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+
+        .stats-table th {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 11px 8px;
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.82rem;
+            white-space: nowrap;
+        }
+
+        .stats-table td {
+            padding: 9px 8px;
+            text-align: center;
+            border-bottom: 1px solid #f0f0f0;
+            background: #fafafa;
+        }
+
+        .stats-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .stats-table td:first-child {
+            background: linear-gradient(135deg, #f8f9ff 0%, #e6f3ff 100%);
+            font-weight: 700;
+            color: #4facfe;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            width: 80px;
+        }
+
+        /* 列標籤顏色區分（現在欄位是列頭） */
+        .row-coach      td:first-child { background: linear-gradient(135deg, #fff8e1, #fff3cd) !important; color: #b8860b !important; }
+        .row-diamond    td:first-child { background: linear-gradient(135deg, #e8f5e9, #d4edda) !important; color: #2e7d32 !important; }
+        .row-training   td:first-child { background: linear-gradient(135deg, #fce4ec, #f8d7da) !important; color: #c62828 !important; }
+        .row-signature  td:first-child { background: linear-gradient(135deg, #f3e5f5, #edd7f7) !important; color: #6a1b9a !important; }
+        .row-enhance    td:first-child { background: linear-gradient(135deg, #e3f2fd, #cce5ff) !important; color: #1565c0 !important; }
+        .row-rise       td:first-child { background: linear-gradient(135deg, #e8f5e9, #d4edda) !important; color: #2e7d32 !important; }
+        .row-base       td:first-child { background: linear-gradient(135deg, #f5f5f5, #eeeeee) !important; color: #555 !important; }
+
+        input[type="number"].stat-input {
+            width: 64px;
+            padding: 7px 4px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: white;
+            box-sizing: border-box;
+        }
+
+        input[type="number"].stat-input:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79,172,254,0.15);
+        }
+
+        /* ===== 額外加成框 ===== */
+        .bonus-section {
+            background: white;
+            border-radius: 15px;
+            padding: 24px 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            border: 1px solid rgba(79,172,254,0.2);
+            animation: fadeInUp 0.55s ease-out;
+        }
+
+        .bonus-row {
+            display: flex;
+            gap: 80px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .bonus-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bonus-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .bonus-sub {
+            font-size: 0.72rem;
+            color: #888;
+            text-align: center;
+        }
+
+        input[type="number"].bonus-input {
+            width: 80px;
+            padding: 9px 6px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 15px;
+            font-weight: 600;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input[type="number"].bonus-input:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79,172,254,0.15);
+        }
+
+        /* 特訓唯讀顯示 */
+        .training-display {
+            display: inline-block;
+            width: 64px;
+            padding: 7px 4px;
+            background: linear-gradient(135deg, #fce4ec, #f8d7da);
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #c62828;
+            border: 2px solid rgba(198,40,40,0.2);
+        }
+
+        /* ===== 總和顯示 ===== */
+        .result-section {
+            background: white;
+            border-radius: 15px;
+            padding: 24px 28px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            border: 1px solid rgba(79,172,254,0.2);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr) auto;
+            gap: 14px;
+            margin-top: 10px;
+            align-items: center;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #f8f9ff 0%, #e6f3ff 100%);
+            border-radius: 12px;
+            border: 2px solid rgba(79,172,254,0.25);
+            padding: 16px 10px;
+            text-align: center;
+        }
+
+        .result-card h3 {
+            color: #4facfe;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin: 0 0 10px;
+        }
+
+        .result-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #667eea;
+            margin: 0;
+        }
+
+        .result-total {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 16px 18px;
+            text-align: center;
+            color: white;
+            min-width: 90px;
+        }
+
+        .result-total .total-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            opacity: 0.9;
+            margin-bottom: 6px;
+        }
+
+        .result-total .total-value {
+            font-size: 1.9rem;
+            font-weight: 700;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== 卓越球員選擇器 ===== */
+        .player-selector-box {
+            background: linear-gradient(135deg, #f0f7ff 0%, #e0f0ff 100%);
+            border: 1.5px solid rgba(79,172,254,0.35);
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin-bottom: 22px;
+        }
+        .player-selector-label {
+            font-weight: 600;
+            color: #4facfe;
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .player-search-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        .player-search-input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            background: white;
+            box-sizing: border-box;
+            transition: all 0.3s;
+        }
+        .player-search-input:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79,172,254,0.12);
+        }
+        .player-dropdown {
+            position: absolute;
+            top: calc(100% + 2px);
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #4facfe;
+            border-radius: 0 0 10px 10px;
+            max-height: 240px;
+            overflow-y: auto;
+            z-index: 999;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+            display: none;
+        }
+        .player-dropdown-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f4ff;
+            transition: background 0.15s;
+        }
+        .player-dropdown-item:last-child { border-bottom: none; }
+        .player-dropdown-item:hover { background: linear-gradient(135deg, #f0f7ff, #e0f0ff); }
+        .dropdown-player-name { font-weight: 600; font-size: 14px; color: #333; }
+        .dropdown-player-meta { font-size: 11px; color: #888; margin-top: 2px; }
+        .dropdown-no-result { padding: 14px; text-align: center; color: #999; font-size: 13px; }
+        .selected-player-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        .selected-player-tag .tag-clear {
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1;
+            opacity: 0.85;
+            background: none;
+            border: none;
+            color: white;
+            padding: 0;
+        }
+        .selected-player-tag .tag-clear:hover { opacity: 1; }
+
+        /* ===== 卡種選擇 ===== */
+        .card-type-section {
+            background: white;
+            border-radius: 15px;
+            padding: 22px 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            border: 1px solid rgba(79,172,254,0.2);
+            animation: fadeInUp 0.45s ease-out;
+        }
+        .card-type-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .card-btn {
+            padding: 10px 22px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            background: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #888;
+            transition: all 0.2s;
+            min-width: 68px;
+        }
+        .card-btn:hover { border-color: #4facfe; color: #4facfe; }
+        .card-btn.active {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-color: #4facfe;
+            color: white;
+            box-shadow: 0 3px 12px rgba(79,172,254,0.4);
+        }
+        /* 各卡種顏色 */
+        .card-btn#cardBtn_normal.active  { background: linear-gradient(135deg, #78909c, #90a4ae); border-color: #78909c; box-shadow: 0 3px 12px rgba(120,144,156,0.4); }
+        .card-btn#cardBtn_sign.active    { background: linear-gradient(135deg, #ab47bc, #ce93d8); border-color: #ab47bc; box-shadow: 0 3px 12px rgba(171,71,188,0.4); }
+        .card-btn#cardBtn_peak.active    { background: linear-gradient(135deg, #26a69a, #80cbc4); border-color: #26a69a; box-shadow: 0 3px 12px rgba(38,166,154,0.4); }
+        .card-btn#cardBtn_legend.active  { background: linear-gradient(135deg, #ef6c00, #ffb74d); border-color: #ef6c00; box-shadow: 0 3px 12px rgba(239,108,0,0.4); }
+        .card-btn#cardBtn_supreme.active { background: linear-gradient(135deg, #1565c0, #42a5f5); border-color: #1565c0; box-shadow: 0 3px 12px rgba(21,101,192,0.4); }
+
+        /* ===== RWD ===== */
+        @media (max-width: 700px) {
+            .content-wrapper { padding: 15px; }
+            .calculator-section, .bonus-section, .result-section { padding: 16px 12px; }
+            .header h1 { font-size: 1.5rem; }
+            input[type="number"].stat-input { width: 52px; font-size: 13px; }
+            .stats-table th, .stats-table td { padding: 7px 4px; font-size: 0.78rem; }
+            .result-grid { grid-template-columns: repeat(3, 1fr); }
+            .result-total { grid-column: 1 / -1; }
+            .bonus-row { gap: 18px; }
+        }
+
+        @media (max-width: 480px) {
+            .result-grid { grid-template-columns: repeat(2, 1fr); }
+            input[type="number"].stat-input { width: 44px; font-size: 12px; padding: 5px 2px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-content">
+    <div class="page-container">
+        <div class="header">
+            <h1>強化計算機</h1>
+        </div>
+
+        <div class="content-wrapper">
+
+            <!-- 卡種選擇 -->
+            <div class="card-type-section">
+                <div class="section-title">卡種選擇</div>
+                <div class="card-type-row">
+                    <button class="card-btn" id="cardBtn_normal"  onclick="setCardType('normal')">普卡</button>
+                    <button class="card-btn" id="cardBtn_sign"    onclick="setCardType('sign')">簽名</button>
+                    <button class="card-btn" id="cardBtn_peak"    onclick="setCardType('peak')">全盛</button>
+                    <button class="card-btn" id="cardBtn_legend"  onclick="setCardType('legend')">傳說</button>
+                    <button class="card-btn" id="cardBtn_supreme" onclick="setCardType('supreme')">卓越</button>
+                </div>
+            </div>
+
+            <!-- 額外加成 -->
+            <div class="bonus-section">
+                <div class="section-title">額外加成</div>
+                <div class="bonus-row">
+                    <div class="bonus-item">
+                        <span class="bonus-label">團隊加成</span>
+                        <input type="number" class="bonus-input" id="teamBonus" min="0" max="12" value="0" oninput="clampAndCalc(this,0,12)">
+                    </div>
+                    <div class="bonus-item">
+                        <span class="bonus-label">指導球員</span>
+                        <input type="number" class="bonus-input" id="coachBonus" min="0" max="3" value="0" oninput="clampAndCalc(this,0,3)">
+                    </div>
+                    <div class="bonus-item">
+                        <span class="bonus-label">黑鑽</span>
+                        <input type="number" class="bonus-input" id="diamondBonus" min="0" max="3" value="0" oninput="clampAndCalc(this,0,3)">
+                    </div>
+                    <div class="bonus-item">
+                        <span class="bonus-label">簽名球員增加量</span>
+                        <input type="number" class="bonus-input" id="signatureBonus" min="0" max="12" value="0" oninput="clampAndCalc(this,0,12)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 屬性輸入表格 -->
+            <div class="calculator-section">
+                <div class="section-title">屬性輸入</div>
+
+                <!-- 卓越球員選擇器 -->
+                <div class="player-selector-box">
+                    <span class="player-selector-label">選擇卓越球員（自動帶入基礎值與上升量）</span>
+                    <div class="player-search-wrapper">
+                        <input type="text" class="player-search-input" id="supremeSearch"
+                               placeholder="輸入球員姓名、隊伍或守備位置搜尋..."
+                               oninput="filterSupremePlayers(this.value)"
+                               onfocus="showSupremeDropdown()"
+                               autocomplete="off">
+                        <div class="player-dropdown" id="supremeDropdown"></div>
+                    </div>
+                    <div id="selectedPlayerTag"></div>
+                </div>
+
+                <table class="stats-table">
+                    <thead>
+                        <tr>
+                            <th>欄位</th>
+                            <th>接觸</th>
+                            <th>力量</th>
+                            <th>選球</th>
+                            <th>速度</th>
+                            <th>守備</th>
+                        </tr>
+                    </thead>
+                    <tbody id="statsBody">
+                        <!-- rows injected by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 總和顯示 -->
+            <div class="result-section">
+                <div class="section-title">計算結果</div>
+                <div class="result-grid" id="resultGrid">
+                    <!-- cards injected by JS -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="navigation.js"></script>
+<script>
+    // ===== 卓越球員資料 =====
+    const supremePlayers = [
+        { name: "Vladimir Guerrero", team: "天使", position: "RF", stats: {con: 84, pow: 82, eye: 77, spd: 68, fld: 69, conUp: 19, powUp: 18, eyeUp: 15, spdUp: 11, fldUp: 12} },
+        { name: "Craig Biggio", team: "太空人", position: "2B", stats: {con: 81, pow: 74, eye: 76, spd: 71, fld: 74, conUp: 18, powUp: 14, eyeUp: 15, spdUp: 13, fldUp: 15} },
+        { name: "Joe Mauer", team: "雙城", position: "C/1B", stats: {con: 87, pow: 75, eye: 78, spd: 65, fld: 71, conUp: 21, powUp: 14, eyeUp: 17, spdUp: 10, fldUp: 13} },
+        { name: "Kirby Puckett", team: "雙城", position: "CF", stats: {con: 86, pow: 74, eye: 72, spd: 65, fld: 80, conUp: 20, powUp: 15, eyeUp: 13, spdUp: 10, fldUp: 17} },
+        { name: "Rod Carew", team: "雙城", position: "2B/1B", stats: {con: 90, pow: 70, eye: 79, spd: 72, fld: 74, conUp: 21, powUp: 12, eyeUp: 16, spdUp: 12, fldUp: 14} },
+        { name: "Frank Thomas", team: "白襪", position: "DH/1B", stats: {con: 85, pow: 86, eye: 85, spd: 59, fld: 60, conUp: 20, powUp: 20, eyeUp: 19, spdUp: 8, fldUp: 8} },
+        { name: "Babe Ruth", team: "洋基", position: "RF", stats: {con: 82, pow: 90, eye: 88, spd: 64, fld: 67, conUp: 17, powUp: 20, eyeUp: 19, spdUp: 9, fldUp: 10} },
+        { name: "Derek Jeter", team: "洋基", position: "SS", stats: {con: 84, pow: 72, eye: 74, spd: 70, fld: 75, conUp: 19, powUp: 13, eyeUp: 15, spdUp: 12, fldUp: 16} },
+        { name: "Joe DiMaggio", team: "洋基", position: "CF", stats: {con: 88, pow: 81, eye: 79, spd: 65, fld: 68, conUp: 20, powUp: 17, eyeUp: 17, spdUp: 10, fldUp: 11} },
+        { name: "Lou Gehrig", team: "洋基", position: "1B", stats: {con: 87, pow: 84, eye: 87, spd: 64, fld: 70, conUp: 19, powUp: 17, eyeUp: 19, spdUp: 9, fldUp: 11} },
+        { name: "Mickey Mantle", team: "洋基", position: "CF", stats: {con: 80, pow: 89, eye: 88, spd: 64, fld: 70, conUp: 16, powUp: 20, eyeUp: 19, spdUp: 9, fldUp: 11} },
+        { name: "Yogi Berra", team: "洋基", position: "C", stats: {con: 78, pow: 77, eye: 77, spd: 63, fld: 78, conUp: 17, powUp: 17, eyeUp: 16, spdUp: 9, fldUp: 16} },
+        { name: "Mariano Rivera", team: "洋基", position: "CP", stats: {con: 80, pow: 78, eye: 51, spd: 80, fld: 75, conUp: 19, powUp: 17, eyeUp: 5, spdUp: 18, fldUp: 16} },
+        { name: "Larry Walker", team: "落磯", position: "RF", stats: {con: 80, pow: 84, eye: 78, spd: 71, fld: 72, conUp: 17, powUp: 18, eyeUp: 16, spdUp: 12, fldUp: 12} },
+        { name: "Gary Sheffield", team: "馬林魚", position: "RF", stats: {con: 82, pow: 85, eye: 86, spd: 67, fld: 68, conUp: 17, powUp: 18, eyeUp: 19, spdUp: 10, fldUp: 11} },
+        { name: "Andre Dawson", team: "國民", position: "RF/CF", stats: {con: 79, pow: 83, eye: 70, spd: 73, fld: 72, conUp: 17, powUp: 19, eyeUp: 12, spdUp: 14, fldUp: 13} },
+        { name: "Gary Carter", team: "國民", position: "C", stats: {con: 77, pow: 78, eye: 76, spd: 64, fld: 78, conUp: 17, powUp: 17, eyeUp: 15, spdUp: 10, fldUp: 16} },
+        { name: "Tim Raines", team: "國民", position: "LF", stats: {con: 83, pow: 72, eye: 80, spd: 84, fld: 73, conUp: 17, powUp: 12, eyeUp: 16, spdUp: 18, fldUp: 12} },
+        { name: "Brooks Robinson", team: "金鶯", position: "3B", stats: {con: 80, pow: 74, eye: 74, spd: 65, fld: 81, conUp: 18, powUp: 15, eyeUp: 14, spdUp: 10, fldUp: 18} },
+        { name: "Cal Ripken Jr.", team: "金鶯", position: "SS", stats: {con: 78, pow: 76, eye: 79, spd: 66, fld: 81, conUp: 15, powUp: 15, eyeUp: 17, spdUp: 10, fldUp: 18} },
+        { name: "Eddie Murray", team: "金鶯", position: "1B", stats: {con: 82, pow: 77, eye: 78, spd: 65, fld: 76, conUp: 18, powUp: 15, eyeUp: 17, spdUp: 10, fldUp: 15} },
+        { name: "Dave Winfield", team: "教士", position: "RF", stats: {con: 83, pow: 81, eye: 76, spd: 68, fld: 73, conUp: 18, powUp: 17, eyeUp: 15, spdUp: 11, fldUp: 14} },
+        { name: "Tony Gwynn", team: "教士", position: "RF", stats: {con: 81, pow: 70, eye: 78, spd: 70, fld: 72, conUp: 18, powUp: 13, eyeUp: 17, spdUp: 13, fldUp: 14} },
+        { name: "Trevor Hoffman", team: "教士", position: "CP", stats: {con: 77, pow: 79, eye: 54, spd: 79, fld: 76, conUp: 17, powUp: 18, eyeUp: 6, spdUp: 18, fldUp: 16} },
+        { name: "Mike Schmidt", team: "費城人", position: "3B", stats: {con: 76, pow: 86, eye: 79, spd: 68, fld: 74, conUp: 15, powUp: 19, eyeUp: 16, spdUp: 11, fldUp: 14} },
+        { name: "Steve Carlton", team: "費城人", position: "SP", stats: {con: 77, pow: 74, eye: 80, spd: 78, fld: 73, conUp: 16, powUp: 14, eyeUp: 17, spdUp: 15, fldUp: 13} },
+        { name: "Ralph Kiner", team: "海盜", position: "LF", stats: {con: 79, pow: 87, eye: 86, spd: 62, fld: 68, conUp: 16, powUp: 20, eyeUp: 19, spdUp: 9, fldUp: 11} },
+        { name: "Roberto Clemente", team: "海盜", position: "RF", stats: {con: 86, pow: 74, eye: 72, spd: 65, fld: 79, conUp: 20, powUp: 15, eyeUp: 13, spdUp: 10, fldUp: 17} },
+        { name: "Willie Stargell", team: "海盜", position: "LF/1B", stats: {con: 80, pow: 87, eye: 75, spd: 61, fld: 66, conUp: 18, powUp: 21, eyeUp: 16, spdUp: 9, fldUp: 11} },
+        { name: "Adrian Beltre", team: "遊騎兵", position: "3B", stats: {con: 82, pow: 82, eye: 72, spd: 62, fld: 77, conUp: 19, powUp: 19, eyeUp: 13, spdUp: 9, fldUp: 15} },
+        { name: "Paul Molitor", team: "釀酒人", position: "DH/3B", stats: {con: 85, pow: 72, eye: 76, spd: 71, fld: 67, conUp: 20, powUp: 15, eyeUp: 16, spdUp: 13, fldUp: 11} },
+        { name: "Robin Yount", team: "釀酒人", position: "SS/CF", stats: {con: 82, pow: 75, eye: 75, spd: 69, fld: 69, conUp: 19, powUp: 16, eyeUp: 16, spdUp: 12, fldUp: 12} },
+        { name: "Rogers Hornsby", team: "紅雀", position: "2B", stats: {con: 94, pow: 82, eye: 83, spd: 65, fld: 66, conUp: 22, powUp: 17, eyeUp: 17, spdUp: 9, fldUp: 10} },
+        { name: "Stan Musial", team: "紅雀", position: "LF/1B", stats: {con: 81, pow: 83, eye: 83, spd: 65, fld: 73, conUp: 16, powUp: 18, eyeUp: 18, spdUp: 10, fldUp: 13} },
+        { name: "Ozzie Smith", team: "紅雀", position: "SS", stats: {con: 78, pow: 64, eye: 79, spd: 77, fld: 81, conUp: 15, powUp: 10, eyeUp: 17, spdUp: 15, fldUp: 18} },
+        { name: "Scott Rolen", team: "紅雀", position: "3B", stats: {con: 79, pow: 80, eye: 74, spd: 62, fld: 75, conUp: 18, powUp: 18, eyeUp: 15, spdUp: 9, fldUp: 15} },
+        { name: "Bruce Sutter", team: "紅雀", position: "CP", stats: {con: 77, pow: 77, eye: 53, spd: 80, fld: 71, conUp: 18, powUp: 18, eyeUp: 6, spdUp: 19, fldUp: 14} },
+        { name: "Dizzy Dean", team: "紅雀", position: "SP", stats: {con: 78, pow: 70, eye: 82, spd: 76, fld: 73, conUp: 16, powUp: 12, eyeUp: 18, spdUp: 16, fldUp: 13} },
+        { name: "Lou Brock", team: "紅雀", position: "LF", stats: {con: 77, pow: 70, eye: 72, spd: 84, fld: 63, conUp: 17, powUp: 13, eyeUp: 15, spdUp: 20, fldUp: 10} },
+        { name: "Pedro Martinez", team: "紅襪", position: "SP", stats: {con: 82, pow: 80, eye: 77, spd: 76, fld: 80, conUp: 17, powUp: 16, eyeUp: 14, spdUp: 13, fldUp: 15} },
+        { name: "Roger Clemens", team: "紅襪", position: "SP", stats: {con: 79, pow: 77, eye: 79, spd: 80, fld: 75, conUp: 16, powUp: 14, eyeUp: 16, spdUp: 15, fldUp: 13} },
+        { name: "Sammy Sosa", team: "小熊", position: "RF", stats: {con: 81, pow: 91, eye: 76, spd: 69, fld: 69, conUp: 17, powUp: 21, eyeUp: 15, spdUp: 11, fldUp: 11} },
+        { name: "Billy Williams", team: "小熊", position: "LF", stats: {con: 83, pow: 79, eye: 79, spd: 65, fld: 71, conUp: 19, powUp: 17, eyeUp: 16, spdUp: 10, fldUp: 13} },
+        { name: "Edgar Martinez", team: "水手", position: "DH/3B", stats: {con: 85, pow: 79, eye: 83, spd: 67, fld: 63, conUp: 20, powUp: 16, eyeUp: 19, spdUp: 11, fldUp: 9} },
+        { name: "Ken Griffey Jr.", team: "水手", position: "CF", stats: {con: 82, pow: 86, eye: 77, spd: 68, fld: 81, conUp: 17, powUp: 18, eyeUp: 14, spdUp: 10, fldUp: 16} },
+        { name: "Bob Feller", team: "守護者", position: "SP", stats: {con: 77, pow: 76, eye: 79, spd: 80, fld: 74, conUp: 15, powUp: 14, eyeUp: 16, spdUp: 17, fldUp: 13} },
+        { name: "Jim Thome", team: "守護者", position: "1B", stats: {con: 79, pow: 90, eye: 79, spd: 58, fld: 67, conUp: 17, powUp: 22, eyeUp: 17, spdUp: 7, fldUp: 12} },
+        { name: "Tris Speaker", team: "守護者", position: "CF", stats: {con: 90, pow: 72, eye: 82, spd: 72, fld: 66, conUp: 21, powUp: 13, eyeUp: 18, spdUp: 13, fldUp: 10} },
+        { name: "Lou Boudreau", team: "守護者", position: "SS", stats: {con: 85, pow: 71, eye: 82, spd: 64, fld: 79, conUp: 19, powUp: 12, eyeUp: 18, spdUp: 9, fldUp: 17} },
+        { name: "Satchel Paige", team: "印地安人", position: "SP", stats: {con: 80, pow: 77, eye: 78, spd: 80, fld: 76, conUp: 16, powUp: 15, eyeUp: 14, spdUp: 16, fldUp: 14} },
+        { name: "Willie Mays", team: "巨人", position: "CF", stats: {con: 80, pow: 88, eye: 76, spd: 72, fld: 72, conUp: 16, powUp: 20, eyeUp: 15, spdUp: 12, fldUp: 12} },
+        { name: "Mel Ott", team: "巨人", position: "RF", stats: {con: 83, pow: 82, eye: 85, spd: 62, fld: 71, conUp: 18, powUp: 17, eyeUp: 19, spdUp: 9, fldUp: 12} },
+        { name: "Willie McCovey", team: "巨人", position: "1B", stats: {con: 81, pow: 85, eye: 86, spd: 60, fld: 65, conUp: 17, powUp: 20, eyeUp: 20, spdUp: 8, fldUp: 10} },
+        { name: "Tom Seaver", team: "大都會", position: "SP", stats: {con: 81, pow: 78, eye: 79, spd: 79, fld: 75, conUp: 17, powUp: 14, eyeUp: 16, spdUp: 15, fldUp: 13} },
+        { name: "Dwight Gooden", team: "大都會", position: "SP", stats: {con: 79, pow: 78, eye: 78, spd: 80, fld: 77, conUp: 16, powUp: 15, eyeUp: 14, spdUp: 16, fldUp: 14} },
+        { name: "Mike Piazza", team: "大都會", position: "C", stats: {con: 80, pow: 81, eye: 75, spd: 64, fld: 70, conUp: 18, powUp: 19, eyeUp: 15, spdUp: 10, fldUp: 13} },
+        { name: "Walter Johnson", team: "雙城", position: "SP", stats: {con: 80, pow: 74, eye: 80, spd: 78, fld: 79, conUp: 16, powUp: 13, eyeUp: 16, spdUp: 14, fldUp: 16} },
+        { name: "Warren Spahn", team: "勇士", position: "SP", stats: {con: 78, pow: 72, eye: 79, spd: 73, fld: 74, conUp: 17, powUp: 13, eyeUp: 17, spdUp: 14, fldUp: 14} },
+        { name: "John Smoltz", team: "勇士", position: "SP", stats: {con: 80, pow: 76, eye: 77, spd: 79, fld: 76, conUp: 16, powUp: 15, eyeUp: 14, spdUp: 16, fldUp: 16} },
+        { name: "Tom Glavine", team: "勇士", position: "SP", stats: {con: 78, pow: 73, eye: 77, spd: 78, fld: 73, conUp: 16, powUp: 14, eyeUp: 16, spdUp: 16, fldUp: 13} },
+        { name: "Phil Niekro", team: "勇士", position: "SP", stats: {con: 79, pow: 73, eye: 77, spd: 75, fld: 80, conUp: 16, powUp: 13, eyeUp: 15, spdUp: 14, fldUp: 17} },
+        { name: "Randy Johnson", team: "響尾蛇", position: "SP", stats: {con: 80, pow: 80, eye: 78, spd: 80, fld: 77, conUp: 16, powUp: 16, eyeUp: 14, spdUp: 15, fldUp: 14} },
+        { name: "Rickey Henderson", team: "運動家", position: "LF", stats: {con: 81, pow: 77, eye: 81, spd: 87, fld: 73, conUp: 16, powUp: 13, eyeUp: 16, spdUp: 18, fldUp: 12} },
+        { name: "Roy Halladay", team: "藍鳥", position: "SP", stats: {con: 79, pow: 73, eye: 77, spd: 73, fld: 75, conUp: 16, powUp: 13, eyeUp: 16, spdUp: 14, fldUp: 15} },
+    ];
+
+    let currentSupremeList = [...supremePlayers];
+
+    function filterSupremePlayers(query) {
+        query = query.trim().toLowerCase();
+        if (!query) {
+            currentSupremeList = [...supremePlayers];
+        } else {
+            currentSupremeList = supremePlayers.filter(p =>
+                p.name.toLowerCase().includes(query) ||
+                p.team.includes(query) ||
+                p.position.toLowerCase().includes(query)
+            );
+        }
+        renderSupremeDropdown();
+        document.getElementById('supremeDropdown').style.display = 'block';
+    }
+
+    function showSupremeDropdown() {
+        filterSupremePlayers(document.getElementById('supremeSearch').value);
+    }
+
+    function renderSupremeDropdown() {
+        const dropdown = document.getElementById('supremeDropdown');
+        if (currentSupremeList.length === 0) {
+            dropdown.innerHTML = '<div class="dropdown-no-result">找不到符合的球員</div>';
+        } else {
+            dropdown.innerHTML = currentSupremeList.map(p => {
+                const idx = supremePlayers.indexOf(p);
+                const s = p.stats;
+                return `<div class="player-dropdown-item" onclick="applySupremePlayer(${idx})">
+                    <div class="dropdown-player-name">${p.name} <span style="color:#4facfe;font-weight:400;font-size:12px;">${p.team}</span></div>
+                    <div class="dropdown-player-meta">${p.position} | 接${s.con}(+${s.conUp}) 力${s.pow}(+${s.powUp}) 選${s.eye}(+${s.eyeUp}) 速${s.spd}(+${s.spdUp}) 守${s.fld}(+${s.fldUp})</div>
+                </div>`;
+            }).join('');
+        }
+    }
+
+    function applySupremePlayer(idx) {
+        const p = supremePlayers[idx];
+        const s = p.stats;
+
+        // 帶入基礎值（欄位index 6 = base）和上升量（index 5 = rise）
+        // STATS順序: 接觸=0, 力量=1, 選球=2, 速度=3, 守備=4
+        const baseVals = [s.con, s.pow, s.eye, s.spd, s.fld];
+        const riseVals = [s.conUp, s.powUp, s.eyeUp, s.spdUp, s.fldUp];
+
+        baseVals.forEach((v, si) => {
+            const el = document.getElementById(`base_${si}`);
+            if (el) el.value = v;
+        });
+        riseVals.forEach((v, si) => {
+            const el = document.getElementById(`rise_${si}`);
+            if (el) el.value = v;
+        });
+
+        // 顯示已選球員 tag
+        const tagDiv = document.getElementById('selectedPlayerTag');
+        tagDiv.innerHTML = `<span class="selected-player-tag">${p.name} (${p.team} · ${p.position})<button class="tag-clear" onclick="clearSupremePlayer()">✕</button></span>`;
+
+        // 關閉下拉、清除搜尋框
+        document.getElementById('supremeDropdown').style.display = 'none';
+        document.getElementById('supremeSearch').value = '';
+
+        // 自動切換為卓越卡種
+        setCardType('supreme');
+    }
+
+    function clearSupremePlayer() {
+        // 清除基礎值和上升量
+        [0,1,2,3,4].forEach(si => {
+            const b = document.getElementById(`base_${si}`);
+            const r = document.getElementById(`rise_${si}`);
+            if (b) b.value = 0;
+            if (r) r.value = 0;
+        });
+        document.getElementById('selectedPlayerTag').innerHTML = '';
+        calculate();
+    }
+
+    // 點擊外部關閉下拉
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.player-search-wrapper') && !e.target.closest('.player-selector-box')) {
+            document.getElementById('supremeDropdown').style.display = 'none';
+        }
+    });
+
+    const STATS = ['接觸','力量','選球','速度','守備'];
+    // 表格欄位：移除黑鑽、特訓、簽名（改到額外加成區塊）
+    const FIELDS = ['coach','enhance','rise','base'];
+    const FIELD_LABELS = ['教練','強化量','上升量','基礎值'];
+    const FIELD_ROWS = ['row-coach','row-enhance','row-rise','row-base'];
+
+    // 特訓列（唯讀，自動計算）
+    let trainingVals = [0, 0, 0, 0, 0];
+
+    // 簽名值
+    function setSignature(val) {
+        const el = document.getElementById('signatureBonus');
+        if (el) { el.value = val; }
+        calculate();
+    }
+
+    // 計算特訓分配
+    function calcTraining() {
+        // 建立候選陣列，每個元素帶 index、強化量、基礎值
+        const candidates = STATS.map((_, si) => ({
+            si,
+            enhance: getNum(`enhance_${si}`),
+            base:    getNum(`base_${si}`)
+        }));
+
+        // 排序：強化量降冪 → 基礎值降冪 → 原始index (接觸<力量<選球<速度<守備) 升冪
+        const sorted = [...candidates].sort((a, b) => {
+            if (b.enhance !== a.enhance) return b.enhance - a.enhance;
+            if (b.base !== a.base) return b.base - a.base;
+            return a.si - b.si;
+        });
+
+        const vals = [0, 0, 0, 0, 0];
+        const trainingMap = [12, 10, 4, 0, 0];
+        sorted.forEach((c, rank) => {
+            vals[c.si] = trainingMap[rank] ?? 0;
+        });
+
+        // 若強化量全為0，特訓全為0
+        if (candidates.every(c => c.enhance === 0)) {
+            return [0, 0, 0, 0, 0];
+        }
+        return vals;
+    }
+
+    // 卡種預設值
+    const CARD_PRESETS = {
+        normal:  { team: 11, coach: 0, diamond: 0, sig: 0  },
+        sign:    { team: 12, coach: 0, diamond: 0, sig: 12 },
+        peak:    { team: 12, coach: 0, diamond: 0, sig: 0  },
+        legend:  { team: 11, coach: 0, diamond: 3, sig: 0  },
+        supreme: { team: 10, coach: 0, diamond: 2, sig: 0  },
+    };
+
+    function setCardType(type) {
+        // 更新按鈕狀態
+        document.querySelectorAll('.card-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('cardBtn_' + type).classList.add('active');
+
+        const p = CARD_PRESETS[type];
+        document.getElementById('teamBonus').value    = p.team;
+        document.getElementById('diamondBonus').value = p.diamond;
+        setSignature(p.sig);
+        calculate();
+    }
+
+    // 建立表格列（欄位為列，屬性為欄）
+    // 順序：教練 → 特訓（自動）→ 強化量 → 上升量 → 基礎值
+    function buildTable() {
+        const tbody = document.getElementById('statsBody');
+
+        // 教練列
+        const trCoach = document.createElement('tr');
+        trCoach.className = 'row-coach';
+        let coachCells = `<td>教練</td>`;
+        STATS.forEach((_, si) => {
+            coachCells += `<td><input type="number" class="stat-input" id="coach_${si}" value="0" min="0" oninput="calculate()"></td>`;
+        });
+        trCoach.innerHTML = coachCells;
+        tbody.appendChild(trCoach);
+
+        // 特訓唯讀列
+        const trTraining = document.createElement('tr');
+        trTraining.className = 'row-training';
+        let trainingCells = `<td>特訓<br><span style="font-size:0.7rem;font-weight:400;color:#999;">（自動）</span></td>`;
+        STATS.forEach((_, si) => {
+            trainingCells += `<td><span class="training-display" id="training_display_${si}">0</span></td>`;
+        });
+        trTraining.innerHTML = trainingCells;
+        tbody.appendChild(trTraining);
+
+        // 其餘欄位：強化量、上升量、基礎值
+        const restFields = ['enhance','rise','base'];
+        const restLabels = ['強化量','上升量','基礎值'];
+        const restRows   = ['row-enhance','row-rise','row-base'];
+        restFields.forEach((field, fi) => {
+            const tr = document.createElement('tr');
+            tr.className = restRows[fi];
+            let cells = `<td>${restLabels[fi]}</td>`;
+            STATS.forEach((_, si) => {
+                cells += `<td><input type="number" class="stat-input" id="${field}_${si}" value="0" min="0" oninput="calculate()"></td>`;
+            });
+            tr.innerHTML = cells;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // 建立結果卡
+    function buildResults() {
+        const grid = document.getElementById('resultGrid');
+        STATS.forEach((stat, si) => {
+            const card = document.createElement('div');
+            card.className = 'result-card';
+            card.innerHTML = `<h3>${stat}</h3><p class="result-value" id="res_${si}">0</p>`;
+            grid.appendChild(card);
+        });
+        const total = document.createElement('div');
+        total.className = 'result-total';
+        total.innerHTML = `<div class="total-label">五項總和</div><div class="total-value" id="res_total">0</div>`;
+        grid.appendChild(total);
+    }
+
+    function clampAndCalc(el, min, max) {
+        let v = parseInt(el.value) || 0;
+        if (v < min) v = min;
+        if (v > max) v = max;
+        el.value = v;
+        calculate();
+    }
+
+    function getNum(id) {
+        return parseInt(document.getElementById(id)?.value) || 0;
+    }
+
+    function calculate() {
+        const teamBonus    = getNum('teamBonus');
+        const coachBonus   = getNum('coachBonus');
+        const diamondBonus   = getNum('diamondBonus');
+        const signatureBonus = getNum('signatureBonus');
+        const training     = calcTraining();
+        let grandTotal = 0;
+
+        // 更新特訓顯示
+        STATS.forEach((_, si) => {
+            const el = document.getElementById(`training_display_${si}`);
+            if (el) el.textContent = training[si];
+        });
+
+        STATS.forEach((stat, si) => {
+            const coach   = getNum(`coach_${si}`);
+            const enhance = getNum(`enhance_${si}`);
+            const rise    = getNum(`rise_${si}`);
+            const base    = getNum(`base_${si}`);
+
+            const total = base + rise + enhance + training[si] + signatureBonus + diamondBonus + coach + teamBonus + coachBonus;
+            document.getElementById(`res_${si}`).textContent = total;
+            grandTotal += total;
+        });
+
+        document.getElementById('res_total').textContent = grandTotal;
+    }
+
+    // 初始化
+    buildTable();
+    buildResults();
+    setCardType('sign');
+</script>
+</body>
+</html>
