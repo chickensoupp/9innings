@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>9INNINGS 技能圖鑑</title>
+  <link rel="stylesheet" href="navigation.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+
+    body {
+      font-family: 'Noto Sans TC', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+
+    .page-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.95);
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: white;
+      text-align: center;
+      padding: 30px;
+    }
+    .header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin: 0;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .header p {
+      margin-top: 6px;
+      font-size: 0.95rem;
+      opacity: 0.9;
+    }
+
+    /* Controls */
+    .controls-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      padding: 18px 24px;
+      background: #f8fbff;
+      border-bottom: 1px solid rgba(79,172,254,0.15);
+    }
+
+    .search-wrap {
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+    }
+    .search-wrap svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #aac;
+      width: 15px;
+      height: 15px;
+      pointer-events: none;
+    }
+    #search {
+      width: 100%;
+      border: 2px solid #e1e5e9;
+      border-radius: 10px;
+      padding: 10px 14px 10px 40px;
+      font-size: 15px;
+      font-family: 'Noto Sans TC', sans-serif;
+      color: #333;
+      background: white;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    #search:focus {
+      border-color: #4facfe;
+      box-shadow: 0 0 0 3px rgba(79,172,254,0.15);
+    }
+    #search::placeholder { color: #bbb; }
+
+    .vdivider { width: 1px; height: 30px; background: #e1e5e9; flex-shrink: 0; }
+
+    .filter-group { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .filter-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 2px solid #e1e5e9;
+      background: white;
+      color: #888;
+      font-size: 14px;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+      white-space: nowrap;
+    }
+    .filter-btn:hover { border-color: #4facfe; color: #4facfe; }
+    .filter-btn.act-all    { background: linear-gradient(135deg, #4facfe, #00f2fe); border-color: #4facfe; color: white; box-shadow: 0 2px 8px rgba(79,172,254,0.35); }
+    .filter-btn.act-legend { background: linear-gradient(135deg, #f6d365, #fda085); border-color: #f6a623; color: white; box-shadow: 0 2px 8px rgba(246,166,35,0.35); }
+    .filter-btn.act-gold   { background: linear-gradient(135deg, #f7971e, #ffd200); border-color: #f7971e; color: white; box-shadow: 0 2px 8px rgba(247,151,30,0.35); }
+    .filter-btn.act-silver { background: linear-gradient(135deg, #8e9eab, #b8ccd4); border-color: #8e9eab; color: white; box-shadow: 0 2px 8px rgba(142,158,171,0.35); }
+    .filter-btn.act-bronze { background: linear-gradient(135deg, #cd7f32, #e8a96a); border-color: #cd7f32; color: white; box-shadow: 0 2px 8px rgba(205,127,50,0.35); }
+    .filter-btn.act-pitcher { background: linear-gradient(135deg, #4facfe, #00f2fe); border-color: #4facfe; color: white; box-shadow: 0 2px 8px rgba(79,172,254,0.35); }
+    .filter-btn.act-batter  { background: linear-gradient(135deg, #f77062, #fe5196); border-color: #f77062; color: white; box-shadow: 0 2px 8px rgba(247,112,98,0.35); }
+
+    /* Stats bar */
+    .stats-bar {
+      padding: 10px 28px;
+      font-size: 14px;
+      color: #888;
+      background: #f0f7ff;
+      border-bottom: 1px solid rgba(79,172,254,0.1);
+    }
+    #count-display { color: #4facfe; font-weight: 700; }
+
+    /* Grid - 桌面最多3欄 */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      padding: 24px 28px 36px;
+    }
+
+    /* Card */
+    .skill-card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+      border: 1px solid rgba(79,172,254,0.12);
+      overflow: hidden;
+      transition: transform 0.18s, box-shadow 0.18s;
+      animation: fadeInUp 0.3s ease both;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .skill-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.13);
+    }
+
+    /* Grade stripe */
+    .card-stripe { height: 5px; }
+    .legend .card-stripe { background: linear-gradient(90deg, #f6d365, #fda085); }
+    .gold   .card-stripe { background: linear-gradient(90deg, #f7971e, #ffd200); }
+    .silver .card-stripe { background: linear-gradient(90deg, #8e9eab, #c8dde8); }
+    .bronze .card-stripe { background: linear-gradient(90deg, #cd7f32, #e8b06a); }
+
+    /* Card header */
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 16px 18px 13px;
+    }
+    .grade-badge {
+      display: flex; align-items: center; justify-content: center;
+      width: 44px; height: 44px; border-radius: 11px;
+      font-size: 17px; font-weight: 700; flex-shrink: 0;
+    }
+    .legend .grade-badge { background: linear-gradient(135deg, #202020, #645a57); color: white; box-shadow: 0 2px 10px rgba(246,163,35,0.4); }
+    .gold   .grade-badge { background: linear-gradient(135deg, #f7971e, #ffd200); color: white; box-shadow: 0 2px 10px rgba(247,151,30,0.4); }
+    .silver .grade-badge { background: linear-gradient(135deg, #8e9eab, #b8ccd4); color: white; box-shadow: 0 2px 10px rgba(142,158,171,0.4); }
+    .bronze .grade-badge { background: linear-gradient(135deg, #cd7f32, #e8a96a); color: white; box-shadow: 0 2px 10px rgba(205,127,50,0.4); }
+
+    .card-title-wrap { flex: 1; min-width: 0; }
+    .skill-name-zh { font-size: 19px; font-weight: 700; color: #2c3e50; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .skill-name-en { font-size: 12px; color: #aaa; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .type-tag {
+      display: inline-flex; align-items: center; gap: 3px;
+      font-size: 12px; font-weight: 600; padding: 3px 9px;
+      border-radius: 6px; margin-top: 5px;
+    }
+    .type-tag.pitcher { background: #e8f4ff; color: #4facfe; }
+    .type-tag.batter  { background: #fff0f0; color: #f77062; }
+
+    /* Card body */
+    .card-body { border-top: 1px solid #f0f0f0; padding: 14px 18px 18px; }
+
+    .card-desc {
+      font-size: 18px; color: #000000; line-height: 1.6;
+      margin-bottom: 13px;
+    }
+    .card-trigger {
+      font-size: 12px; color: #b8860b;
+      background: #fffbea; border: 1px solid #ffe58f;
+      border-radius: 7px; padding: 7px 11px; margin-bottom: 13px; line-height: 1.5;
+    }
+    .card-trigger::before { content: "⚡ 觸發條件："; font-weight: 700; }
+
+    /* Tabs */
+    .target-tabs { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+    .target-tab {
+      padding: 6px 14px; border-radius: 8px;
+      border: 2px solid #e1e5e9; background: white;
+      font-size: 13px; color: #888;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 600; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    }
+    .target-tab:hover { border-color: #4facfe; color: #4facfe; }
+    .target-tab.active {
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      border-color: #4facfe; color: white;
+      box-shadow: 0 2px 8px rgba(79,172,254,0.3);
+    }
+    .target-tab.trigger-tab.active {
+      background: linear-gradient(135deg, #f6d365, #fda085);
+      border-color: #f6a623;
+      box-shadow: 0 2px 8px rgba(246,163,35,0.3);
+    }
+
+    /* Table */
+    .stat-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .stat-table th {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: white; padding: 7px 8px;
+      font-weight: 600; text-align: center; font-size: 12px;
+    }
+    .stat-table th:first-child { text-align: left; }
+    .stat-table td { padding: 6px 8px; text-align: center; border-bottom: 1px solid #f5f5f5; color: #555; font-weight: 500; font-size: 13px; }
+    .stat-table td:first-child { text-align: left; color: #4facfe; font-weight: 700; font-size: 12px; white-space: nowrap; background: #f8fbff; }
+    .stat-table tr:last-child td { border-bottom: none; }
+    .stat-table tr:hover td { background: #f0f7ff; }
+    .stat-table tr:hover td:first-child { background: #e8f4ff; }
+    .pos  { color: #27ae60; font-weight: 700; }
+    .neg  { color: #e74c3c; font-weight: 700; }
+    .zero { color: #ccc; }
+
+    .target-label { font-size: 13px; color: #aaa; margin-bottom: 9px; }
+    .no-data { text-align: center; padding: 20px 0; color: #bbb; font-size: 14px; }
+
+    /* Empty state */
+    .empty-state { grid-column: 1/-1; text-align: center; padding: 70px 20px; color: #aaa; }
+    .empty-state .big-icon { font-size: 52px; margin-bottom: 16px; }
+    .empty-state h3 { font-size: 20px; font-weight: 700; color: #888; margin-bottom: 8px; }
+
+    @media (max-width: 1100px) {
+      .skills-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 680px) {
+      body { padding: 12px; }
+      .controls-bar { padding: 12px 14px; }
+      .skills-grid { padding: 14px; gap: 14px; grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-container">
+  <div class="header">
+    <h1>⚡ 技能圖鑑</h1>
+    <p>9INNINGS 2025 全技能數值一覽</p>
+  </div>
+
+  <div class="controls-bar">
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="search" placeholder="搜尋技能名稱（中文或英文）...">
+    </div>
+    <div class="vdivider"></div>
+    <div class="filter-group" id="type-filters">
+      <button class="filter-btn act-all" data-type="all">全部</button>
+      <button class="filter-btn" data-type="pitcher">⚾ 投手</button>
+      <button class="filter-btn" data-type="batter">🏏 打者</button>
+    </div>
+    <div class="vdivider"></div>
+    <div class="filter-group" id="grade-filters">
+      <button class="filter-btn act-all" data-grade="all">全部</button>
+      <button class="filter-btn" data-grade="legend">傳說</button>
+      <button class="filter-btn" data-grade="gold">金</button>
+      <button class="filter-btn" data-grade="silver">銀</button>
+      <button class="filter-btn" data-grade="bronze">銅</button>
+    </div>
+  </div>
+
+  <div class="stats-bar">共 <span id="count-display">0</span> 個技能</div>
+  <div class="skills-grid" id="skills-grid"></div>
+</div>
+
+<script src="navigation.js"></script>
+<script>
+const SKILL_DATA = [
+    {
+        "name": "壞球打者",
+        "name_en": "Bad Ball Hitter ",
+        "type": "batter",
+        "grade": "legend",
+        "description": "增加接觸、力量,並減少對方投手的控球和變化。增加每個打席首球擊出安打的機率。",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [3,3,0,0,0],"2": [4,4,0,0,0],"3": [5,5,0,0,0],"4": [6,6,0,0,0],"5": [7,7,0,0,0],"6": [9,9,0,0,0]}
+            },
+            "opponent": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [-3,0,0,0,-3],"2": [-4,0,0,0,-4],"3": [-5,0,0,0,-5],"4": [-6,0,0,0,-6],"5": [-7,0,0,0,-7],"6": [-9,0,0,0,-9]}
+            }
+        }
+    },
+    {
+        "name": "打者默契",
+        "name_en": "Batter's Chemistry ",
+        "type": "batter",
+        "grade": "legend",
+        "description": "登錄至先發陣容時,增加隊內站上打擊區的打者的所有能力值,且進入得點圈時,增加擊出安打的機率。重複套用相同技能時,只會套用等級較高的技能。",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [2,2,2,2,2],"2": [3,3,3,3,3],"3": [4,4,4,4,4],"4": [5,5,5,5,5],"5": [6,6,6,6,6],"6": [7,7,7,7,7]}
+            },
+            "teammate": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [2,2,2,2,2],"2": [3,3,3,3,3],"3": [4,4,4,4,4],"4": [5,5,5,5,5],"5": [6,6,6,6,6],"6": [7,7,7,7,7]}
+            },
+            "trigger_owner": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [3,3,3,3,3],"2": [4,4,4,4,4],"3": [5,5,5,5,5],"4": [6,6,6,6,6],"5": [7,7,7,7,7],"6": [8,8,8,8,8]}
+            },
+            "trigger_teammate": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [3,3,3,3,3],"2": [4,4,4,4,4],"3": [5,5,5,5,5],"4": [6,6,6,6,6],"5": [7,7,7,7,7],"6": [8,8,8,8,8]}
+            }
+        }
+    },
+    {
+        "name": "打者洞察力",
+        "name_en": "Batter's Insight",
+        "type": "batter",
+        "grade": "legend",
+        "description": "增加選球,並使對方投手炫金級以下的技能降低等級。降低的技能階級越低,降低等級效果越強。(不會低於LvV.1。)",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [0,0,5,0,0],"2": [0,0,8,0,0],"3": [0,0,11,0,0],"4": [0,0,14,0,0],"5": [0,0,17,0,0],"6": [0,0,20,0,0]}
+            }
+        }
+    },
+    {
+        "name": "天生巨星",
+        "name_en": "Born To Be  Star ",
+        "type": "batter",
+        "grade": "legend",
+        "description": "增加所有和能力值。以下情況將額外增加特定能力值,且會根據情況同時套用。<br>1)存在得分圈跑者:增加接觸<br>2)2人出局情況:增加力量<br>3)7局以後同分或落後時:增加接觸、力量、選球",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [2,2,2,2,2],"2": [4,4,4,4,4],"3": [5,5,5,5,5],"4": [6,6,6,6,6],"5": [7,7,7,7,7],"6": [9,9,9,9,9]}
+            },
+            "trigger_owner": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [6,6,4,2,2],"2": [10,10,6,4,4],"3": [12,12,7,5,5],"4": [16,16,10,6,6],"5": [18,18,11,7,7],"6": [22,22,13,9,9]}
+            }
+        }
+    },
+    {
+        "name": "機會製造者",
+        "name_en": "Chance Maker",
+        "type": "batter",
+        "grade": "legend",
+        "description": "增加接觸、選球、速度。上墨時,根據上墨次數(最多2次),增加後續打者的接觸、力量。",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [2,0,2,2,0],"2": [4,0,4,4,0],"3": [6,0,6,6,0],"4": [8,0,8,8,0],"5": [10,0,10,10,0],"6": [12,0,12,12,0]}
+            },
+            "trigger_teammate": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [1,1,0,0,0],"2": [2,2,0,0,0],"3": [3,3,0,0,0],"4": [4,4,0,0,0],"5": [5,5,0,0,0],"6": [6,6,0,0,0]}
+            }
+        }
+    },
+    {
+        "name": "精準打擊",
+        "name_en": "Contact Master",
+        "type": "batter",
+        "grade": "legend",
+        "description": "根據接觸的基本能力值及技能等級,增加打者的接觸。",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [0,0,0,0,0],"2": [0,0,0,0,0],"3": [0,0,0,0,0],"4": [0,0,0,0,0],"5": [0,0,0,0,0],"6": [0,0,0,0,0]}
+            }
+        }
+    },
+    {
+        "name": "最強打者",
+        "name_en": "Hard Hitter ",
+        "type": "batter",
+        "grade": "legend",
+        "description": "長打率的增加與基本力量能力值成正比。在完美打擊時機擊球時,獲得增加長打率的追加效果。",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "先鋒",
+        "name_en": "Pioneer",
+        "type": "batter",
+        "grade": "legend",
+        "description": "增加接觸、力量、選球能力值。隊伍的安打數越少,擊出安打的機率越高。",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [1,1,1,0,0],"2": [2,2,2,0,0],"3": [4,4,4,0,0],"4": [6,6,6,0,0],"5": [8,8,8,0,0],"6": [10,10,10,0,0]}
+            },
+            "trigger_owner": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [2,2,2,0,0],"2": [4,4,4,0,0],"3": [6,6,6,0,0],"4": [8,8,8,0,0],"5": [10,10,10,0,0],"6": [12,12,12,0,0]}
+            }
+        }
+    },
+    {
+        "name": "老手",
+        "name_en": "Strategist",
+        "type": "batter",
+        "grade": "legend",
+        "description": "將根據跑者狀況獲得不同效果。<br>無跑者時,將提升全墨打機率,<br>當只有一壘跑者時,提升至1壘的跑壘速度。<br>此外。,將根據跑者數量獲得減少好球帶邊緣/好球帶以外投球的揮空機率,並提升安打機率的追加效果。",
+        "trigger": null,
+        "stats": {}
+    },
+    //  金 Gold
+    {
+        "name": "五拍子球員",
+        "name_en": "5-Tool Player",
+        "type": "batter",
+        "grade": "gold",
+        "description": "以基本能力值、階級上升量、強化量的總和最低的能力值為基準,根據技能等級,增加所有能力值。",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [1,1,1,1,1],"2": [2,2,2,2,2],"3": [3,3,3,3,3],"4": [4,4,4,4,4],"5": [5,5,5,5,5],"6": [6,6,6,6,6],"7": [7,7,7,7,7],"8": [8,8,8,8,8]}
+            },
+            "trigger_owner": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [2,2,2,2,2],"2": [3,3,3,3,3],"3": [4,4,4,4,4],"4": [5,5,5,5,5],"5": [6,6,6,6,6],"6": [7,7,7,7,7],"7": [8,8,8,8,8],"8": [9,9,9,9,9]}
+            }
+        }
+    },
+    {
+        "name": "王牌殺手",
+        "name_en": "Ace Specialist",
+        "type": "batter",
+        "grade": "gold",
+        "description": "我方打者的接觸、力量、選球、速度平均低於或等於對方投手的控球、球威、直球、變化平均時,增加安打機率。",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "自走砲",
+        "name_en": "Barrel It Up ",
+        "type": "batter",
+        "grade": "gold",
+        "description": "增加打者的安打機率。接觸、速度的總和達210以上,且速度為接觸的65%以上時,額外增加安打機率。",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "打擊機器",
+        "name_en": "Batting Machine ",
+        "type": "batter",
+        "grade": "gold",
+        "description": "打出正確的打擊機率增加。",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "超能神話",
+        "name_en": "Charisma",
+        "type": "batter",
+        "grade": "gold",
+        "description": "對方投手的所有能力值下降",
+        "trigger": null,
+        "stats": {
+            "opponent": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [-2,-2,-2,-2,-2],"2": [-3,-3,-3,-3,-3],"3": [-4,-4,-4,-4,-4],"4": [-5,-5,-5,-5,-5],"5": [-6,-6,-6,-6,-6],"6": [-8,-8,-8,-8,-8],"7": [-10,-10,-10,-10,-10],"8": [-12,-12,-12,-12,-12]}
+            }
+        }
+    },
+    {
+        "name": "雷射肩",
+        "name_en": "Laser Beam",
+        "type": "batter",
+        "grade": "gold",
+        "description": "傳球能力快速提升",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "盜壘天王",
+        "name_en": "Master Base Thief ",
+        "type": "batter",
+        "grade": "gold",
+        "description": "根據速度的基本能力值及技能等級,減少對方投手的控球及變化。在壘上時,僅套用70%效果,同一技能發動時,只會套用最高效果的技能。",
+        "trigger": null,
+        "stats": {
+            "opponent": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [-1,0,0,0,-1],"2": [-1,0,0,0,-1],"3": [-1,0,0,0,-1],"4": [-2,0,0,0,-2],"5": [-2,0,0,0,-2],"6": [-2,0,0,0,-2],"7": [-3,0,0,0,-3],"8": [-3,0,0,0,-3]}
+            }
+        }
+    },
+    {
+        "name": "預知能力",
+        "name_en": "Prediction",
+        "type": "batter",
+        "grade": "gold",
+        "description": "根據選球的基本能力值及技能等級,有一定的機率可預測到投球的軌跡。",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "廣角打者",
+        "name_en": "Spray Hitter",
+        "type": "batter",
+        "grade": "gold",
+        "description": "一般陣容接觸能力值越高,將增加擊出鎖定防守漏洞的平飛球的發生機率。",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "超級強打",
+        "name_en": "Slugger Instinct",
+        "type": "batter",
+        "grade": "gold",
+        "description": "以一般陣容能力值為基準,力量越高,將增加全壘打及長打率。但當接觸或選球比力量低超過20點時,將分別遞增好球帶邊緣/好球帶以外投球的揮空機率。當接觸及選球兩者皆低超過20點時,將疊加揮空機率。",
+        "trigger": null,
+        "stats": null,
+    },
+    {
+        "name": "萬眾矚目",
+        "name_en": "Spotlight",
+        "type": "batter",
+        "grade": "gold",
+        "description": "增加長打率,並可誘使對方投手失投。6局起,處於同分或落後時,可額外增加長打率。",
+        "trigger": null,
+        "stats": null,
+    },
+    {
+        "name": "強化優點",
+        "name_en": "Strengthen the Strength ",
+        "type": "batter",
+        "grade": "gold",
+        "description": "增加力量、選球。面對反手投手時獲得增加長打率、降低三振率的追加效果。",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [0,3,3,0,0],"2": [0,5,5,0,0],"3": [0,7,7,0,0],"4": [0,9,9,0,0],"5": [0,11,11,0,0],"6": [0,13,13,0,0],"7": [0,15,15,0,0],"8": [0,17,17,0,0]}
+            }
+        }
+    },
+    {
+        "name": "超級輔助",
+        "name_en": "Super Sub",
+        "type": "batter",
+        "grade": "gold",
+        "description": "在同分或落後的情況下以代打出戰時,增加第一個打席的安打率。",
+        "trigger": null,
+        "stats": null
+    },
+    // 銀 Silver
+    {
+        "name": "忍術",
+        "name_en": "Endurance",
+        "type": "batter",
+        "grade": "silver",
+        "description": "現在打席上的投手,投球數越多,打者安打機率增加",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "筋疲力盡",
+        "name_en": "Exhaustion",
+        "type": "batter",
+        "grade": "silver",
+        "description": "安打或上壘時,對方投手的體力可額外減少",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "揮大棒打者",
+        "name_en": "Full Swing Hitter ",
+        "type": "batter",
+        "grade": "silver",
+        "description": "增加力量數值。當墨上有跑者的情況下出現長打時,額外減少投手的體力。",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [0,2,0,0,0],"2": [0,4,0,0,0],"3": [0,6,0,0,0],"4": [0,8,0,0,0],"5": [0,10,0,0,0],"6": [0,12,0,0,0]}
+            }
+        }
+    },
+    {
+        "name": "巨砲本能",
+        "name_en": "Heavy Hitter ",
+        "type": "batter",
+        "grade": "silver",
+        "description": "長打率增加",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "逆轉的力量",
+        "name_en": "It Ain't Over Yet",
+        "type": "batter",
+        "grade": "silver",
+        "description": "球隊比賽落後時,球員的接觸、力量和選球能力增加",
+        "trigger": null,
+        "stats": {
+            "trigger_owner": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [2,2,2,0,0],"2": [4,4,4,0,0],"3": [6,6,6,0,0],"4": [8,8,8,0,0],"5": [10,10,10,0,0],"6": [12,12,12,0,0]}
+            }
+        }
+    },
+    {
+        "name": "下盤鍛鍊",
+        "name_en": "Leg Day",
+        "type": "batter",
+        "grade": "silver",
+        "description": "速度和盜壘成功率增加",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [0,0,0,2,0],"2": [0,0,0,4,0],"3": [0,0,0,6,0],"4": [0,0,0,8,0],"5": [0,0,0,10,0],"6": [0,0,0,12,0]}
+            }
+        }
+    },
+    {
+        "name": "克服弱點",
+        "name_en": "Overcome Weakness",
+        "type": "batter",
+        "grade": "silver",
+        "description": "提升最低的能力值。最低能力值有兩項以上時,增加最左邊的能力值。",
+        "trigger": null,
+        "stats": null,
+    },
+    {
+        "name": "精密打擊",
+        "name_en": "Pinpoint Strike",
+        "type": "batter",
+        "grade": "silver",
+        "description": "增加接觸數值。當墨上有跑者且擊出1壘安打時,額外減少投手的體力。",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [2,0,0,0,0],"2": [4,0,0,0,0],"3": [6,0,0,0,0],"4": [8,0,0,0,0],"5": [10,0,0,0,0],"6": [12,0,0,0,0]}
+            }
+        }
+    },
+    {
+        "name": "動物本能",
+        "name_en": "Flashing the Leather",
+        "type": "batter",
+        "grade": "silver",
+        "description": "增加守備及速度。有一定機率以動物本能接到球。",
+        "trigger": null,
+        "stats": {
+            "trigger_owner": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [0,0,0,3,3],"2": [0,0,0,4,4],"3": [0,0,0,5,5],"4": [0,0,0,6,6],"5": [0,0,0,7,7],"6": [0,0,0,9,9]},
+            }
+        }
+    },
+    {
+        "name": "信賴",
+        "name_en": "Reliable",
+        "type": "batter",
+        "grade": "silver",
+        "description": "增加接觸,上加時,增加後續打者的力量。",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [3,0,0,0,0],"2": [4,0,0,0,0],"3": [5,0,0,0,0],"4": [6,0,0,0,0],"5": [8,0,0,0,0],"6": [10,0,0,0,0]}
+            },
+            "trigger_teammate": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [0,3,0,0,0],"2": [0,4,0,0,0],"3": [0,5,0,0,0],"4": [0,6,0,0,0],"5": [0,8,0,0,0],"6": [0,10,0,0,0]}
+            }
+        }
+    },
+    {
+        "name": "開路先鋒",
+        "name_en": "Table Setter",
+        "type": "batter",
+        "grade": "silver",
+        "description": "還上沒有跑者時,增加選球數值。",
+        "trigger": null,
+        "stats": {
+            "trigger_owner": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [0,0,3,0,0],"2": [0,0,6,0,0],"3": [0,0,9,0,0],"4": [0,0,12,0,0],"5": [0,0,15,0,0],"6": [0,0,18,0,0]}
+            }
+        }
+    },
+    {
+        "name": "勝負天性",
+        "name_en": "Professional",
+        "type": "batter",
+        "grade": "silver",
+        "description": "當球隊領先時會提升球員的接觸、力量和選球。",
+        "trigger": null,
+        "stats": {
+            "trigger_owner": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [2,2,2,0,0],"2": [4,4,4,0,0],"3": [6,6,6,0,0],"4": [8,8,8,0,0],"5": [10,10,10,0,0],"6": [12,12,12,0,0]}
+            }
+        }
+    },
+    {
+        "name": "訓練上癮",
+        "name_en": "Training Junkie",
+        "type": "batter",
+        "grade": "silver",
+        "description": "打者的力量、接觸和選球值增加",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [2,2,2,0,0],"2": [3,3,3,0,0],"3": [4,4,4,0,0],"4": [5,5,5,0,0],"5": [6,6,6,0,0],"6": [8,8,8,0,0]}
+            }
+        }
+    },
+    //  銅 Bronze
+    {
+        "name": "集中力",
+        "name_en": "Concentration",
+        "type": "batter",
+        "grade": "bronze",
+        "description": "打出界外球的機率減少",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "直球殺手",
+        "name_en": "Fastball Crusher",
+        "type": "batter",
+        "grade": "bronze",
+        "description": "投手投出直球時,安打機率增加",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "守備將軍",
+        "name_en": "Fielding Specialist",
+        "type": "batter",
+        "grade": "bronze",
+        "description": "提升守備",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [0,0,0,0,2],"2": [0,0,0,0,3],"3": [0,0,0,0,4],"4": [0,0,0,0,5],"5": [0,0,0,0,6],"6": [0,0,0,0,8]}
+            }
+        }
+    },
+    {
+        "name": "初球攻略",
+        "name_en": "Going For The First Pitch",
+        "type": "batter",
+        "grade": "bronze",
+        "description": "每個打席第一球的安打機率增加",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "鷹眼",
+        "name_en": "Hawk Eye",
+        "type": "batter",
+        "grade": "bronze",
+        "description": "安打機率增加",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "正面對決",
+        "name_en": "Head-On",
+        "type": "batter",
+        "grade": "bronze",
+        "description": "對上的投手投出直球的機率增加",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "左腕殺手",
+        "name_en": "Lefty Specialist",
+        "type": "batter",
+        "grade": "bronze",
+        "description": "對上左投手時,安打機率增加",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "代打專家",
+        "name_en": "Pinch Hit Specialist",
+        "type": "batter",
+        "grade": "bronze",
+        "description": "增加代打效果",
+        "trigger": null,
+        "stats": {
+            "trigger_owner": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [2,2,2,2,2],"2": [3,3,3,3,3],"3": [4,4,4,4,4],"4": [5,5,5,5,5],"5": [6,6,6,6,6],"6": [8,8,8,8,8]}
+            }
+        }
+    },
+    {
+        "name": "拉打",
+        "name_en": "Pull Hit",
+        "type": "batter",
+        "grade": "bronze",
+        "description": "拉打內側球時,增加長打率",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "推打",
+        "name_en": "Push Hit",
+        "type": "batter",
+        "grade": "bronze",
+        "description": "推打外側球時,增加長打率",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "打點機器",
+        "name_en": "RBI Machine",
+        "type": "batter",
+        "grade": "bronze",
+        "description": "在得點圈時,增加安打機率。",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "右腕殺手",
+        "name_en": "Righty Specialist",
+        "type": "batter",
+        "grade": "bronze",
+        "description": "對上右投手時,安打機率增加",
+        "trigger": null,
+        "stats": null
+    },
+    // ==================== 投手 Pitcher ====================
+    //  傳說 Legend
+    {
+        "name": "牛棚日",
+        "name_en": "Bullpen Day",
+        "type": "pitcher",
+        "grade": "legend",
+        "description": "增加控球、球威、直球、變化。中繼、終結者投手將自首次登板後,直到第3局結束時為止,額外增加對應能力值。",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [2,2,0,2,2],"2": [4,4,0,4,4],"3": [6,6,0,6,6],"4": [8,8,0,8,8],"5": [10,10,0,10,10],"6": [12,12,0,12,12]}
+            },
+            "trigger_owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [3,3,0,3,3],"2": [5,5,0,5,5],"3": [7,7,0,7,7],"4": [9,9,0,9,9],"5": [11,11,0,11,11],"6": [13,13,0,13,13]}
+            }
+        }
+    },
+    {
+        "name": "精準控球",
+        "name_en": "Control Master",
+        "type": "pitcher",
+        "grade": "legend",
+        "description": "增加控球、變化,並減少對方打者的接觸、力量。",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [3,0,0,0,3],"2": [4,0,0,0,4],"3": [5,0,0,0,5],"4": [6,0,0,0,6],"5": [8,0,0,0,8],"6": [10,0,0,0,10]}
+            },
+            "opponent": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [-3,-3,0,0,0],"2": [-4,-4,0,0,0],"3": [-5,-5,0,0,0],"4": [-6,-6,0,0,0],"5": [-8,-8,0,0,0],"6": [-10,-10,0,0,0]}
+            },
+            "trigger_owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [0,0,0,0,0],"2": [0,0,0,0,0],"3": [0,0,0,0,0],"4": [0,0,0,0,0],"5": [0,0,0,0,0],"6": [12,0,0,0,12]}
+            },
+            "trigger_opponent": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [0,0,0,0,0],"2": [0,0,0,0,0],"3": [0,0,0,0,0],"4": [0,0,0,0,0],"5": [0,0,0,0,0],"6": [-12,-12,0,0,0]}
+            }
+        }
+    },
+    {
+        "name": "合力投球",
+        "name_en": "Cooperative Pitching ",
+        "type": "pitcher",
+        "grade": "legend",
+        "description": "提高控球、球威、直球、變化。下一位上場投手對上曾在比賽中成功上壘的打者時,增加貧打的機率。",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [2,2,0,2,2],"2": [4,4,0,4,4],"3": [6,6,0,6,6],"4": [8,8,0,8,8],"5": [10,10,0,10,10],"6": [12,12,0,12,12]}
+            },
+            "trigger_teammate": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [2,2,0,2,2],"2": [4,4,0,4,4],"3": [6,6,0,6,6],"4": [8,8,0,8,8],"5": [10,10,0,10,10],"6": [12,12,0,12,12]}
+            }
+        }
+    },
+    {
+        "name": "速球型投手",
+        "name_en": "Fireballer",
+        "type": "pitcher",
+        "grade": "legend",
+        "description": "增加球威、直球,並減少對方打者的力量、選球。",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [0,3,0,3,0],"2": [0,4,0,4,0],"3": [0,5,0,5,0],"4": [0,6,0,6,0],"5": [0,8,0,8,0],"6": [0,10,0,10,0]}
+            },
+            "opponent": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [0,-3,-3,0,0],"2": [0,-4,-4,0,0],"3": [0,-5,-5,0,0],"4": [0,-6,-6,0,0],"5": [0,-8,-8,0,0],"6": [0,-10,-10,0,0]}
+            },
+            "trigger_owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [0,0,0,0,0],"2": [0,0,0,0,0],"3": [0,0,0,0,0],"4": [0,0,0,0,0],"5": [0,0,0,0,0],"6": [0,12,0,12,0]}
+            },
+            "trigger_opponent": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [0,0,0,0,0],"2": [0,0,0,0,0],"3": [0,0,0,0,0],"4": [0,0,0,0,0],"5": [0,0,0,0,0],"6": [0,-12,-12,0,0]}
+            }
+        }
+    },
+    {
+        "name": "完美先生",
+        "name_en": "Mister Perfect ",
+        "type": "pitcher",
+        "grade": "legend",
+        "description": "以一般陣容能力值中最低的能力值為基準,增加所有能力值。",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [0,0,0,0,0],"2": [0,0,0,0,0],"3": [0,0,0,0,0],"4": [0,0,0,0,0],"5": [0,0,0,0,0],"6": [0,0,0,0,0]}
+            }
+        }
+    },
+    {
+        "name": "投手默契",
+        "name_en": "Pitcher's Chemistry ",
+        "type": "pitcher",
+        "grade": "legend",
+        "description": "登錄至先發陣容時,增加隊內投手的所有能力值和投球的準確度。重複套用相同技能時,只會套用等級較高的技能。",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [1,1,1,1,1],"2": [2,2,2,2,2],"3": [3,3,3,3,3],"4": [4,4,4,4,4],"5": [5,5,5,5,5],"6": [6,6,6,6,6]}
+            },
+            "teammate": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [1,1,1,1,1],"2": [2,2,2,2,2],"3": [3,3,3,3,3],"4": [4,4,4,4,4],"5": [5,5,5,5,5],"6": [6,6,6,6,6]}
+            },
+            "trigger_owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [3,3,3,3,3],"2": [4,4,4,4,4],"3": [5,5,5,5,5],"4": [6,6,6,6,6],"5": [7,7,7,7,7],"6": [8,8,8,8,8]}
+            },
+            "trigger_teammate": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [3,3,3,3,3],"2": [4,4,4,4,4],"3": [5,5,5,5,5],"4": [6,6,6,6,6],"5": [7,7,7,7,7],"6": [8,8,8,8,8]}
+            }
+        }
+    },
+    {
+        "name": "投手洞察力",
+        "name_en": "Pitcher's Insight",
+        "type": "pitcher",
+        "grade": "legend",
+        "description": "減少對方打者的選球,並弱化對方打者所有炫金級以下的技能。降低的技能階級越低,降低等級效果越強。(不會低於LvV.1。)",
+        "trigger": null,
+        "stats": {
+            "opponent": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [0,0,-5,0,0],"2": [0,0,-8,0,0],"3": [0,0,-11,0,0],"4": [0,0,-14,0,0],"5": [0,0,-17,0,0],"6": [0,0,-20,0,0]}
+            }
+        }
+    },
+    {
+        "name": "先守後攻",
+        "name_en": "Slow Starter ",
+        "type": "pitcher",
+        "grade": "legend",
+        "description": "增加控球、球威及體力數值。每增加8個投球數,即額外增加控球及球威數值,最多增加至40球為止。",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [1,1,1,0,0],"2": [2,2,2,0,0],"3": [4,4,4,0,0],"4": [6,6,6,0,0],"5": [8,8,8,0,0],"6": [10,10,10,0,0]}
+            },
+            "trigger_owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [2,2,2,0,0],"2": [4,4,4,0,0],"3": [6,6,6,0,0],"4": [8,8,8,0,0],"5": [10,10,10,0,0],"6": [12,12,12,0,0]}
+            }
+        }
+    },
+    {
+        "name": "工作馬",
+        "name_en": "Workhorse",
+        "type": "pitcher",
+        "grade": "legend",
+        "description": "增加體力能力值,並減少消耗。增加投球準確度。與基本體力能力值成比例,增加錠打機率。有",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [0,0,0,0,0],"2": [0,0,10,0,0],"3": [0,0,0,0,0],"4": [0,0,0,0,0],"5": [0,0,0,0,0],"6": [0,0,0,0,0]}
+            }
+        }
+    },
+    //  金 Gold
+    {
+        "name": "王牌",
+        "name_en": "Ace",
+        "type": "pitcher",
+        "grade": "gold",
+        "description": "增加所有能力值,並套用王牌效果。王牌效果:陣容內持有王牌技能的球員越少,將額外增加所有能力值,並減少被安打率。",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [4,4,4,4,4],"2": [5,5,5,5,5],"3": [6,6,6,6,6],"4": [8,8,8,8,8],"5": [10,10,10,10,10],"6": [12,12,12,12,12],"7": [14,14,14,14,14],"8": [16,16,16,16,16]}
+            },
+            "trigger_owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [2,2,2,2,2],"2": [3,3,3,3,3],"3": [4,4,4,4,4],"4": [6,6,6,6,6],"5": [0,0,0,0,0],"6": [0,0,0,0,0],"7": [10,10,10,10,10],"8": [12,12,12,12,12]}
+            }
+        }
+    },
+    {
+        "name": "自我解決",
+        "name_en": "Cleaning Up Your Mess ",
+        "type": "pitcher",
+        "grade": "gold",
+        "description": "壘上跑者自責時,增加貧打機率。自責跑者越多,效果越強,體力消耗也越多。",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "交錯之火",
+        "name_en": "Crossfire",
+        "type": "pitcher",
+        "grade": "gold",
+        "description": "增加球威、變化。<br>面對相同慣用手的打者時,將額外增加貧打機率。<br>當替換追擊組投手(MR)時,與登板打者相同慣用手且持有交錯之火技能的投手將優先登板。",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [0,4,0,0,4],"2": [0,5,0,0,5],"3": [0,6,0,0,6],"4": [0,7,0,0,7],"5": [0,9,0,0,9],"6": [0,11,0,0,11],"7": [0,13,0,0,13],"8": [0,15,0,0,15]}
+            }
+        }
+    },
+    {
+        "name": "壓倒性投手",
+        "name_en": "Dominant Pitcher ",
+        "type": "pitcher",
+        "grade": "gold",
+        "description": "增加球威及直球能力。球威、直球能力總和高於控球、變化能力總和5以上時,額外增加球威及直球數值。",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [0,2,0,2,0],"2": [0,3,0,3,0],"3": [0,4,0,4,0],"4": [0,6,0,6,0],"5": [0,8,0,8,0],"6": [0,10,0,10,0],"7": [0,13,0,13,0],"8": [0,16,0,16,0]}
+            },
+            "trigger_owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [0,6,0,6,0],"2": [0,7,0,7,0],"3": [0,8,0,8,0],"4": [0,10,0,10,0],"5": [0,12,0,12,0],"6": [0,14,0,14,0],"7": [0,17,0,17,0],"8": [0,20,0,20,0]}
+            }
+        }
+    },
+    {
+        "name": "王牌終結者",
+        "name_en": "Elite Closer ",
+        "type": "pitcher",
+        "grade": "gold",
+        "description": "若作為終結者登板時,減少被安打率並提升三振率。消化的局數越多,將減少效果。",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "技巧派投手",
+        "name_en": "Finesse Pitcher ",
+        "type": "pitcher",
+        "grade": "gold",
+        "description": "增加控球及變化能力。控球、變化能力總和高於球威、直球能力總和5以上時,額外增加控球及變化數值。",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [2,0,0,0,2],"2": [3,0,0,0,3],"3": [4,0,0,0,4],"4": [6,0,0,0,6],"5": [8,0,0,0,8],"6": [10,0,0,0,10],"7": [13,0,0,0,13],"8": [16,0,0,0,16]}
+            },
+            "trigger_owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [6,0,0,0,6],"2": [7,0,0,0,7],"3": [8,0,0,0,8],"4": [10,0,0,0,10],"5": [12,0,0,0,12],"6": [14,0,0,0,14],"7": [17,0,0,0,17],"8": [20,0,0,0,20]}
+            }
+        }
+    },
+    {
+        "name": "巨人殺手",
+        "name_en": "Giant Crusher",
+        "type": "pitcher",
+        "grade": "gold",
+        "description": "我方投手的控球、球威、直球、變化平均,低於或等於對方打者的接觸、力量、選球、速度平均加上4的數值時,增加貧打機率。",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "滾地球投手",
+        "name_en": "Groundballer",
+        "type": "pitcher",
+        "grade": "gold",
+        "description": "增加滾地球機率、降低被長打率。捕手及內野手們的守備能力值(基本和能力值、階級上升量、強化量)的總和越高,效果越強。",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "大吃局數",
+        "name_en": "Inning Eater",
+        "type": "pitcher",
+        "grade": "gold",
+        "description": "與一般陣容體力能力值成比例,增加貧打機率。",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "鬥志",
+        "name_en": "Iron Will",
+        "type": "pitcher",
+        "grade": "gold",
+        "description": "降低對方打者的打擊準確度,面對比賽中曾上壘的打者時,根據直球的基本能力值及技能等級,增加貧打機率。",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "投球協調者",
+        "name_en": "Pitching Coordinator",
+        "type": "pitcher",
+        "grade": "gold",
+        "description": "與一般陣容直球、變化能力值和投手球種數量成比例,增加控球、球威,並追加對好球帶邊緣/好球帶以外投球的揮空機率",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [0,0,0,0,0],"2": [0,0,0,0,0],"3": [0,0,0,0,0],"4": [0,0,0,0,0],"5": [0,0,0,0,0],"6": [0,0,0,0,0],"7": [0,0,0,0,0],"8": [0,0,0,0,0]}
+            }
+        }
+    },
+    {
+        "name": "決勝球",
+        "name_en": "Putaway Pitch",
+        "type": "pitcher",
+        "grade": "gold",
+        "description": "2好球情況下,以特定機率發動決勝球。投出決勝球時大幅增加三振機率",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "最後大魔王",
+        "name_en": "The Last Boss",
+        "type": "pitcher",
+        "grade": "gold",
+        "description": "對方打者所有能力值減少",
+        "trigger": null,
+        "stats": {
+            "opponent": {
+                "cols": ["CON","POW","EYE","SPD","FLD"],
+                "levels": {"1": [-2,-2,-2,-2,-2],"2": [-3,-3,-3,-3,-3],"3": [-4,-4,-4,-4,-4],"4": [-5,-5,-5,-5,-5],"5": [-6,-6,-6,-6,-6],"6": [-8,-8,-8,-8,-8],"7": [-10,-10,-10,-10,-10],"8": [-12,-12,-12,-12,-12]}
+            }
+        }
+    },
+    {
+        "name": "無法碰觸",
+        "name_en": "The Untouchable",
+        "type": "pitcher",
+        "grade": "gold",
+        "description": "增加搶抓對方打者時機的能力",
+        "trigger": null,
+        "stats": null
+    },
+    // 銀 Silver
+    {
+        "name": "強打殺手",
+        "name_en": "3-4-5 Specialist",
+        "type": "pitcher",
+        "grade": "silver",
+        "description": "面對3、4、5號打序的打者時,所有能力值增加",
+        "trigger": null,
+        "stats": {
+            "trigger_owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [3,3,3,3,3],"2": [4,4,4,4,4],"3": [6,6,6,6,6],"4": [8,8,8,8,8],"5": [9,9,9,9,9],"6": [12,12,12,12,12]}
+            }
+        }
+    },
+    {
+        "name": "控球藝術家",
+        "name_en": "Control Artist",
+        "type": "pitcher",
+        "grade": "silver",
+        "description": "增加控球數值",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [2,0,0,0,0],"2": [4,0,0,0,0],"3": [6,0,0,0,0],"4": [8,0,0,0,0],"5": [10,0,0,0,0],"6": [12,0,0,0,0]}
+            }
+        }
+    },
+    {
+        "name": "野戰指揮",
+        "name_en": "Field Commander",
+        "type": "pitcher",
+        "grade": "silver",
+        "description": "提升野手的守備及速度",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "救火隊",
+        "name_en": "Firefighter",
+        "type": "pitcher",
+        "grade": "silver",
+        "description": "墨上有非自責跑者時,將增加除了體力以外的所有能力值,若同分或有逆轉跑者,將額外恢復減少的能力值。",
+        "trigger": null,
+        "stats": {
+            "trigger_owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [2,2,0,2,2],"2": [3,3,0,3,3],"3": [4,4,0,4,4],"4": [6,6,0,6,6],"5": [8,8,0,8,8],"6": [10,10,0,10,10]}
+            }
+        }
+    },
+    {
+        "name": "逆轉大師",
+        "name_en": "Fixer",
+        "type": "pitcher",
+        "grade": "silver",
+        "description": "當比賽落後時,控球和球威能力值增加",
+        "trigger": null,
+        "stats": {
+            "trigger_owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [3,3,0,0,0],"2": [4,4,0,0,0],"3": [6,6,0,0,0],"4": [8,8,0,0,0],"5": [9,9,0,0,0],"6": [12,12,0,0,0]}
+            }
+        }
+    },
+    {
+        "name": "國寶投手",
+        "name_en": "Golden Pitcher ",
+        "type": "pitcher",
+        "grade": "silver",
+        "description": "球威、控球能力增加",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [2,2,0,0,0],"2": [3,3,0,0,0],"3": [4,4,0,0,0],"4": [5,5,0,0,0],"5": [6,6,0,0,0],"6": [8,8,0,0,0]}
+            }
+        }
+    },
+    {
+        "name": "調整節奏",
+        "name_en": "Pace Controller",
+        "type": "pitcher",
+        "grade": "silver",
+        "description": "強化控球及變化。減少體力消耗。",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [2,0,0,0,2],"2": [3,0,0,0,3],"3": [4,0,0,0,4],"4": [5,0,0,0,5],"5": [6,0,0,0,6],"6": [7,0,0,0,7]}
+            }
+        }
+    },
+    {
+        "name": "投球機器",
+        "name_en": "Pitching Machine ",
+        "type": "pitcher",
+        "grade": "silver",
+        "description": "直球、變化球能力增加",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [0,0,0,2,2],"2": [0,0,0,3,3],"3": [0,0,0,4,4],"4": [0,0,0,5,5],"5": [0,0,0,6,6],"6": [0,0,0,8,8]}
+            }
+        }
+    },
+    {
+        "name": "強力投手",
+        "name_en": "Power Pitcher",
+        "type": "pitcher",
+        "grade": "silver",
+        "description": "增加球威數值",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [0,2,0,0,0],"2": [0,4,0,0,0],"3": [0,6,0,0,0],"4": [0,8,0,0,0],"5": [0,10,0,0,0],"6": [0,12,0,0,0]}
+            }
+        }
+    },
+    {
+        "name": "安全感",
+        "name_en": "Stability",
+        "type": "pitcher",
+        "grade": "silver",
+        "description": "增加投手的控球太變化。捕手的守備達110以上時,額外增加控球及變化。",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [1,0,0,0,1],"2": [2,0,0,0,2],"3": [3,0,0,0,3],"4": [4,0,0,0,4],"5": [5,0,0,0,5],"6": [6,0,0,0,6]}
+            },
+            "trigger_owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [2,0,0,0,2],"2": [4,0,0,0,4],"3": [6,0,0,0,6],"4": [8,0,0,0,8],"5": [10,0,0,0,10],"6": [12,0,0,0,12]}
+            }
+        }
+    },
+    {
+        "name": "佈局",
+        "name_en": "The Setup Man ",
+        "type": "pitcher",
+        "grade": "silver",
+        "description": "首次登板後,直到投完該局為止,增加球員所有能力值。。",
+        "trigger": null,
+        "stats": {
+            "trigger_owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [3,3,3,3,3],"2": [4,4,4,4,4],"3": [6,6,6,6,6],"4": [8,8,8,8,8],"5": [9,9,9,9,9],"6": [12,12,12,12,12]}
+            }
+        }
+    },
+    {
+        "name": "狙擊手",
+        "name_en": "Warmed Up",
+        "type": "pitcher",
+        "grade": "silver",
+        "description": "於上場後面對的首個打席增加所有能力值",
+        "trigger": null,
+        "stats": {
+            "trigger_owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [5,5,5,5,5],"2": [9,9,9,9,9],"3": [13,13,13,13,13],"4": [17,17,17,17,17],"5": [21,21,21,21,21],"6": [25,25,25,25,25]}
+            }
+        }
+    },
+    {
+        "name": "乘勝追擊",
+        "name_en": "Winning Streak ",
+        "type": "pitcher",
+        "grade": "silver",
+        "description": "當比賽領先時,控球和球威能力值增加",
+        "trigger": null,
+        "stats": {
+            "trigger_owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [3,3,0,0,0],"2": [4,4,0,0,0],"3": [6,6,0,0,0],"4": [8,8,0,0,0],"5": [9,9,0,0,0],"6": [12,12,0,0,0]}
+            }
+        }
+    },
+    //  銅 Bronze
+    {
+        "name": "魔球大師",
+        "name_en": "Breaking Ball Mastery",
+        "type": "pitcher",
+        "grade": "bronze",
+        "description": "變化球能力增加",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [0,0,0,0,2],"2": [0,0,0,0,3],"3": [0,0,0,0,4],"4": [0,0,0,0,5],"5": [0,0,0,0,6],"6": [0,0,0,0,8]}
+            }
+        }
+    },
+    {
+        "name": "平靜",
+        "name_en": "Calm Mind",
+        "type": "pitcher",
+        "grade": "bronze",
+        "description": "壘上沒有跑者時,被打安打機率減少",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "危機克服",
+        "name_en": "Danger Zone",
+        "type": "pitcher",
+        "grade": "bronze",
+        "description": "跑者進到2壘以上時,減少被打安打機率",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "強心臟",
+        "name_en": "Fearless",
+        "type": "pitcher",
+        "grade": "bronze",
+        "description": "2出局時被打出安打的機率降低",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "左打殺手",
+        "name_en": "Lefty Specialist",
+        "type": "pitcher",
+        "grade": "bronze",
+        "description": "面對左打者時,被打安打的機率下降",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "光速投球",
+        "name_en": "Lightning Pitch",
+        "type": "pitcher",
+        "grade": "bronze",
+        "description": "直球能力增加",
+        "trigger": null,
+        "stats": {
+            "owner": {
+                "cols": ["LOC","VEL","STA","FB","BRK"],
+                "levels": {"1": [0,0,0,2,0],"2": [0,0,0,3,0],"3": [0,0,0,4,0],"4": [0,0,0,5,0],"5": [0,0,0,6,0],"6": [0,0,0,8,0]}
+            }
+        }
+    },
+    {
+        "name": "牽制王",
+        "name_en": "Pick-off King",
+        "type": "pitcher",
+        "grade": "bronze",
+        "description": "增加牽制成功率",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "右打殺手",
+        "name_en": "Righty Specialist",
+        "type": "pitcher",
+        "grade": "bronze",
+        "description": "面對右打者時,被打安打的機率下降",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "老謀深算",
+        "name_en": "Seasoned Pitcher",
+        "type": "pitcher",
+        "grade": "bronze",
+        "description": "跑者進到3了壘時,被打安打的機率降低",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "佛祖保佑",
+        "name_en": "Strong Mentality",
+        "type": "pitcher",
+        "grade": "bronze",
+        "description": "體力低落時,減少投球準確度下降",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "鋼鐵人",
+        "name_en": "Strong Stamina",
+        "type": "pitcher",
+        "grade": "bronze",
+        "description": "在比賽時,投手的體力增加",
+        "trigger": null,
+        "stats": null
+    },
+    {
+        "name": "冰凍",
+        "name_en": "Thin Ice",
+        "type": "pitcher",
+        "grade": "bronze",
+        "description": "對手打者嘗試盜壘的機率降低",
+        "trigger": null,
+        "stats": null
+    }
+];
+
+const GRADE_SHORT = { legend:'傳', gold:'金', silver:'銀', bronze:'銅' };
+const TARGET_LABELS = {
+  owner:            '持有者',
+  opponent:         '對手',
+  teammate:         '隊友',
+  trigger_owner:    '持有者(觸發)',
+  trigger_opponent: '對手(觸發)',
+  trigger_teammate: '隊友(觸發)',
+};
+const TRIGGER_KEYS = new Set(['trigger_owner','trigger_opponent','trigger_teammate']);
+
+function fmtVal(v) {
+  if (v === null || v === undefined) return `<span class="zero">.</span>`;
+  const n = Number(v);
+  if (n > 0) return `<span class="pos">+${n}</span>`;
+  if (n < 0) return `<span class="neg">${n}</span>`;
+  return `<span class="zero">.</span>`;
+}
+
+function buildTable(data) {
+  const lvNums = Object.keys(data.levels).map(Number).sort((a,b)=>b-a);
+  let rows = '';
+  for (const lv of lvNums) {
+    const row = data.levels[lv];
+    rows += `<tr><td>Lv ${lv}:</td>${row.map(v=>`<td>${fmtVal(v)}</td>`).join('')}</tr>`;
+  }
+  const hdr = `<tr>${['', ...data.cols].map(c=>`<th>${c}</th>`).join('')}</tr>`;
+  return `<table class="stat-table"><thead>${hdr}</thead><tbody>${rows}</tbody></table>`;
+}
+
+function buildCardBody(s) {
+  let html = '<div class="card-body">';
+  if (s.description) html += `<div class="card-desc">${s.description}</div>`;
+  if (s.trigger)     html += `<div class="card-trigger">${s.trigger}</div>`;
+
+  if (!s.stats || Object.keys(s.stats).length === 0) {
+    // html += '<div class="no-data">數值待補充</div>';
+    return html + '</div>';
+  }
+
+  const keys = Object.keys(s.stats);
+  const uid = (s.name + '_' + s.grade).replace(/[^\w]/g, '_');
+
+  if (keys.length === 1) {
+    const k = keys[0];
+    const isTrg = TRIGGER_KEYS.has(k);
+    html += `<div class="target-label">${TARGET_LABELS[k]||k}</div>`;
+    html += buildTable(s.stats[k]);
+  } else {
+    html += '<div class="target-tabs">';
+    keys.forEach((k,i) => {
+      const isTrg = TRIGGER_KEYS.has(k);
+      html += `<button class="target-tab${i===0?' active':''}${isTrg?' trigger-tab':''}" onclick="switchTab(this,'${uid}','${k}')">${TARGET_LABELS[k]||k}</button>`;
+    });
+    html += '</div>';
+    keys.forEach((k,i) => {
+      html += `<div id="t_${uid}_${k}" class="tab-content" style="${i>0?'display:none':''}">`;
+      html += buildTable(s.stats[k]);
+      html += '</div>';
+    });
+  }
+  return html + '</div>';
+}
+
+function switchTab(btn, uid, key) {
+  const cb = btn.closest('.card-body');
+  cb.querySelectorAll('.target-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  cb.querySelectorAll('.tab-content').forEach(d=>d.style.display='none');
+  const el = document.getElementById(`t_${uid}_${key}`);
+  if (el) el.style.display = '';
+}
+
+let fType='all', fGrade='all', fSearch='';
+
+function render() {
+  const grid = document.getElementById('skills-grid');
+  const filtered = SKILL_DATA.filter(s => {
+    if (fType  !== 'all' && s.type  !== fType)  return false;
+    if (fGrade !== 'all' && s.grade !== fGrade) return false;
+    if (fSearch) {
+      const q = fSearch.toLowerCase();
+      if (!s.name.includes(fSearch) && !s.name_en.toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
+  document.getElementById('count-display').textContent = filtered.length;
+
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="empty-state"><div class="big-icon">🔍</div><h3>找不到符合的技能</h3><p>請嘗試調整篩選條件或搜尋關鍵字</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map((s,i) => `
+    <div class="skill-card ${s.grade}" style="animation-delay:${Math.min(i,24)*0.025}s">
+      <div class="card-stripe"></div>
+      <div class="card-header">
+        <div class="grade-badge">${GRADE_SHORT[s.grade]}</div>
+        <div class="card-title-wrap">
+          <div class="skill-name-zh">${s.name}</div>
+          <div class="skill-name-en">${s.name_en}</div>
+          <span class="type-tag ${s.type}">${s.type==='pitcher'?'⚾ 投手':'🏏 打者'}</span>
+        </div>
+      </div>
+      ${buildCardBody(s)}
+    </div>`
+  ).join('');
+}
+
+function setActive(groupId, attr, val) {
+  document.querySelectorAll(`#${groupId} .filter-btn`).forEach(b => {
+    b.className = 'filter-btn';
+    if (b.dataset[attr] === val) b.classList.add(val==='all'?'act-all':`act-${val}`);
+  });
+}
+
+document.getElementById('search').addEventListener('input', e => { fSearch = e.target.value.trim(); render(); });
+document.getElementById('type-filters').addEventListener('click', e => {
+  const b = e.target.closest('.filter-btn'); if (!b) return;
+  fType = b.dataset.type; setActive('type-filters','type',fType); render();
+});
+document.getElementById('grade-filters').addEventListener('click', e => {
+  const b = e.target.closest('.filter-btn'); if (!b) return;
+  fGrade = b.dataset.grade; setActive('grade-filters','grade',fGrade); render();
+});
+
+render();
+</script>
+</body>
+</html>
