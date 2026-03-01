@@ -456,6 +456,24 @@ tbody td:first-child {
    (subtle visual grouping between sets)
 ═══════════════════════════════════════ */
 .sep-left { border-left: 2px solid rgba(0,180,216,0.35) !important; }
+
+/* ALL 模式 - 週別欄位 */
+.week-col {
+  background: #e8f4fd !important;
+  font-weight: 700 !important;
+  color: #0d47a1 !important;
+  border-right: 2px solid #90bfe8 !important;
+  white-space: nowrap;
+}
+thead th.week-col {
+  background: #1255a0 !important;
+  color: #fff !important;
+  border-right: 2px solid var(--accent) !important;
+}
+/* 不同球員之間的分隔線（ALL 模式） */
+tr.player-divider td {
+  border-top: 2px solid #90bfe8 !important;
+}
 </style>
 </head>
 <body>
@@ -592,6 +610,15 @@ async function init() {
   state.week = weeks[0];
 
   const sel = document.getElementById('weekSel');
+
+  // 加入 ALL 選項（多週才顯示）
+  if (weeks.length > 1) {
+    const allOpt = document.createElement('option');
+    allOpt.value = 'ALL';
+    allOpt.textContent = '📊 全部週別';
+    sel.appendChild(allOpt);
+  }
+
   weeks.forEach(w => {
     const opt = document.createElement('option');
     opt.value = w;
@@ -608,7 +635,7 @@ async function init() {
    EVENT HANDLERS
 ═══════════════════════════════════════════════ */
 function onWeekChange() {
-  state.week = document.getElementById('weekSel').value;
+  state.week    = document.getElementById('weekSel').value;
   state.sortCol = null;
   renderTable();
 }
@@ -657,114 +684,174 @@ function parseNum(v) {
   return isNaN(n) ? null : n;
 }
 
+/* 取得單週的 rows（附加 week 欄位在 index 1） */
+function getRowsForWeek(week) {
+  const sheet = DB[week]?.[getSheetKey()];
+  if (!sheet) return { headers: null, rows: [] };
+  // 在每筆 row 插入 week 作為第二欄 [player, week, ...stats]
+  const rows = sheet.rows.map(r => [r[0], week, ...r.slice(1)]);
+  return { headers: sheet.headers, rows };
+}
+
 function renderTable() {
   state.filter = document.getElementById('filterInput').value.toLowerCase().trim();
 
-  const weekData = DB[state.week];
-  if (!weekData) return;
-  const sheet = weekData[getSheetKey()];
-  if (!sheet) return;
+  const sheetKey = getSheetKey();
+  const isAll    = state.week === 'ALL';
 
-  const { headers, rows } = sheet;
-  // headers[0] = 'player'
-  const statCols   = headers.slice(1);
-  const sets       = state.main === 'batter' ? BATTER_SETS : PITCHER_SETS;
-  const setStarts  = new Set();   // col indices (in headers) that start a new group
-  let covered = 0;
+  /* ── 取得 headers & rows ── */
+  let headers, allRows;
+
+  if (isAll) {
+    const weeks = Object.keys(DB).sort();  // 舊→新
+    let baseHeaders = null;
+    allRows = [];
+    for (const w of weeks) {
+      const sheet = DB[w]?.[sheetKey];
+      if (!sheet) continue;
+      if (!baseHeaders) baseHeaders = sheet.headers;
+      sheet.rows.forEach(r => allRows.push([r[0], w, ...r.slice(1)]));
+    }
+    if (!baseHeaders) return;
+    // headers: [player, 週別, ...stats]
+    headers = [baseHeaders[0], '週別', ...baseHeaders.slice(1)];
+  } else {
+    const weekData = DB[state.week];
+    if (!weekData) return;
+    const sheet = weekData[sheetKey];
+    if (!sheet) return;
+    headers  = sheet.headers;
+    allRows  = sheet.rows.map(r => [...r]);
+  }
+
+  const statStartIdx = isAll ? 2 : 1;   // stats 開始的 col index
+  const statCols     = headers.slice(statStartIdx);
+
+  /* ── 欄位組分隔線 ── */
+  const sets     = state.main === 'batter' ? BATTER_SETS : PITCHER_SETS;
+  const setStarts = new Set();
   sets.forEach((s, si) => {
     if (si > 0) {
       const firstOfSet = s.find(f => statCols.includes(f));
-      if (firstOfSet) setStarts.add(statCols.indexOf(firstOfSet) + 1); // +1 for player col
+      if (firstOfSet) setStarts.add(statCols.indexOf(firstOfSet) + statStartIdx);
     }
-    covered += s.length;
   });
 
-  // Filter
+  /* ── 篩選 ── */
   let filtered = state.filter
-    ? rows.filter(r => r[0].toLowerCase().includes(state.filter))
-    : [...rows];
+    ? allRows.filter(r => r[0].toLowerCase().includes(state.filter))
+    : [...allRows];
 
-  // Sort
+  /* ── 排序 ── */
   if (state.sortCol !== null) {
     const ci = state.sortCol;
     filtered.sort((a, b) => {
       const na = parseNum(a[ci]), nb = parseNum(b[ci]);
-      if (na === null && nb === null) return String(a[ci]).localeCompare(String(b[ci]));
+      if (na === null && nb === null) return String(a[ci] ?? '').localeCompare(String(b[ci] ?? ''));
       if (na === null) return 1;
       if (nb === null) return -1;
       return state.sortDir === 'asc' ? na - nb : nb - na;
     });
-  } else {
-    // default: original order (as-is from JSON, which is alphabetical)
+  } else if (isAll) {
+    // ALL 預設：依球員名稱 → 週別排序，方便看每個球員的趨勢
+    filtered.sort((a, b) => {
+      const nameCmp = a[0].localeCompare(b[0]);
+      return nameCmp !== 0 ? nameCmp : a[1].localeCompare(b[1]);
+    });
   }
 
-  // Best value per column
+  /* ── 最佳值（僅單週模式計算） ── */
   const best = {};
-  statCols.forEach((col, i) => {
-    const ci = i + 1;
-    const vals = filtered.map(r => parseNum(r[ci])).filter(v => v !== null);
-    if (!vals.length) return;
-    best[ci] = LOWER_BETTER.has(col) ? Math.min(...vals) : Math.max(...vals);
-  });
+  if (!isAll) {
+    statCols.forEach((col, i) => {
+      const ci = i + statStartIdx;
+      const vals = filtered.map(r => parseNum(r[ci])).filter(v => v !== null);
+      if (!vals.length) return;
+      best[ci] = LOWER_BETTER.has(col) ? Math.min(...vals) : Math.max(...vals);
+    });
+  }
 
-  /* ── THEAD ───────────────────────────── */
+  /* ── THEAD ── */
   const thead = document.getElementById('tableHead');
   let hHTML = '<tr>';
   const sc0cls = state.sortCol === 0 ? `sort-${state.sortDir}` : '';
   hHTML += `<th class="${sc0cls}" onclick="sortBy(0)">球員</th>`;
+
+  if (isAll) {
+    const sc1cls = state.sortCol === 1 ? `sort-${state.sortDir}` : '';
+    hHTML += `<th class="week-col ${sc1cls}" onclick="sortBy(1)">週別</th>`;
+  }
+
   statCols.forEach((col, i) => {
-    const ci = i + 1;
-    const scCls  = state.sortCol === ci ? `sort-${state.sortDir}` : '';
+    const ci    = i + statStartIdx;
+    const scCls = state.sortCol === ci ? `sort-${state.sortDir}` : '';
     const sepCls = setStarts.has(ci) ? ' sep-left' : '';
     hHTML += `<th class="${scCls}${sepCls}" onclick="sortBy(${ci})">${col}</th>`;
   });
   hHTML += '</tr>';
   thead.innerHTML = hHTML;
 
-  /* ── TBODY ───────────────────────────── */
-  const tbody  = document.getElementById('tableBody');
-  const empty  = document.getElementById('empty');
+  /* ── TBODY ── */
+  const tbody = document.getElementById('tableBody');
+  const empty = document.getElementById('empty');
 
   if (!filtered.length) {
     tbody.innerHTML = '';
     empty.style.display = 'flex';
-  } else {
-    empty.style.display = 'none';
-
-    /* Show week badge only if multiple weeks exist */
-    const multiWeek = Object.keys(DB).length > 1;
-
-    let bHTML = '';
-    filtered.forEach((row, idx) => {
-      bHTML += '<tr>';
-      const badge = multiWeek
-        ? `<span class="week-badge">${state.week}</span>` : '';
-      bHTML += `<td><span class="rank">${idx + 1}</span><span class="pname">${esc(row[0])}</span>${badge}</td>`;
-
-      statCols.forEach((col, i) => {
-        const ci    = i + 1;
-        const val   = row[ci] ?? '';
-        const num   = parseNum(val);
-        const isBest = num !== null && best[ci] !== undefined && num === best[ci];
-        const bCls  = isBest ? ' class="best"' : '';
-        const sCls  = setStarts.has(ci) ? ' style="border-left:2px solid rgba(0,180,216,0.3)"' : '';
-        bHTML += `<td${bCls}${sCls}>${esc(val)}</td>`;
-      });
-      bHTML += '</tr>';
-    });
-    tbody.innerHTML = bHTML;
+    document.getElementById('playerCount').textContent = '共 0 筆';
+    return;
   }
+  empty.style.display = 'none';
 
-  /* ── SORT BAR ─────────────────────────── */
-  const colName = state.sortCol === null || state.sortCol === 0
-    ? '球員名稱'
-    : headers[state.sortCol];
+  let bHTML = '';
+  let prevPlayer = null;
+
+  filtered.forEach((row, idx) => {
+    const isNewPlayer = isAll && row[0] !== prevPlayer;
+    // ALL 模式：每個新球員加上頂部分隔線
+    const divClass = (isAll && isNewPlayer && idx > 0) ? ' class="player-divider"' : '';
+    bHTML += `<tr${divClass}>`;
+
+    // 球員欄
+    const showRank = !isAll;
+    const rankSpan = showRank ? `<span class="rank">${idx + 1}</span>` : '';
+    bHTML += `<td><span class="pname">${rankSpan}${esc(row[0])}</span></td>`;
+
+    // 週別欄（ALL 模式）
+    if (isAll) {
+      bHTML += `<td class="week-col">${esc(row[1])}</td>`;
+    }
+
+    // 統計欄
+    statCols.forEach((col, i) => {
+      const ci    = i + statStartIdx;
+      const val   = row[ci] ?? '';
+      const num   = parseNum(val);
+      const isBest = !isAll && num !== null && best[ci] !== undefined && num === best[ci];
+      const bCls  = isBest ? ' class="best"' : '';
+      const sCls  = setStarts.has(ci) ? ' style="border-left:2px solid rgba(0,180,216,0.3)"' : '';
+      bHTML += `<td${bCls}${sCls}>${esc(val)}</td>`;
+    });
+
+    bHTML += '</tr>';
+    prevPlayer = row[0];
+  });
+  tbody.innerHTML = bHTML;
+
+  /* ── SORT BAR ── */
+  const colName = state.sortCol === null
+    ? (isAll ? '球員→週別' : '球員名稱')
+    : headers[state.sortCol] ?? '球員名稱';
   const dirLabel = state.sortCol === null ? ''
-    : state.sortDir === 'asc' ? '▲ 升冪' : '▼ 降冪';
+    : state.sortDir === 'asc' ? ' ▲ 升冪' : ' ▼ 降冪';
 
   document.getElementById('sortColLabel').textContent = colName;
-  document.getElementById('sortDirLabel').textContent = dirLabel ? ` ${dirLabel}` : '';
-  document.getElementById('playerCount').textContent  = `共 ${filtered.length} 名`;
+  document.getElementById('sortDirLabel').textContent = dirLabel;
+
+  const countLabel = isAll
+    ? `共 ${filtered.length} 筆 / ${new Set(filtered.map(r=>r[0])).size} 名球員`
+    : `共 ${filtered.length} 名`;
+  document.getElementById('playerCount').textContent = countLabel;
 }
 
 function sortBy(ci) {
