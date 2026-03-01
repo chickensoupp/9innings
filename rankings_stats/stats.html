@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>⚾ 排名戰統計</title>
+<style>
+/* ═══════════════════════════════════════
+   CSS 變數 & Reset
+═══════════════════════════════════════ */
+:root {
+  --blue-darkest : #081529;
+  --blue-dark    : #0f2744;
+  --blue-mid     : #1a3d6e;
+  --blue-header  : #1e6eb5;
+  --blue-sel     : #2196f3;
+  --blue-active  : #1565c0;
+  --accent       : #00b4d8;
+  --accent2      : #00e5ff;
+  --gold         : #ffd700;
+  --white        : #ffffff;
+  --gray-light   : #f0f4f8;
+  --gray-row     : #e8edf4;
+  --text-dark    : #0d1b2a;
+  --text-mid     : #2c4a6e;
+  --rank-teal    : #00acc1;
+  --red-best     : #c62828;
+  --green-ok     : #2e7d32;
+  --border-light : rgba(255,255,255,0.10);
+  --row-border   : #cddaea;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  height: 100%;
+  background: var(--blue-darkest);
+  font-family: 'PingFang TC', 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+  color: var(--white);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════════════════════════════════════
+   LAYOUT SHELL
+═══════════════════════════════════════ */
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+}
+
+/* ═══════════════════════════════════════
+   TOP BAR
+═══════════════════════════════════════ */
+#topbar {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #0c1f3d 0%, #1a3d6e 100%);
+  padding: 0 10px;
+  gap: 8px;
+  border-bottom: 1px solid var(--blue-sel);
+  height: 46px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+.logo {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  text-shadow: 0 0 12px rgba(255,215,0,0.5);
+}
+
+.team-badge {
+  background: var(--blue-mid);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: 1px;
+}
+
+#weekSel {
+  margin-left: auto;
+  background: var(--blue-mid);
+  border: 1px solid var(--blue-sel);
+  color: var(--white);
+  border-radius: 5px;
+  padding: 5px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  outline: none;
+  min-width: 100px;
+}
+
+/* ═══════════════════════════════════════
+   MAIN TABS (打者 / 投手)
+═══════════════════════════════════════ */
+#maintabs {
+  display: flex;
+  background: var(--blue-dark);
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(30,110,181,0.5);
+}
+
+.maintab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 38px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #6e9cc4;
+  border-bottom: 3px solid transparent;
+  transition: all 0.18s;
+  gap: 4px;
+}
+
+.maintab.active {
+  color: var(--white);
+  border-bottom: 3px solid var(--blue-sel);
+  background: linear-gradient(to bottom, rgba(33,150,243,0.15), transparent);
+}
+
+/* ═══════════════════════════════════════
+   MODE TABS (總計 / 主場 / 客場)
+═══════════════════════════════════════ */
+#modetabs {
+  display: flex;
+  background: #0f2035;
+  height: 34px;
+  align-items: center;
+  padding: 0 8px;
+  gap: 6px;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(30,110,181,0.3);
+}
+
+.modetab {
+  flex: 1;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #5a88b0;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid transparent;
+  transition: all 0.15s;
+  letter-spacing: 0.5px;
+}
+
+.modetab.active {
+  background: var(--blue-sel);
+  border-color: var(--accent);
+  color: var(--white);
+  box-shadow: 0 0 8px rgba(33,150,243,0.4);
+}
+
+/* ═══════════════════════════════════════
+   FILTER ROW
+═══════════════════════════════════════ */
+#filterrow {
+  background: #0a1929;
+  padding: 5px 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(30,110,181,0.25);
+}
+
+#filterInput {
+  flex: 1;
+  background: var(--blue-mid);
+  border: 1px solid rgba(33,150,243,0.4);
+  border-radius: 5px;
+  color: var(--white);
+  padding: 5px 10px;
+  font-size: 13px;
+  outline: none;
+}
+
+#filterInput::placeholder { color: #4a7090; }
+#filterInput:focus { border-color: var(--blue-sel); }
+
+.clear-btn {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #8ab4d4;
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════
+   SORT INFO BAR
+═══════════════════════════════════════ */
+#sortbar {
+  background: #070f1c;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  font-size: 11px;
+  color: #3d6280;
+  border-bottom: 1px solid rgba(0,0,0,0.3);
+  flex-shrink: 0;
+  gap: 4px;
+}
+
+#sortbar .sort-col { color: var(--accent); font-weight: 700; }
+#sortbar .sort-dir { color: var(--gold); }
+#sortbar .player-count { margin-left: auto; color: #3d6280; }
+
+/* ═══════════════════════════════════════
+   TABLE WRAPPER
+═══════════════════════════════════════ */
+#table-wrapper {
+  flex: 1;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* ═══════════════════════════════════════
+   TABLE
+═══════════════════════════════════════ */
+table {
+  border-collapse: collapse;
+  min-width: max-content;
+  width: 100%;
+}
+
+/* ── HEADER ── */
+thead {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+thead tr { background: var(--blue-header); }
+
+thead th {
+  padding: 0 10px;
+  height: 36px;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  color: var(--white);
+  cursor: pointer;
+  user-select: none;
+  border-right: 1px solid rgba(255,255,255,0.12);
+  text-align: center;
+  vertical-align: middle;
+  position: relative;
+  transition: background 0.12s;
+}
+
+thead th:hover { background: #1a5c9a; }
+
+thead th:first-child {
+  text-align: left;
+  position: sticky;
+  left: 0;
+  z-index: 21;
+  background: var(--blue-header);
+  min-width: 140px;
+  padding-left: 8px;
+  border-right: 2px solid var(--accent);
+}
+
+thead th:first-child:hover { background: #1a5c9a; }
+
+/* Sort indicators */
+thead th.sort-asc  { background: #1558a0; }
+thead th.sort-desc { background: #1558a0; }
+thead th.sort-asc::after  { content: ' ▲'; color: var(--gold); font-size: 10px; }
+thead th.sort-desc::after { content: ' ▼'; color: var(--gold); font-size: 10px; }
+
+/* ── ROWS ── */
+tbody tr:nth-child(odd)  { background: #ffffff; }
+tbody tr:nth-child(even) { background: #edf2f9; }
+tbody tr { transition: background 0.1s; }
+tbody tr:active { background: #c2d8f0 !important; }
+
+tbody td {
+  padding: 0 10px;
+  height: 34px;
+  font-size: 13px;
+  white-space: nowrap;
+  text-align: center;
+  vertical-align: middle;
+  color: var(--text-dark);
+  border-right: 1px solid var(--row-border);
+  border-bottom: 1px solid var(--row-border);
+}
+
+/* Frozen player name column */
+tbody td:first-child {
+  text-align: left;
+  position: sticky;
+  left: 0;
+  z-index: 5;
+  background: inherit;
+  border-right: 2px solid #90bfe8;
+  padding-left: 4px;
+  min-width: 140px;
+}
+
+/* Rank number */
+.rank {
+  display: inline-block;
+  color: var(--rank-teal);
+  font-weight: 800;
+  font-size: 13px;
+  min-width: 20px;
+  text-align: right;
+  margin-right: 5px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Player name */
+.pname {
+  color: var(--text-mid);
+  font-weight: 700;
+}
+
+/* Best value highlight */
+.best {
+  color: var(--red-best);
+  font-weight: 800;
+}
+
+/* Week badge */
+.week-badge {
+  display: inline-block;
+  background: #ddeeff;
+  color: #0d47a1;
+  font-size: 10px;
+  border-radius: 3px;
+  padding: 1px 4px;
+  margin-left: 5px;
+  font-weight: 600;
+  vertical-align: middle;
+  letter-spacing: 0;
+}
+
+/* ═══════════════════════════════════════
+   EMPTY STATE
+═══════════════════════════════════════ */
+#empty {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #3a607c;
+  font-size: 15px;
+  gap: 12px;
+  text-align: center;
+}
+#empty .ico { font-size: 48px; }
+
+/* ═══════════════════════════════════════
+   LANDSCAPE HINT
+═══════════════════════════════════════ */
+#landscape-hint {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(8,21,41,0.96);
+  z-index: 200;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 30px;
+  text-align: center;
+}
+
+#landscape-hint .hint-ico  { font-size: 52px; animation: rotate 2s ease-in-out infinite alternate; }
+#landscape-hint .hint-text { font-size: 15px; color: #9fc5e8; line-height: 1.6; }
+#landscape-hint .skip-btn  {
+  margin-top: 8px;
+  background: var(--blue-sel);
+  border: none;
+  color: white;
+  border-radius: 8px;
+  padding: 12px 28px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 0 16px rgba(33,150,243,0.5);
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(15deg); }
+}
+
+@media (orientation: portrait) and (max-width: 600px) {
+  #landscape-hint { display: flex; }
+}
+
+/* ═══════════════════════════════════════
+   LOADING
+═══════════════════════════════════════ */
+#loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  inset: 0;
+  background: var(--blue-darkest);
+  z-index: 300;
+  gap: 16px;
+  font-size: 14px;
+  color: #5a88b0;
+}
+#loading .spinner {
+  width: 40px; height: 40px;
+  border: 3px solid rgba(33,150,243,0.2);
+  border-top-color: var(--blue-sel);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ═══════════════════════════════════════
+   SCROLLBAR STYLE (webkit)
+═══════════════════════════════════════ */
+#table-wrapper::-webkit-scrollbar       { width: 4px; height: 4px; }
+#table-wrapper::-webkit-scrollbar-track { background: transparent; }
+#table-wrapper::-webkit-scrollbar-thumb { background: rgba(33,150,243,0.4); border-radius: 2px; }
+
+/* ═══════════════════════════════════════
+   STAT GROUP SEPARATORS
+   (subtle visual grouping between sets)
+═══════════════════════════════════════ */
+.sep-left { border-left: 2px solid rgba(0,180,216,0.35) !important; }
+</style>
+</head>
+<body>
+
+<!-- Loading screen -->
+<div id="loading">
+  <div class="spinner"></div>
+  <div>載入資料中...</div>
+</div>
+
+<!-- Landscape prompt -->
+<div id="landscape-hint">
+  <div class="hint-ico">📱</div>
+  <div class="hint-text">建議<strong>橫向</strong>查看<br>以獲得最佳統計表格體驗</div>
+  <button class="skip-btn" onclick="dismissHint()">繼續直向查看</button>
+</div>
+
+<!-- Main App -->
+<div id="app">
+
+  <!-- Top Bar -->
+  <div id="topbar">
+    <div class="logo">⚾ 排名戰</div>
+    <div class="team-badge" id="teamBadge">NYY S</div>
+    <select id="weekSel" onchange="onWeekChange()"></select>
+  </div>
+
+  <!-- Main Tabs -->
+  <div id="maintabs">
+    <div class="maintab active" onclick="switchMain('batter')">🏏 我的打者</div>
+    <div class="maintab"        onclick="switchMain('pitcher')">⚡ 我的投手</div>
+  </div>
+
+  <!-- Mode Tabs -->
+  <div id="modetabs">
+    <div class="modetab active" onclick="switchMode('total')">總計</div>
+    <div class="modetab"        onclick="switchMode('home')">主場</div>
+    <div class="modetab"        onclick="switchMode('away')">客場</div>
+  </div>
+
+  <!-- Filter -->
+  <div id="filterrow">
+    <input id="filterInput" type="text" placeholder="🔍 搜尋球員名稱..."
+           oninput="renderTable()" autocomplete="off" autocorrect="off" spellcheck="false">
+    <button class="clear-btn" onclick="clearFilter()">✕ 清除</button>
+  </div>
+
+  <!-- Sort Info Bar -->
+  <div id="sortbar">
+    <span>排序：</span>
+    <span class="sort-col" id="sortColLabel">球員名稱</span>
+    <span class="sort-dir" id="sortDirLabel"></span>
+    <span class="player-count" id="playerCount"></span>
+  </div>
+
+  <!-- Table -->
+  <div id="table-wrapper">
+    <table id="statsTable">
+      <thead id="tableHead"></thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    <div id="empty">
+      <div class="ico">🔍</div>
+      <div>找不到符合的球員</div>
+    </div>
+  </div>
+
+</div><!-- #app -->
+
+<script>
+'use strict';
+
+/* ═══════════════════════════════════════════════
+   DATA SOURCE
+   ─────────────────────────────────────────────
+   執行 OCR.py 後，將產生的 baseball_data.json
+   放在同一個資料夾。網頁會自動載入。
+   
+   如果 JSON 檔不存在（本機直接開啟 HTML），
+   則使用下面 FALLBACK_DATA 作為範例資料。
+═══════════════════════════════════════════════ */
+const JSON_FILE = 'baseball_data.json';
+
+/* 欄位組別（用於視覺分隔線） */
+const BATTER_SETS  = [
+  ['AVG','OBP','SLG','OPS','SO','BB','BB/K','HR%'],
+  ['G','AB','H','2B','3B','HR','RBI','R'],
+  ['SB','SB%','GIDP','HSP','RISP','ISOD','ISOP','BABIP'],
+];
+const PITCHER_SETS = [
+  ['IP','G','W','L','ERA','WHIP','SV','HLD'],
+  ['SO','BB','H','2B','3B','HR','R','QS'],
+  ['AVG','OBP','SLG','OPS','K/9','BB/9','HR/9','K/BB'],
+];
+
+/* 數值越低越好的欄位 */
+const LOWER_BETTER = new Set([
+  'ERA','WHIP','BB/9','HR/9','BB','GIDP','R','L','H','SO','2B','3B'
+]);
+
+/* ── 狀態 ─────────────────────────────────── */
+let DB       = {};
+let state    = {
+  week:    '',
+  main:    'batter',
+  mode:    'total',
+  sortCol: null,      // null = 球員名稱
+  sortDir: 'desc',
+  filter:  '',
+};
+let hintDismissed = false;
+
+/* ═══════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════ */
+async function init() {
+  try {
+    const resp = await fetch(JSON_FILE);
+    if (!resp.ok) throw new Error('fetch failed');
+    DB = await resp.json();
+    console.log('✅ 從 baseball_data.json 載入資料');
+  } catch (e) {
+    console.warn('⚠️  無法載入 JSON，使用內建範例資料');
+    DB = FALLBACK_DATA;
+  }
+
+  const weeks = Object.keys(DB).sort().reverse();
+  if (!weeks.length) {
+    document.getElementById('loading').innerHTML =
+      '<div style="color:#e57373;font-size:15px">❌ 無資料，請先執行 OCR.py</div>';
+    return;
+  }
+
+  state.week = weeks[0];
+
+  const sel = document.getElementById('weekSel');
+  weeks.forEach(w => {
+    const opt = document.createElement('option');
+    opt.value = w;
+    opt.textContent = w;
+    sel.appendChild(opt);
+  });
+  sel.value = state.week;
+
+  renderTable();
+  document.getElementById('loading').style.display = 'none';
+}
+
+/* ═══════════════════════════════════════════════
+   EVENT HANDLERS
+═══════════════════════════════════════════════ */
+function onWeekChange() {
+  state.week = document.getElementById('weekSel').value;
+  state.sortCol = null;
+  renderTable();
+}
+
+function switchMain(m) {
+  state.main = m;
+  state.sortCol = null;
+  clearFilter();
+  document.querySelectorAll('.maintab').forEach((el, i) => {
+    el.classList.toggle('active', (i === 0 && m === 'batter') || (i === 1 && m === 'pitcher'));
+  });
+  renderTable();
+}
+
+function switchMode(m) {
+  state.mode = m;
+  state.sortCol = null;
+  document.querySelectorAll('.modetab').forEach((el, i) => {
+    el.classList.toggle('active', ['total','home','away'][i] === m);
+  });
+  renderTable();
+}
+
+function clearFilter() {
+  state.filter = '';
+  document.getElementById('filterInput').value = '';
+  renderTable();
+}
+
+function dismissHint() {
+  hintDismissed = true;
+  document.getElementById('landscape-hint').style.display = 'none';
+}
+
+/* ═══════════════════════════════════════════════
+   RENDER TABLE
+═══════════════════════════════════════════════ */
+function getSheetKey() {
+  const tl = state.main === 'batter' ? '打者' : '投手';
+  const ml = { total: '總計', home: '主場', away: '客場' }[state.mode];
+  return `${tl}_${ml}`;
+}
+
+function parseNum(v) {
+  const n = parseFloat(v);
+  return isNaN(n) ? null : n;
+}
+
+function renderTable() {
+  state.filter = document.getElementById('filterInput').value.toLowerCase().trim();
+
+  const weekData = DB[state.week];
+  if (!weekData) return;
+  const sheet = weekData[getSheetKey()];
+  if (!sheet) return;
+
+  const { headers, rows } = sheet;
+  // headers[0] = 'player'
+  const statCols   = headers.slice(1);
+  const sets       = state.main === 'batter' ? BATTER_SETS : PITCHER_SETS;
+  const setStarts  = new Set();   // col indices (in headers) that start a new group
+  let covered = 0;
+  sets.forEach((s, si) => {
+    if (si > 0) {
+      const firstOfSet = s.find(f => statCols.includes(f));
+      if (firstOfSet) setStarts.add(statCols.indexOf(firstOfSet) + 1); // +1 for player col
+    }
+    covered += s.length;
+  });
+
+  // Filter
+  let filtered = state.filter
+    ? rows.filter(r => r[0].toLowerCase().includes(state.filter))
+    : [...rows];
+
+  // Sort
+  if (state.sortCol !== null) {
+    const ci = state.sortCol;
+    filtered.sort((a, b) => {
+      const na = parseNum(a[ci]), nb = parseNum(b[ci]);
+      if (na === null && nb === null) return String(a[ci]).localeCompare(String(b[ci]));
+      if (na === null) return 1;
+      if (nb === null) return -1;
+      return state.sortDir === 'asc' ? na - nb : nb - na;
+    });
+  } else {
+    // default: original order (as-is from JSON, which is alphabetical)
+  }
+
+  // Best value per column
+  const best = {};
+  statCols.forEach((col, i) => {
+    const ci = i + 1;
+    const vals = filtered.map(r => parseNum(r[ci])).filter(v => v !== null);
+    if (!vals.length) return;
+    best[ci] = LOWER_BETTER.has(col) ? Math.min(...vals) : Math.max(...vals);
+  });
+
+  /* ── THEAD ───────────────────────────── */
+  const thead = document.getElementById('tableHead');
+  let hHTML = '<tr>';
+  const sc0cls = state.sortCol === 0 ? `sort-${state.sortDir}` : '';
+  hHTML += `<th class="${sc0cls}" onclick="sortBy(0)">球員</th>`;
+  statCols.forEach((col, i) => {
+    const ci = i + 1;
+    const scCls  = state.sortCol === ci ? `sort-${state.sortDir}` : '';
+    const sepCls = setStarts.has(ci) ? ' sep-left' : '';
+    hHTML += `<th class="${scCls}${sepCls}" onclick="sortBy(${ci})">${col}</th>`;
+  });
+  hHTML += '</tr>';
+  thead.innerHTML = hHTML;
+
+  /* ── TBODY ───────────────────────────── */
+  const tbody  = document.getElementById('tableBody');
+  const empty  = document.getElementById('empty');
+
+  if (!filtered.length) {
+    tbody.innerHTML = '';
+    empty.style.display = 'flex';
+  } else {
+    empty.style.display = 'none';
+
+    /* Show week badge only if multiple weeks exist */
+    const multiWeek = Object.keys(DB).length > 1;
+
+    let bHTML = '';
+    filtered.forEach((row, idx) => {
+      bHTML += '<tr>';
+      const badge = multiWeek
+        ? `<span class="week-badge">${state.week}</span>` : '';
+      bHTML += `<td><span class="rank">${idx + 1}</span><span class="pname">${esc(row[0])}</span>${badge}</td>`;
+
+      statCols.forEach((col, i) => {
+        const ci    = i + 1;
+        const val   = row[ci] ?? '';
+        const num   = parseNum(val);
+        const isBest = num !== null && best[ci] !== undefined && num === best[ci];
+        const bCls  = isBest ? ' class="best"' : '';
+        const sCls  = setStarts.has(ci) ? ' style="border-left:2px solid rgba(0,180,216,0.3)"' : '';
+        bHTML += `<td${bCls}${sCls}>${esc(val)}</td>`;
+      });
+      bHTML += '</tr>';
+    });
+    tbody.innerHTML = bHTML;
+  }
+
+  /* ── SORT BAR ─────────────────────────── */
+  const colName = state.sortCol === null || state.sortCol === 0
+    ? '球員名稱'
+    : headers[state.sortCol];
+  const dirLabel = state.sortCol === null ? ''
+    : state.sortDir === 'asc' ? '▲ 升冪' : '▼ 降冪';
+
+  document.getElementById('sortColLabel').textContent = colName;
+  document.getElementById('sortDirLabel').textContent = dirLabel ? ` ${dirLabel}` : '';
+  document.getElementById('playerCount').textContent  = `共 ${filtered.length} 名`;
+}
+
+function sortBy(ci) {
+  if (state.sortCol === ci) {
+    state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+  } else {
+    state.sortCol = ci;
+    if (ci === 0) {
+      state.sortDir = 'asc';
+    } else {
+      const weekData = DB[state.week];
+      const sheet    = weekData?.[getSheetKey()];
+      const col      = sheet?.headers?.[ci];
+      state.sortDir  = LOWER_BETTER.has(col) ? 'asc' : 'desc';
+    }
+  }
+  renderTable();
+}
+
+function esc(s) {
+  return String(s ?? '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+init();
+</script>
+</body>
+</html>
