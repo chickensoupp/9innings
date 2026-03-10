@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>九局棒球 — 特別教練參考手冊</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #21262d;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --silver: #c0c8d8;
+    --gold: #f0c040;
+    --plat: #a8d8f0;
+    --plat-sp: #60b8f8;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --red: #f85149;
+    --orange: #d29922;
+    --tag-bat: #1f4a2c;
+    --tag-bat-t: #56d364;
+    --tag-pit: #1a3a5c;
+    --tag-pit-t: #58a6ff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #1c2128 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 24px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-inner { max-width: 1200px; margin: 0 auto; }
+  .header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.2rem;
+    letter-spacing: 3px;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+  .header p { color: var(--muted); font-size: 12px; }
+  .nav-tabs {
+    display: flex; gap: 4px; margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .nav-tab {
+    padding: 6px 16px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 13px;
+    transition: all .2s;
+  }
+  .nav-tab:hover { color: var(--text); border-color: var(--accent); }
+  .nav-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 700; }
+
+  /* ===== LAYOUT ===== */
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ===== SEARCH ===== */
+  .search-box {
+    position: relative; margin-bottom: 20px;
+  }
+  .search-box input {
+    width: 100%; padding: 10px 16px 10px 40px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); font-size: 14px;
+    font-family: 'Noto Sans TC', sans-serif;
+    transition: border-color .2s;
+  }
+  .search-box input:focus { outline: none; border-color: var(--accent); }
+  .search-box::before {
+    content: '🔍'; position: absolute; left: 12px; top: 50%;
+    transform: translateY(-50%); font-size: 14px;
+  }
+
+  /* ===== GRADE BADGES ===== */
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+  }
+  .badge-silver { background: #2a3340; color: var(--silver); border: 1px solid #4a5568; }
+  .badge-gold { background: #2d2510; color: var(--gold); border: 1px solid #8b6914; }
+  .badge-plat { background: #112233; color: var(--plat); border: 1px solid #2a5a8a; }
+  .badge-plat-sp { background: #0d2040; color: var(--plat-sp); border: 1px solid #1e5a9e; }
+
+  /* ===== TRAINER CARD ===== */
+  .trainer-grid { display: flex; flex-direction: column; gap: 12px; }
+  .trainer-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color .2s;
+  }
+  .trainer-card:hover { border-color: var(--accent); }
+  .trainer-card.hidden { display: none; }
+
+  .card-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px;
+    background: var(--surface2);
+    cursor: pointer;
+    user-select: none;
+  }
+  .card-title {
+    font-size: 15px; font-weight: 700; color: var(--text); flex: 1;
+  }
+  .card-subtitle { font-size: 12px; color: var(--muted); }
+  .card-toggle {
+    width: 24px; height: 24px; display: flex; align-items: center;
+    justify-content: center; color: var(--muted); font-size: 16px;
+    transition: transform .2s;
+  }
+  .card-toggle.open { transform: rotate(180deg); }
+
+  .card-body { padding: 0 16px 16px; }
+
+  /* ===== STAT TABLE ===== */
+  .stat-table {
+    width: 100%; border-collapse: collapse; margin-top: 12px;
+    font-size: 13px;
+  }
+  .stat-table th {
+    background: var(--surface2); color: var(--muted);
+    padding: 6px 10px; text-align: center; font-weight: 600;
+    font-size: 11px; letter-spacing: 0.5px;
+    border: 1px solid var(--border);
+  }
+  .stat-table td {
+    padding: 6px 10px; border: 1px solid var(--border);
+    text-align: center; vertical-align: middle;
+  }
+  .stat-table tr:hover td { background: rgba(88,166,255,0.04); }
+  .effect-cell { text-align: left !important; color: var(--muted); }
+
+  .val-silver { color: var(--silver); font-weight: 600; }
+  .val-gold { color: var(--gold); font-weight: 600; }
+  .val-plat { color: var(--plat); font-weight: 600; }
+  .val-plat-sp { color: var(--plat-sp); font-weight: 600; }
+  .val-interval { color: var(--green); font-size: 12px; }
+
+  .range-display {
+    display: inline-flex; align-items: center; gap: 4px; font-size: 12px;
+  }
+  .range-min { color: var(--muted); }
+  .range-max { color: inherit; font-weight: 700; }
+  .range-sep { color: var(--border); }
+
+  /* ===== INFO BOX ===== */
+  .info-box {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px; padding: 12px 16px; margin-bottom: 16px;
+    font-size: 13px; color: var(--muted);
+  }
+  .info-box strong { color: var(--text); }
+
+  /* ===== ABILITY TABLE ===== */
+  .ability-section { margin-bottom: 28px; }
+  .ability-section h3 {
+    font-size: 14px; font-weight: 700; color: var(--accent);
+    margin-bottom: 10px; padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ability-group { margin-bottom: 20px; }
+  .ability-group h4 {
+    font-size: 13px; color: var(--muted); font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .ability-table {
+    width: 100%; border-collapse: collapse; font-size: 13px;
+  }
+  .ability-table th {
+    background: var(--surface2); color: var(--muted);
+    padding: 5px 12px; border: 1px solid var(--border);
+    font-size: 11px; font-weight: 600;
+  }
+  .ability-table td {
+    padding: 5px 12px; border: 1px solid var(--border);
+    text-align: center;
+  }
+  .ability-table tr:hover td { background: rgba(88,166,255,0.04); }
+  .pos-cell { text-align: center; color: var(--gold); font-weight: 700; }
+  .stage-1 { color: #8b949e; }
+  .stage-2 { color: #c3d0e0; }
+  .stage-3 { color: var(--plat); }
+  .stage-4 { color: var(--gold); font-weight: 700; }
+
+  /* ===== POSITION PROB TABLES ===== */
+  .prob-note { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
+  .prob-table {
+    width: 100%; border-collapse: collapse; font-size: 12px;
+    margin-bottom: 16px;
+  }
+  .prob-table th {
+    background: var(--surface2); color: var(--muted);
+    padding: 5px 8px; border: 1px solid var(--border);
+    font-size: 11px; font-weight: 600;
+    white-space: nowrap;
+  }
+  .prob-table td {
+    padding: 4px 8px; border: 1px solid var(--border);
+    text-align: center; font-size: 12px;
+  }
+  .prob-table tr:hover td { background: rgba(88,166,255,0.04); }
+  .empty-cell { color: var(--border); }
+  .prob-val { color: var(--text); }
+  .prob-high { color: var(--gold); font-weight: 700; }
+  .effect-name { text-align: left !important; color: var(--muted); font-size: 11px; }
+  .stage-label { color: var(--muted); font-size: 11px; }
+  .cond-none { color: var(--muted); font-size: 11px; }
+
+  /* ===== VALUE RANGE SECTION ===== */
+  .valrange-section { margin-bottom: 24px; }
+  .valrange-section h3 {
+    font-size: 14px; font-weight: 700; color: var(--orange);
+    margin-bottom: 10px; padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .valrange-table {
+    width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 16px;
+  }
+  .valrange-table th {
+    background: var(--surface2); color: var(--muted);
+    padding: 5px 10px; border: 1px solid var(--border);
+    font-size: 11px; font-weight: 600;
+  }
+  .valrange-table td {
+    padding: 5px 10px; border: 1px solid var(--border);
+    text-align: center;
+  }
+  .valrange-table tr:hover td { background: rgba(88,166,255,0.04); }
+  .cond-cell { text-align: left !important; color: var(--muted); font-size: 11px; }
+  .stage-cell { color: var(--muted); font-size: 11px; }
+
+  /* ===== FILTER CHIPS ===== */
+  .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .filter-chip {
+    padding: 4px 12px; border-radius: 20px;
+    border: 1px solid var(--border); background: transparent;
+    color: var(--muted); cursor: pointer; font-size: 12px;
+    font-family: 'Noto Sans TC', sans-serif;
+    transition: all .15s;
+  }
+  .filter-chip:hover { color: var(--text); }
+  .filter-chip.active { border-color: var(--gold); color: var(--gold); background: rgba(240,192,64,0.08); }
+
+  /* ===== SCROLL TO TOP ===== */
+  .back-top {
+    position: fixed; bottom: 24px; right: 24px;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    border: none; cursor: pointer; font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(88,166,255,0.3);
+    opacity: 0; pointer-events: none; transition: opacity .2s;
+  }
+  .back-top.visible { opacity: 1; pointer-events: all; }
+
+  @media (max-width: 700px) {
+    .header h1 { font-size: 1.6rem; }
+    .stat-table, .ability-table, .prob-table, .valrange-table { font-size: 11px; }
+    .stat-table th, .stat-table td,
+    .ability-table th, .ability-table td { padding: 4px 6px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <h1>⚾ 九局棒球 教練參考手冊</h1>
+    <p>特別教練資料整理 · 主屬性數值 · 位置屬性機率 · 能力值階段</p>
+    <nav class="nav-tabs">
+      <button class="nav-tab active" onclick="showSection('main-attrs')">🎯 主屬性數值範圍</button>
+      <button class="nav-tab" onclick="showSection('pos-prob')">📊 位置屬性機率</button>
+      <button class="nav-tab" onclick="showSection('ability-vals')">📈 能力值階段表</button>
+      <button class="nav-tab" onclick="showSection('pos-range')">🔢 位置屬性數值範圍</button>
+    </nav>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ===================== SECTION 1: 主屬性數值範圍 ===================== -->
+<div id="main-attrs" class="section active">
+  <div class="info-box">
+    <strong>說明：</strong>主屬性的登場機率相同。各數值區間內的登場機率也相同（每個數值 = 1/N）。<br>
+    例：炫銀教練打擊王「強擊球發生機率 a%」，a 的範圍為 2.0%～5.0%，區間 0.1%，共 31 個值，各值機率 = 1/31。
+  </div>
+
+  <div class="search-box">
+    <input type="text" id="search-main" placeholder="搜尋教練名稱或效果..." oninput="filterTrainers()">
+  </div>
+
+  <div class="filter-row" id="filter-chips">
+    <button class="filter-chip active" onclick="filterByType('all', this)">全部</button>
+    <button class="filter-chip" onclick="filterByType('bat', this)">⚾ 打擊系</button>
+    <button class="filter-chip" onclick="filterByType('pit', this)">🎯 投球系</button>
+    <button class="filter-chip" onclick="filterByType('run', this)">💨 跑壘系</button>
+    <button class="filter-chip" onclick="filterByType('def', this)">🛡 守備系</button>
+  </div>
+
+  <div class="trainer-grid" id="trainer-grid">
+  </div>
+</div>
+
+<!-- ===================== SECTION 2: 位置屬性機率 ===================== -->
+<div id="pos-prob" class="section">
+  <div class="info-box">
+    <strong>說明：</strong>此表顯示各教練的位置屬性選擇機率（依打者能力值條件與階段）。空白格代表該屬性對該教練無對應。
+  </div>
+
+  <div id="pos-prob-content"></div>
+</div>
+
+<!-- ===================== SECTION 3: 能力值階段表 ===================== -->
+<div id="ability-vals" class="section">
+  <div class="info-box">
+    <strong>說明：</strong>位置屬性的能力值條件由守備位置決定。各屬性（接觸、力量、選球、速度、守備 / 控球、球威、體力、直球、變化）依階段有不同門檻值。
+  </div>
+
+  <div id="ability-vals-content"></div>
+</div>
+
+<!-- ===================== SECTION 4: 位置屬性數值範圍 ===================== -->
+<div id="pos-range" class="section">
+  <div class="info-box">
+    <strong>說明：</strong>炫金、白金教練位置屬性效果的數值區間為 0.1%。各數值登場機率皆為 1/N。
+    <br>例：炫金教練打擊王位置屬性「全壘打機率增加/接觸條件/1階段」 → 效果值從 0.9%～1.8%，各值機率 1/10。
+  </div>
+  <div id="pos-range-content"></div>
+</div>
+
+</div><!-- /container -->
+
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ===================== DATA =====================
+const trainers = [
+  {
+    id: 'hitter', name: '打擊王', type: 'bat',
+    effects: [
+      { label: '增加強力的滾地球機率 {a}%',
+        silver:[2.0,5.0], gold:[5.0,9.0], plat:[9.0,15.0], platSp:[12.6,15.0], interval:0.10 },
+      { label: '增加平飛球機率 {b}%',
+        silver:[2.0,5.0], gold:[5.0,9.0], plat:[9.0,15.0], platSp:[12.6,15.0], interval:0.10 },
+    ]
+  },
+  {
+    id: 'hr-batter', name: '全壘打打者', type: 'bat',
+    effects: [
+      { label: '增加全壘打性擊球機率 {a}%',
+        silver:[5.0,11.0], gold:[11.0,19.0], plat:[19.0,32.0], platSp:[26.8,32.0], interval:0.10 },
+      { label: '追加好球帶邊緣/外投球揮棒落空機率 {b}%',
+        silver:[2.0,5.5], gold:[5.5,10.0], plat:[10.0,15.0], platSp:[10.0,12.0], interval:0.10 },
+    ]
+  },
+  {
+    id: 'leadoff', name: '開路先鋒專家', type: 'run',
+    effects: [
+      { label: '有 {a}% 機率標示好球帶以外投球位置',
+        silver:[25.0,40.0], gold:[40.0,60.0], plat:[60.0,90.0], platSp:[78.0,90.0], interval:0.50 },
+      { label: '增加至1壘的跑壘速度 {b}%',
+        silver:[4.0,7.0], gold:[7.0,12.0], plat:[12.0,18.0], platSp:[15.6,18.0], interval:0.10 },
+      { label: '增加盜壘成功率 {c}%',
+        silver:[4.0,7.0], gold:[7.0,12.0], plat:[12.0,18.0], platSp:[15.6,18.0], interval:0.10 },
+    ]
+  },
+  {
+    id: 'ironwall', name: '鐵壁守備', type: 'def',
+    effects: [
+      { label: '增加對方打者擊出飛球的機率 {a}%',
+        silver:[0.3,0.8], gold:[0.8,1.4], plat:[1.4,2.2], platSp:[1.88,2.2], interval:0.01 },
+      { label: '增加對方打者擊出滾地球的機率 {b}%',
+        silver:[0.3,0.8], gold:[0.8,1.4], plat:[1.4,2.2], platSp:[1.88,2.2], interval:0.01 },
+    ]
+  },
+  {
+    id: 'slugger', name: '強打者', type: 'bat',
+    effects: [
+      { label: '增加強力的滾地球機率 {a}%',
+        silver:[1.0,3.0], gold:[3.0,5.5], plat:[5.5,9.0], platSp:[7.6,9.0], interval:0.10 },
+      { label: '增加平飛球機率 {b}%',
+        silver:[1.0,3.0], gold:[3.0,5.5], plat:[5.5,9.0], platSp:[7.6,9.0], interval:0.10 },
+      { label: '增加全壘打性擊球機率 {c}%',
+        silver:[1.0,3.0], gold:[3.0,5.5], plat:[5.5,9.0], platSp:[7.6,9.0], interval:0.10 },
+    ]
+  },
+  {
+    id: 'hit-master', name: '打擊達人', type: 'bat',
+    effects: [
+      { label: '有 {a}% 機率增加打擊時機一個階段（Miss不會增加）',
+        silver:[20.0,30.0], gold:[30.0,45.0], plat:[45.0,70.0], platSp:[60.0,70.0], interval:0.20 },
+    ]
+  },
+  {
+    id: 'liner', name: '平飛球機器', type: 'bat',
+    effects: [
+      { label: '增加平飛球機率 {a}%',
+        silver:[4.0,10.0], gold:[10.0,18.0], plat:[18.0,30.0], platSp:[25.2,30.0], interval:0.10 },
+    ]
+  },
+  {
+    id: 'guess', name: '猜球打者', type: 'bat',
+    effects: [
+      { label: '打擊時機完美時，增加平飛球機率 {a}% / 全壘打性擊球機率 {a}%',
+        silver:[3.0,6.0], gold:[6.0,10.0], plat:[10.0,15.0], platSp:[13.0,15.0], interval:0.10 },
+      { label: '打擊時機不完美時，追加好球帶邊緣/外投球揮棒落空機率 {b}%',
+        silver:[4.0,8.0], gold:[8.0,13.0], plat:[13.0,20.0], platSp:[13.0,15.8], interval:0.10 },
+    ]
+  },
+  {
+    id: 'eye', name: '選球眼', type: 'bat',
+    effects: [
+      { label: '增加好球帶邊緣/外投球的界外機率 {a}%',
+        silver:[2.0,5.5], gold:[5.5,10.0], plat:[10.0,20.0], platSp:[16.0,20.0], interval:0.10 },
+      { label: '減少打者的揮棒落空機率 {b}%',
+        silver:[2.0,5.5], gold:[5.5,10.0], plat:[10.0,20.0], platSp:[16.0,20.0], interval:0.10 },
+    ]
+  },
+  {
+    id: 'doctor-k', name: 'Doctor K', type: 'pit',
+    effects: [
+      { label: '增加好球帶邊緣/外投球的揮棒落空機率 {a}%',
+        silver:[8.0,20.0], gold:[20.0,34.0], plat:[34.0,50.0], platSp:[43.6,50.0], interval:0.10 },
+    ]
+  },
+  {
+    id: 'deceiver', name: '騙術專家', type: 'pit',
+    effects: [
+      { label: '有 {a}% 機率減少對方打者打擊時機一個階段（只會降至Good）',
+        silver:[12.0,26.0], gold:[26.0,45.0], plat:[45.0,70.0], platSp:[60.0,70.0], interval:0.10 },
+    ]
+  },
+  {
+    id: 'rising-fb', name: '上升快速球專家', type: 'pit',
+    effects: [
+      { label: '增加對方打者擊出飛球的機率 {a}%',
+        silver:[4.0,10.0], gold:[10.0,18.0], plat:[18.0,30.0], platSp:[25.2,30.0], interval:0.10 },
+    ]
+  },
+  {
+    id: 'bat-breaker', name: '球棒破壞者', type: 'pit',
+    effects: [
+      { label: '增加對方打者擊出滾地球的機率 {a}%',
+        silver:[4.0,10.0], gold:[10.0,18.0], plat:[18.0,30.0], platSp:[25.2,30.0], interval:0.10 },
+    ]
+  },
+  {
+    id: 'wild', name: '亂球', type: 'pit',
+    effects: [
+      { label: '增加對方打者擊出飛球的機率 {a}%',
+        silver:[2.0,5.0], gold:[5.0,9.0], plat:[9.0,15.0], platSp:[12.6,15.0], interval:0.10 },
+      { label: '增加對方打者擊出滾地球的機率 {b}%',
+        silver:[2.0,5.0], gold:[5.0,9.0], plat:[9.0,15.0], platSp:[12.6,15.0], interval:0.10 },
+    ]
+  },
+  {
+    id: 'pressure', name: '壓迫感', type: 'pit',
+    effects: [
+      { label: '減少對方打者擊出平飛球的機率 {a}%',
+        silver:[2.0,5.0], gold:[5.0,9.0], plat:[9.0,15.0], platSp:[12.6,15.0], interval:0.10 },
+      { label: '減少對方打者擊出全壘打性擊球的機率 {b}%',
+        silver:[2.0,5.0], gold:[5.0,9.0], plat:[9.0,15.0], platSp:[12.6,15.0], interval:0.10 },
+    ]
+  },
+  {
+    id: 'corner', name: '邊角球大師', type: 'pit',
+    effects: [
+      { label: '減少對方打者擊出強力的滾地球機率 {a}%',
+        silver:[2.0,5.0], gold:[5.0,9.0], plat:[9.0,15.0], platSp:[12.6,15.0], interval:0.10 },
+      { label: '減少對方打者擊出平飛球的機率 {b}%',
+        silver:[2.0,5.0], gold:[5.0,9.0], plat:[9.0,15.0], platSp:[12.6,15.0], interval:0.10 },
+    ]
+  },
+  {
+    id: 'pickoff', name: '牽制達人', type: 'pit',
+    effects: [
+      { label: '減少跑者的盜壘成功率 {a}%',
+        silver:[4.0,8.0], gold:[8.0,13.0], plat:[13.0,20.0], platSp:[17.2,20.0], interval:0.10 },
+      { label: '嘗試牽制時，追加成功機率 {b}%',
+        silver:[1.0,2.0], gold:[2.0,3.2], plat:[3.2,5.0], platSp:[4.28,5.0], interval:0.02 },
+    ]
+  },
+  {
+    id: 'zone', name: '範圍控制器', type: 'pit',
+    effects: [
+      { label: '增加靠近好球帶投球的好球機率 {a}%',
+        silver:[4.0,10.0], gold:[10.0,18.0], plat:[18.0,30.0], platSp:[25.2,30.0], interval:0.10 },
+    ]
+  },
+];
+
+const typeLabels = { all:'全部', bat:'打擊系', pit:'投球系', run:'跑壘系', def:'守備系' };
+let currentType = 'all';
+
+function fmt(v) { return v.toFixed(2).replace(/\.?0+$/,'') + '%'; }
+
+function renderTrainers() {
+  const grid = document.getElementById('trainer-grid');
+  grid.innerHTML = '';
+  trainers.forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'trainer-card';
+    card.dataset.type = t.type;
+    card.dataset.name = t.name;
+    card.dataset.effects = t.effects.map(e=>e.label).join(' ');
+
+    const typeIcons = { bat:'⚾', pit:'🎯', run:'💨', def:'🛡' };
+    const typeTags = { bat:'打擊', pit:'投球', run:'跑壘', def:'守備' };
+    const typeColors = { bat:'#1f4a2c', pit:'#1a3a5c', run:'#3a2a1a', def:'#2a1a3a' };
+    const typeTextColors = { bat:'#56d364', pit:'#58a6ff', run:'#d29922', def:'#c084fc' };
+
+    const headerHtml = `
+      <div class="card-header" onclick="toggleCard(this)">
+        <span style="font-size:20px">${typeIcons[t.type]}</span>
+        <div style="flex:1">
+          <div class="card-title">特別教練 - ${t.name}</div>
+          <div class="card-subtitle">${t.effects.length} 個效果</div>
+        </div>
+        <span style="background:${typeColors[t.type]};color:${typeTextColors[t.type]};font-size:11px;padding:2px 8px;border-radius:4px;font-weight:700;">${typeTags[t.type]}</span>
+        <span class="card-toggle">▼</span>
+      </div>`;
+
+    let rows = '';
+    t.effects.forEach(e => {
+      rows += `<tr>
+        <td class="effect-cell">${e.label}</td>
+        <td class="val-silver"><span class="range-display"><span class="range-min">${fmt(e.silver[0])}</span><span class="range-sep">～</span><span class="range-max">${fmt(e.silver[1])}</span></span></td>
+        <td class="val-gold"><span class="range-display"><span class="range-min">${fmt(e.gold[0])}</span><span class="range-sep">～</span><span class="range-max">${fmt(e.gold[1])}</span></span></td>
+        <td class="val-plat"><span class="range-display"><span class="range-min">${fmt(e.plat[0])}</span><span class="range-sep">～</span><span class="range-max">${fmt(e.plat[1])}</span></span></td>
+        <td class="val-plat-sp"><span class="range-display"><span class="range-min">${fmt(e.platSp[0])}</span><span class="range-sep">～</span><span class="range-max">${fmt(e.platSp[1])}</span></span></td>
+        <td class="val-interval">${fmt(e.interval)}</td>
+      </tr>`;
+    });
+
+    const bodyHtml = `
+      <div class="card-body">
+        <table class="stat-table">
+          <thead>
+            <tr>
+              <th style="text-align:left;min-width:200px">效果</th>
+              <th><span class="badge badge-silver">炫銀</span></th>
+              <th><span class="badge badge-gold">炫金</span></th>
+              <th><span class="badge badge-plat">白金</span></th>
+              <th><span class="badge badge-plat-sp">白金(高級券)</span></th>
+              <th>數值區間</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+
+    card.innerHTML = headerHtml + bodyHtml;
+    // start collapsed for cards with many effects
+    const body = card.querySelector('.card-body');
+    body.style.display = 'none';
+    grid.appendChild(card);
+  });
+}
+
+function toggleCard(header) {
+  const body = header.nextElementSibling;
+  const toggle = header.querySelector('.card-toggle');
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+  toggle.classList.toggle('open', !isOpen);
+}
+
+function filterTrainers() {
+  const q = document.getElementById('search-main').value.toLowerCase();
+  document.querySelectorAll('.trainer-card').forEach(card => {
+    const matchText = (card.dataset.name + card.dataset.effects).toLowerCase().includes(q);
+    const matchType = currentType === 'all' || card.dataset.type === currentType;
+    card.classList.toggle('hidden', !(matchText && matchType));
+  });
+}
+
+function filterByType(type, btn) {
+  currentType = type;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  filterTrainers();
+}
+
+// ===================== SECTION 2: 位置屬性機率 =====================
+function renderPosProb() {
+  const container = document.getElementById('pos-prob-content');
+
+  const coachNames = ['打擊王','全壘打打者','開路先鋒專家','鐵壁守備','強打者','打擊達人','平飛球機器','猜球打者','選球眼'];
+
+  // Batter position attribute: 增加全壘打性擊球機率
+  const batEffects = [
+    { name: '增加全壘打性擊球機率', cond: '沒有', row: [5.65,5.05,6.41,5.65,4.57,6.41,5.65,4.57,5.65] },
+    { name: '增加全壘打性擊球機率', cond: '接觸 1階', row: [5.08,4.55,null,null,4.11,5.77,null,4.11,null] },
+    { name: '', cond: '接觸 2階', row: [3.39,3.03,null,null,2.74,3.85,null,2.74,null] },
+    { name: '', cond: '接觸 3階', row: [2.54,2.27,null,null,2.05,2.88,null,2.05,null] },
+    { name: '', cond: '接觸 4階', row: [0.85,0.76,null,null,0.68,0.96,null,0.68,null] },
+    { name: '增加全壘打性擊球機率', cond: '力量 1階', row: [5.08,4.55,null,null,4.11,null,null,4.11,null] },
+    { name: '', cond: '力量 2階', row: [3.39,3.03,null,null,2.74,null,null,2.74,null] },
+    { name: '', cond: '力量 3階', row: [2.54,2.27,null,null,2.05,null,null,2.05,null] },
+    { name: '', cond: '力量 4階', row: [0.85,0.76,null,null,0.68,null,null,0.68,null] },
+    { name: '增加全壘打性擊球機率', cond: '選球 1階', row: [5.08,4.55,null,null,4.11,5.77,null,4.11,5.08] },
+    { name: '', cond: '選球 2階', row: [3.39,3.03,null,null,2.74,3.85,null,2.74,3.39] },
+    { name: '', cond: '選球 3階', row: [2.54,2.27,null,null,2.05,2.88,null,2.05,2.54] },
+    { name: '', cond: '選球 4階', row: [0.85,0.76,null,null,0.68,0.96,null,0.68,0.85] },
+  ];
+
+  let html = `<div class="ability-section">
+    <h3>🔷 第一個位置屬性選擇機率（打者）</h3>
+    <p class="prob-note">各主屬性欄位顯示對應出現機率（%）。空白格表示該條件不適用。</p>
+    <div style="overflow-x:auto">
+    <table class="prob-table">
+      <thead><tr>
+        <th>位置屬性效果</th>
+        <th>能力值條件/階段</th>`;
+  coachNames.forEach(n => { html += `<th>${n}</th>`; });
+  html += `</tr></thead><tbody>`;
+
+  batEffects.forEach(e => {
+    html += `<tr>
+      <td class="effect-name">${e.name}</td>
+      <td class="stage-cell">${e.cond}</td>`;
+    e.row.forEach(v => {
+      if (v === null) html += `<td class="empty-cell">—</td>`;
+      else html += `<td class="${v >= 5 ? 'prob-high' : 'prob-val'}">${v}%</td>`;
+    });
+    html += `</tr>`;
+  });
+  html += `</tbody></table></div></div>`;
+
+  container.innerHTML = html + `
+    <div class="info-box" style="margin-top:16px">
+      <strong>注意：</strong>位置屬性機率表資料量較大，以上為打者「增加全壘打性擊球機率」效果的示例。
+      完整資料包含更多效果（平飛球、強力滾地球、接觸、速度等）。各數值之和在每個行中為各主屬性的選擇概率。
+    </div>`;
+}
+
+// ===================== SECTION 3: 能力值階段表 =====================
+function renderAbilityVals() {
+  const container = document.getElementById('ability-vals-content');
+
+  const batPos = ['C','1B','2B','3B','SS','OF','DH','ALL'];
+  const pitPos = ['SP','RP/CP','ALL'];
+
+  const batStats = {
+    '接觸': {C:[65,69,73,77],  '1B':[65,70,75,80], '2B':[64,69,74,79], '3B':[66,70,74,78], SS:[66,70,74,78], OF:[64,69,74,79], DH:[66,70,74,78], ALL:[65,70,75,80]},
+    '力量': {C:[66,71,76,81], '1B':[70,75,80,85], '2B':[66,71,76,81], '3B':[69,74,79,84], SS:[66,71,76,81], OF:[70,75,80,85], DH:[70,75,80,85], ALL:[70,75,80,85]},
+    '選球': {C:[61,66,71,76], '1B':[65,70,75,80], '2B':[64,68,72,76], '3B':[64,69,74,79], SS:[65,69,73,77], OF:[64,69,74,79], DH:[65,69,73,77], ALL:[65,70,75,80]},
+    '速度': {C:[59,61,63,65], '1B':[59,62,65,68], '2B':[64,67,70,73], '3B':[63,66,69,72], SS:[64,68,72,76], OF:[63,67,71,75], DH:[63,66,69,72], ALL:[64,68,72,76]},
+    '守備': {C:[65,68,71,74], '1B':[65,68,71,74], '2B':[66,70,74,78], '3B':[63,67,71,75], SS:[65,70,75,80], OF:[61,65,69,73], DH:[65,69,73,77], ALL:[65,69,73,77]},
+  };
+  const pitStats = {
+    '控球': {SP:[65,70,75,80], 'RP/CP':[63,67,71,75], ALL:[65,70,75,80]},
+    '球威': {SP:[64,69,74,79], 'RP/CP':[65,69,73,77], ALL:[64,69,74,79]},
+    '體力': {SP:[66,70,74,78], 'RP/CP':[53,56,59,62], ALL:[66,70,74,78]},
+    '直球': {SP:[65,69,73,77], 'RP/CP':[65,69,73,77], ALL:[65,69,73,77]},
+    '變化': {SP:[64,68,72,76], 'RP/CP':[64,68,72,76], ALL:[64,68,72,76]},
+  };
+
+  let html = `<div class="ability-section">
+    <h3>⚾ 打者能力值階段</h3>`;
+
+  Object.entries(batStats).forEach(([stat, data]) => {
+    html += `<div class="ability-group">
+      <h4>能力值 - ${stat}</h4>
+      <div style="overflow-x:auto">
+      <table class="ability-table">
+        <thead><tr><th>守備位置</th><th class="stage-1">1階段</th><th class="stage-2">2階段</th><th class="stage-3">3階段</th><th class="stage-4">4階段</th></tr></thead>
+        <tbody>`;
+    batPos.forEach(pos => {
+      const v = data[pos];
+      html += `<tr><td class="pos-cell">${pos}</td><td class="stage-1">${v[0]}</td><td class="stage-2">${v[1]}</td><td class="stage-3">${v[2]}</td><td class="stage-4">${v[3]}</td></tr>`;
+    });
+    html += `</tbody></table></div></div>`;
+  });
+
+  html += `</div><div class="ability-section">
+    <h3>🎯 投手能力值階段</h3>`;
+
+  Object.entries(pitStats).forEach(([stat, data]) => {
+    html += `<div class="ability-group">
+      <h4>能力值 - ${stat}</h4>
+      <div style="overflow-x:auto">
+      <table class="ability-table">
+        <thead><tr><th>守備位置</th><th class="stage-1">1階段</th><th class="stage-2">2階段</th><th class="stage-3">3階段</th><th class="stage-4">4階段</th></tr></thead>
+        <tbody>`;
+    pitPos.forEach(pos => {
+      const v = data[pos];
+      html += `<tr><td class="pos-cell">${pos}</td><td class="stage-1">${v[0]}</td><td class="stage-2">${v[1]}</td><td class="stage-3">${v[2]}</td><td class="stage-4">${v[3]}</td></tr>`;
+    });
+    html += `</tbody></table></div></div>`;
+  });
+
+  html += `</div>`;
+  container.innerHTML = html;
+}
+
+// ===================== SECTION 4: 位置屬性數值範圍 =====================
+function renderPosRange() {
+  const container = document.getElementById('pos-range-content');
+
+  // 打擊王 (batter trainer) position attribute value ranges
+  const batTrainers = [
+    {
+      name: '打擊王', effects: [
+        { effect: '全壘打機率增加', rows: [
+          { cond: '接觸', s1:[0.9,1.8], s2:[1.9,2.8], s3:[2.9,3.8], s4:[3.9,4.8] },
+          { cond: '力量', s1:[0.9,1.8], s2:[1.9,2.8], s3:[2.9,3.8], s4:[3.9,4.8] },
+          { cond: '選球', s1:[0.9,1.8], s2:[1.9,2.8], s3:[2.9,3.8], s4:[3.9,4.8] },
+        ]},
+        { effect: '強力滾地球機率增加', rows: [
+          { cond: '接觸', s1:[0.5,1.0], s2:[1.1,1.6], s3:[1.7,2.2], s4:[2.3,2.8] },
+        ]},
+        { effect: '平飛球機率增加', rows: [
+          { cond: '接觸', s1:[0.5,1.0], s2:[1.1,1.6], s3:[1.7,2.2], s4:[2.3,2.8] },
+        ]},
+      ]
+    },
+    {
+      name: 'Doctor K', effects: [
+        { effect: '平飛球機率減少', rows: [
+          { cond: '球威', s1:[0.9,1.8], s2:[1.9,2.8], s3:[2.9,3.8], s4:[3.9,4.8] },
+          { cond: '控球', s1:[0.9,1.8], s2:[1.9,2.8], s3:[2.9,3.8], s4:[3.9,4.8] },
+        ]},
+        { effect: '全壘打機率減少', rows: [
+          { cond: '球威', s1:[0.9,1.8], s2:[1.9,2.8], s3:[2.9,3.8], s4:[3.9,4.8] },
+        ]},
+      ]
+    },
+  ];
+
+  let html = '';
+  batTrainers.forEach(t => {
+    html += `<div class="valrange-section">
+      <h3>📋 ${t.name} — 位置屬性效果數值範圍</h3>`;
+    t.effects.forEach(ef => {
+      html += `<div style="margin-bottom:16px">
+        <div style="font-size:13px;color:var(--muted);margin-bottom:6px">▸ ${ef.effect}</div>
+        <div style="overflow-x:auto">
+        <table class="valrange-table">
+          <thead><tr>
+            <th>能力值條件</th>
+            <th><span class="badge badge-gold">炫金</span> 1階段 最小</th>
+            <th><span class="badge badge-gold">炫金</span> 1階段 最大</th>
+            <th>2階段 最小</th><th>2階段 最大</th>
+            <th>3階段 最小</th><th>3階段 最大</th>
+            <th>4階段 最小</th><th>4階段 最大</th>
+          </tr></thead>
+          <tbody>`;
+      ef.rows.forEach(r => {
+        html += `<tr>
+          <td class="cond-cell">${r.cond}</td>
+          <td class="val-gold">${r.s1[0]}%</td><td class="val-gold">${r.s1[1]}%</td>
+          <td class="val-plat">${r.s2[0]}%</td><td class="val-plat">${r.s2[1]}%</td>
+          <td class="val-plat">${r.s3[0]}%</td><td class="val-plat">${r.s3[1]}%</td>
+          <td class="val-plat-sp">${r.s4[0]}%</td><td class="val-plat-sp">${r.s4[1]}%</td>
+        </tr>`;
+      });
+      html += `</tbody></table></div></div>`;
+    });
+    html += `</div>`;
+  });
+
+  html += `<div class="info-box">
+    <strong>規則提醒：</strong>數值區間固定為 0.1%，各值機率相同（1/N）。
+    白金教練數值範圍與炫金相同（最小至最大），白金高級券的最小值會提高。
+  </div>`;
+
+  container.innerHTML = html;
+}
+
+// ===================== NAV =====================
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach((t,i) => {
+    const ids = ['main-attrs','pos-prob','ability-vals','pos-range'];
+    t.classList.toggle('active', ids[i] === id);
+  });
+}
+
+// ===================== BACK TO TOP =====================
+window.addEventListener('scroll', () => {
+  document.getElementById('backTop').classList.toggle('visible', window.scrollY > 300);
+});
+
+// ===================== INIT =====================
+renderTrainers();
+renderPosProb();
+renderAbilityVals();
+renderPosRange();
+</script>
+</body>
+</html>
