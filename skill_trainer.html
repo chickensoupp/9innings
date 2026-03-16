@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>九局棒球 — 技能教練傳說屬性參考手冊</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #21262d;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --silver: #c0c8d8;
+    --gold: #f0c040;
+    --plat: #a8d8f0;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --red: #f85149;
+    --orange: #d29922;
+    --purple: #bc8cff;
+    --tag-bat: #1f4a2c;
+    --tag-bat-t: #56d364;
+    --tag-pit: #1a3a5c;
+    --tag-pit-t: #58a6ff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #1c2128 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 24px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-inner { max-width: 1200px; margin: 0 auto; }
+  .header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.2rem;
+    letter-spacing: 3px;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+  .header p { color: var(--muted); font-size: 12px; }
+  .nav-tabs {
+    display: flex; gap: 4px; margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .nav-tab {
+    padding: 6px 16px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 13px;
+    transition: all .2s;
+  }
+  .nav-tab:hover { color: var(--text); border-color: var(--accent); }
+  .nav-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 700; }
+
+  /* ===== LAYOUT ===== */
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ===== SEARCH ===== */
+  .search-box { position: relative; margin-bottom: 20px; }
+  .search-box input {
+    width: 100%; padding: 10px 16px 10px 40px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); font-size: 14px;
+    font-family: 'Noto Sans TC', sans-serif;
+    transition: border-color .2s;
+  }
+  .search-box input:focus { outline: none; border-color: var(--accent); }
+  .search-box::before {
+    content: '🔍'; position: absolute; left: 12px; top: 50%;
+    transform: translateY(-50%); font-size: 14px;
+  }
+
+  /* ===== TIER BADGES ===== */
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+  }
+  .badge-I   { background: #1f2e1f; color: #56d364; border: 1px solid #2ea043; }
+  .badge-II  { background: #2d2510; color: var(--gold); border: 1px solid #8b6914; }
+  .badge-III { background: #112233; color: var(--plat); border: 1px solid #2a5a8a; }
+
+  /* ===== INFO BOX ===== */
+  .info-box {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px; padding: 12px 16px; margin-bottom: 16px;
+    font-size: 13px; color: var(--muted);
+  }
+  .info-box strong { color: var(--text); }
+
+  /* ===== FILTER CHIPS ===== */
+  .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .filter-chip {
+    padding: 4px 12px; border-radius: 20px;
+    border: 1px solid var(--border); background: transparent;
+    color: var(--muted); cursor: pointer; font-size: 12px;
+    font-family: 'Noto Sans TC', sans-serif;
+    transition: all .15s;
+  }
+  .filter-chip:hover { color: var(--text); }
+  .filter-chip.active { border-color: var(--gold); color: var(--gold); background: rgba(240,192,64,0.08); }
+
+  /* ===== TRAINER CARD ===== */
+  .trainer-grid { display: flex; flex-direction: column; gap: 12px; }
+  .trainer-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color .2s;
+  }
+  .trainer-card:hover { border-color: var(--accent); }
+  .trainer-card.hidden { display: none; }
+
+  .card-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px;
+    background: var(--surface2);
+    cursor: pointer;
+    user-select: none;
+  }
+  .card-title { font-size: 15px; font-weight: 700; color: var(--text); flex: 1; }
+  .card-subtitle { font-size: 12px; color: var(--muted); }
+  .card-toggle {
+    width: 24px; height: 24px; display: flex; align-items: center;
+    justify-content: center; color: var(--muted); font-size: 16px;
+    transition: transform .2s;
+  }
+  .card-toggle.open { transform: rotate(180deg); }
+  .card-body { padding: 0 16px 16px; }
+
+  /* ===== LEGEND TIER BLOCK ===== */
+  .tier-block { margin-top: 14px; }
+  .tier-header {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 0 6px 2px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+  .tier-prob {
+    font-size: 12px; color: var(--muted); margin-left: auto;
+  }
+  .tier-prob span { color: var(--orange); font-weight: 700; }
+
+  /* ===== EFFECT ROW TABLE ===== */
+  .effect-table {
+    width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 4px;
+  }
+  .effect-table th {
+    background: var(--surface2); color: var(--muted);
+    padding: 5px 10px; border: 1px solid var(--border);
+    font-size: 11px; font-weight: 600; text-align: center;
+  }
+  .effect-table td {
+    padding: 6px 10px; border: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .effect-table tr:hover td { background: rgba(88,166,255,0.04); }
+
+  .etype-cell {
+    text-align: center; white-space: nowrap; font-size: 12px; font-weight: 700;
+  }
+  .etype-base { color: #56d364; }
+  .etype-skill { color: var(--plat); }
+
+  .desc-cell { text-align: left; color: var(--muted); font-size: 12px; line-height: 1.5; }
+  .desc-cell .note { color: var(--orange); font-size: 11px; display: block; margin-top: 2px; }
+
+  .val-cell { text-align: center; }
+  .val-min { color: var(--silver); font-weight: 600; font-size: 12px; }
+  .val-max { color: var(--gold); font-weight: 700; font-size: 13px; }
+  .val-interval { color: var(--green); font-size: 11px; }
+  .val-fixed { color: var(--plat); font-weight: 700; font-size: 13px; }
+  .val-dash { color: var(--border); }
+
+  /* ===== OVERVIEW TABLE (tier probs) ===== */
+  .overview-table {
+    width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px;
+  }
+  .overview-table th {
+    background: var(--surface2); color: var(--muted);
+    padding: 6px 14px; border: 1px solid var(--border);
+    font-size: 12px; font-weight: 600; text-align: center;
+  }
+  .overview-table td {
+    padding: 7px 14px; border: 1px solid var(--border);
+    text-align: center; vertical-align: middle;
+  }
+  .overview-table tr:hover td { background: rgba(88,166,255,0.04); }
+
+  /* ===== SCROLL TO TOP ===== */
+  .back-top {
+    position: fixed; bottom: 24px; right: 24px;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    border: none; cursor: pointer; font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(88,166,255,0.3);
+    opacity: 0; pointer-events: none; transition: opacity .2s;
+  }
+  .back-top.visible { opacity: 1; pointer-events: all; }
+
+  @media (max-width: 700px) {
+    .header h1 { font-size: 1.6rem; }
+    .effect-table { font-size: 11px; }
+    .effect-table th, .effect-table td { padding: 4px 6px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <h1>⚡ 九局棒球 技能教練傳說屬性</h1>
+    <p>傳說屬性獲得機率 · 基本效果 / 技能效果數值範圍</p>
+    <nav class="nav-tabs">
+      <button class="nav-tab active" onclick="showSection('detail')">⚾ 打者技能</button>
+      <button class="nav-tab" onclick="showSection('pitcher')">🎯 投手技能</button>
+    </nav>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ===================== SECTION 1: 打者技能 ===================== -->
+<div id="detail" class="section active">
+  <div class="info-box">
+    <strong>說明：</strong>下列為打者技能教練傳說屬性的完整數值。<br>
+    <span class="etype-base">■ 基本效果</span>為固定效果，<span class="etype-skill">■ 技能效果</span>為傳說技能觸發的額外效果（觸發機率 1/18）。
+  </div>
+
+  <div class="filter-row" id="bat-filter">
+    <button class="filter-chip active" onclick="setBatFilter('all',this)">全部</button>
+    <button class="filter-chip" onclick="setBatFilter('打者洞察力',this)">打者洞察力</button>
+    <button class="filter-chip" onclick="setBatFilter('精準打擊',this)">精準打擊</button>
+    <button class="filter-chip" onclick="setBatFilter('壞球打者',this)">壞球打者</button>
+    <button class="filter-chip" onclick="setBatFilter('先鋒',this)">先鋒</button>
+    <button class="filter-chip" onclick="setBatFilter('天生巨星',this)">天生巨星</button>
+    <button class="filter-chip" onclick="setBatFilter('機會製造者',this)">機會製造者</button>
+    <button class="filter-chip" onclick="setBatFilter('打者默契',this)">打者默契</button>
+    <button class="filter-chip" onclick="setBatFilter('最強打者',this)">最強打者</button>
+    <button class="filter-chip" onclick="setBatFilter('老手',this)">老手</button>
+  </div>
+
+  <div class="search-box">
+    <input type="text" id="search-bat" placeholder="搜尋技能名稱或效果描述..." oninput="filterBat()">
+  </div>
+
+  <div class="trainer-grid" id="bat-grid"></div>
+</div>
+
+<!-- ===================== SECTION 3: 投手技能 ===================== -->
+<div id="pitcher" class="section">
+  <div class="info-box">
+    <strong>說明：</strong>下列為投手技能教練傳說屬性的完整數值。<br>
+    <span class="etype-base">■ 基本效果</span>為固定效果，<span class="etype-skill">■ 技能效果</span>為傳說技能觸發的額外效果（觸發機率 1/18）。
+  </div>
+
+  <div class="filter-row" id="pit-filter">
+    <button class="filter-chip active" onclick="setPitFilter('all',this)">全部</button>
+    <button class="filter-chip" onclick="setPitFilter('投手洞察力',this)">投手洞察力</button>
+    <button class="filter-chip" onclick="setPitFilter('精準控球',this)">精準控球</button>
+    <button class="filter-chip" onclick="setPitFilter('速球型投手',this)">速球型投手</button>
+    <button class="filter-chip" onclick="setPitFilter('先守後攻',this)">先守後攻</button>
+    <button class="filter-chip" onclick="setPitFilter('牛棚日',this)">牛棚日</button>
+    <button class="filter-chip" onclick="setPitFilter('合力投球',this)">合力投球</button>
+    <button class="filter-chip" onclick="setPitFilter('投手默契',this)">投手默契</button>
+    <button class="filter-chip" onclick="setPitFilter('工作馬',this)">工作馬</button>
+    <button class="filter-chip" onclick="setPitFilter('完美先生',this)">完美先生</button>
+  </div>
+
+  <div class="search-box">
+    <input type="text" id="search-pit" placeholder="搜尋技能名稱或效果描述..." oninput="filterPit()">
+  </div>
+
+  <div class="trainer-grid" id="pit-grid"></div>
+</div>
+
+</div><!-- /container -->
+
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ===================== DATA =====================
+// Structure: { name, type:'bat'|'pit', tiers: [ { tier:'I'|'II'|'III', prob, rows:[ {etype, desc, note?, min, max, interval} ] } ] }
+
+const skillData = [
+  {
+    name: '打者洞察力', type: 'bat',
+    tiers: [
+      { tier: 'I', prob: '2.78%', rows: [
+        { etype: 'base', desc: '好球帶邊緣、好球帶以外投球的揮空機率減少{0}%（依自身打席數比例提升效果）', min: 4, max: 8, interval: 0.05 },
+        { etype: 'skill', desc: '對方投手的傳說技能等級減少{0}（投手洞察力除外）', min: 1, max: 1, interval: null },
+        { etype: 'skill', desc: '好球帶邊緣、好球帶以外投球的揮空機率減少{0}%（依自身打席數比例提升效果）', min: 4.5, max: 9, interval: 0.05 },
+      ]},
+      { tier: 'II', prob: '1.94%', rows: [
+        { etype: 'base', desc: '增加強力的滾地球機率{0}%（依自身打席數比例提升效果）', min: 2.8, max: 5.6, interval: 0.02 },
+        { etype: 'skill', desc: '對方投手的傳說技能等級減少{0}（投手洞察力除外）', note: '{0}的值以1或2登場的機率分別為71%、29%', min: 1, max: 2, interval: 1 },
+        { etype: 'skill', desc: '增加強力的滾地球機率{0}%（依自身打席數比例提升效果）', min: 3.2, max: 6.4, interval: 0.02 },
+      ]},
+      { tier: 'III', prob: '0.83%', rows: [
+        { etype: 'base', desc: '增加平飛球機率{0}%（依自身打席數比例提升效果）', min: 3.8, max: 7.6, interval: 0.02 },
+        { etype: 'skill', desc: '對方投手的傳說技能等級減少{0}（投手洞察力除外）', note: '{0}的值以1或2登場的機率分別為31%、69%', min: 1, max: 2, interval: 1 },
+        { etype: 'skill', desc: '增加平飛球機率{0}%（依自身打席數比例提升效果）', min: 4.2, max: 8.4, interval: 0.02 },
+      ]},
+    ]
+  },
+  {
+    name: '精準打擊', type: 'bat',
+    tiers: [
+      { tier: 'I', prob: '2.78%', rows: [
+        { etype: 'base', desc: '好球帶邊緣/好球帶以外投球的揮空機率減少{0}%', min: 5, max: 10, interval: 0.05 },
+        { etype: 'skill', desc: '打擊靠近好球帶中心的球時，有{0}%機率將打擊時機提升一個階段', min: 12, max: 24, interval: 0.1 },
+        { etype: 'skill', desc: '好球帶邊緣/好球帶以外投球的揮空機率減少{0}%', min: 6, max: 12, interval: 0.05 },
+      ]},
+      { tier: 'II', prob: '1.94%', rows: [
+        { etype: 'base', desc: '對方投手的暴投、死球發生機率增加{0}%', min: 1.6, max: 3.2, interval: 0.01 },
+        { etype: 'skill', desc: '打擊靠近好球帶中心的球時，有{0}%機率將打擊時機提升一個階段', min: 15, max: 30, interval: 0.1 },
+        { etype: 'skill', desc: '對方投手的暴投、死球發生機率增加{0}%', min: 1.9, max: 3.8, interval: 0.01 },
+      ]},
+      { tier: 'III', prob: '0.83%', rows: [
+        { etype: 'base', desc: '增加平飛球機率{0}%', min: 6.5, max: 13, interval: 0.05 },
+        { etype: 'skill', desc: '打擊靠近好球帶中心的球時，有{0}%機率將打擊時機提升一個階段', min: 18, max: 36, interval: 0.1 },
+        { etype: 'skill', desc: '增加平飛球機率{0}%', min: 7.5, max: 15, interval: 0.05 },
+      ]},
+    ]
+  },
+  {
+    name: '壞球打者', type: 'bat',
+    tiers: [
+      { tier: 'I', prob: '2.78%', rows: [
+        { etype: 'base', desc: '打擊好球帶邊緣/好球帶以外投球時，平飛球機率增加{0}%', min: 7, max: 14, interval: 0.05 },
+        { etype: 'skill', desc: '良好擊球發生範圍增加{0}%', min: 7.5, max: 15, interval: 0.05 },
+        { etype: 'skill', desc: '打擊好球帶邊緣/好球帶以外投球時，平飛球機率增加{0}%', min: 8, max: 16, interval: 0.05 },
+      ]},
+      { tier: 'II', prob: '1.94%', rows: [
+        { etype: 'base', desc: '打擊好球帶邊緣/好球帶以外投球時，全壘打性擊球機率增加{0}%', min: 12.5, max: 25, interval: 0.05 },
+        { etype: 'skill', desc: '良好擊球發生範圍增加{0}%', min: 9.5, max: 19, interval: 0.05 },
+        { etype: 'skill', desc: '打擊好球帶邊緣/好球帶以外投球時，全壘打性擊球機率增加{0}%', min: 13.5, max: 27, interval: 0.05 },
+      ]},
+      { tier: 'III', prob: '0.83%', rows: [
+        { etype: 'base', desc: '打擊好球帶中心的球時，全壘打性擊球機率增加{0}%', min: 5.5, max: 11, interval: 0.05 },
+        { etype: 'base', desc: '打擊好球帶中心的球時，平飛球機率增加{0}%', min: 5.5, max: 11, interval: 0.05 },
+        { etype: 'skill', desc: '良好擊球發生範圍增加{0}%', min: 12.5, max: 25, interval: 0.05 },
+        { etype: 'skill', desc: '打擊好球帶中心的球時，全壘打性擊球機率增加{0}%', min: 6.5, max: 13, interval: 0.05 },
+        { etype: 'skill', desc: '打擊好球帶中心的球時，平飛球機率增加{0}%', min: 6.5, max: 13, interval: 0.05 },
+      ]},
+    ]
+  },
+  {
+    name: '先鋒', type: 'bat',
+    tiers: [
+      { tier: 'I', prob: '2.78%', rows: [
+        { etype: 'base', desc: '對方投手的暴投、死球發生機率增加{0}%', min: 1.3, max: 2.6, interval: 0.01 },
+        { etype: 'skill', desc: '在第{0}次打席內不受技能懲罰', min: 1, max: 1, interval: null },
+        { etype: 'skill', desc: '對方投手的暴投、死球發生機率增加{0}%', min: 1.4, max: 2.8, interval: 0.01 },
+      ]},
+      { tier: 'II', prob: '1.94%', rows: [
+        { etype: 'base', desc: '增加強力的滾地球機率{0}%', min: 5.5, max: 11, interval: 0.05 },
+        { etype: 'skill', desc: '在第{0}次打席內不受技能懲罰', min: 2, max: 2, interval: null },
+        { etype: 'skill', desc: '增加強力的滾地球機率{0}%', min: 6.5, max: 13, interval: 0.05 },
+      ]},
+      { tier: 'III', prob: '0.83%', rows: [
+        { etype: 'base', desc: '增加平飛球機率{0}%', min: 7.5, max: 15, interval: 0.05 },
+        { etype: 'skill', desc: '在第{0}次打席內不受技能懲罰', min: 3, max: 3, interval: null },
+        { etype: 'skill', desc: '增加平飛球機率{0}%', min: 9, max: 18, interval: 0.05 },
+      ]},
+    ]
+  },
+  {
+    name: '天生巨星', type: 'bat',
+    tiers: [
+      { tier: 'I', prob: '2.78%', rows: [
+        { etype: 'base', desc: '增加強力的滾地球機率{0}%', min: 3, max: 6, interval: 0.05 },
+        { etype: 'skill', desc: '有{0}%機率將打擊時機提升一個階段（依持有打者的累積貧打數比例變動）', min: 8, max: 16, interval: 0.1 },
+        { etype: 'skill', desc: '增加強力的滾地球機率{0}%', min: 3.5, max: 7, interval: 0.05 },
+      ]},
+      { tier: 'II', prob: '1.94%', rows: [
+        { etype: 'base', desc: '增加平飛球機率{0}%', min: 5.5, max: 11, interval: 0.05 },
+        { etype: 'skill', desc: '有{0}%機率將打擊時機提升一個階段（依持有打者的累積貧打數比例變動）', min: 10, max: 20, interval: 0.1 },
+        { etype: 'skill', desc: '增加平飛球機率{0}%', min: 6.5, max: 13, interval: 0.05 },
+      ]},
+      { tier: 'III', prob: '0.83%', rows: [
+        { etype: 'base', desc: '增加全壘打性擊球機率{0}%', min: 6.5, max: 13, interval: 0.05 },
+        { etype: 'skill', desc: '有{0}%機率將打擊時機提升一個階段（依持有打者的累積貧打數比例變動）', min: 12, max: 24, interval: 0.1 },
+        { etype: 'skill', desc: '增加全壘打性擊球機率{0}%', min: 8, max: 16, interval: 0.05 },
+      ]},
+    ]
+  },
+  {
+    name: '機會製造者', type: 'bat',
+    tiers: [
+      { tier: 'I', prob: '2.78%', rows: [
+        { etype: 'base', desc: '好球帶邊緣、好球帶以外投球的揮空機率減少{0}%', min: 5.5, max: 11, interval: 0.05 },
+        { etype: 'skill', desc: '一壘無跑者時，跑至一壘的跑壘速度提升{0}%', min: 3, max: 6, interval: 0.05 },
+        { etype: 'skill', desc: '好球帶邊緣、好球帶以外投球的揮空機率減少{0}%', min: 6.5, max: 13, interval: 0.05 },
+      ]},
+      { tier: 'II', prob: '1.94%', rows: [
+        { etype: 'base', desc: '對方投手的暴投、死球發生機率增加{0}%', min: 1.4, max: 2.8, interval: 0.01 },
+        { etype: 'skill', desc: '一壘無跑者時，跑至一壘的跑壘速度提升{0}%', min: 5, max: 10, interval: 0.05 },
+        { etype: 'skill', desc: '對方投手的暴投、死球發生機率增加{0}%', min: 1.6, max: 3.2, interval: 0.01 },
+      ]},
+      { tier: 'III', prob: '0.83%', rows: [
+        { etype: 'base', desc: '上壘後，後續打者的平飛球機率增加{0}%', min: 6, max: 12, interval: 0.05 },
+        { etype: 'skill', desc: '一壘無跑者時，跑至一壘的跑壘速度提升{0}%', min: 9, max: 18, interval: 0.05 },
+        { etype: 'skill', desc: '影響後續打者的累積上壘最大次數增加{0}', min: 1, max: 1, interval: null },
+        { etype: 'skill', desc: '上壘後，後續打者的平飛球機率增加{0}%', min: 6.5, max: 13, interval: 0.05 },
+      ]},
+    ]
+  },
+  {
+    name: '打者默契', type: 'bat',
+    tiers: [
+      { tier: 'I', prob: '2.78%', rows: [
+        { etype: 'base', desc: '持有打者以代打站上打席時，平飛球機率增加{0}%', min: 5, max: 10, interval: 0.05 },
+        { etype: 'skill', desc: '持有打者以代打站上打席時，平飛球機率增加{0}%', min: 5, max: 10, interval: 0.05 },
+        { etype: 'skill', desc: '1、2、9號打序的好球帶邊緣/好球帶以外投球的揮空機率減少{0}%（僅套用於發動中的默契技能）', min: 2, max: 4, interval: 0.01 },
+      ]},
+      { tier: 'II', prob: '1.94%', rows: [
+        { etype: 'base', desc: '持有打者以代打站上打席時，平飛球機率增加{0}%', min: 6, max: 12, interval: 0.05 },
+        { etype: 'skill', desc: '持有打者以代打站上打席時，平飛球機率增加{0}%', min: 6, max: 12, interval: 0.05 },
+        { etype: 'skill', desc: '3、4、5號打序的好球帶邊緣/好球帶以外投球的揮空機率減少{0}%（僅套用於發動中的默契技能）', min: 2.2, max: 4.4, interval: 0.01 },
+      ]},
+      { tier: 'III', prob: '0.83%', rows: [
+        { etype: 'base', desc: '持有打者以代打站上打席時，平飛球機率增加{0}%', min: 7, max: 14, interval: 0.05 },
+        { etype: 'skill', desc: '持有打者以代打站上打席時，平飛球機率增加{0}%', min: 7, max: 14, interval: 0.05 },
+        { etype: 'skill', desc: '6、7、8、9號打序的好球帶邊緣/好球帶以外投球的揮空機率減少{0}%（僅套用於發動中的默契技能）', min: 3.5, max: 7, interval: 0.01 },
+      ]},
+    ]
+  },
+  {
+    name: '最強打者', type: 'bat',
+    tiers: [
+      { tier: 'I', prob: '2.78%', rows: [
+        { etype: 'base', desc: '增加平飛球機率{0}%', min: 3, max: 6, interval: 0.05 },
+        { etype: 'skill', desc: '有{0}%機率將打擊時機提升一個階段（依一般陣容接觸比例變動）', min: 8, max: 16, interval: 0.05 },
+        { etype: 'skill', desc: '增加平飛球機率{0}%', min: 4, max: 8, interval: 0.05 },
+      ]},
+      { tier: 'II', prob: '1.94%', rows: [
+        { etype: 'base', desc: '增加全壘打性擊球機率{0}%', min: 5, max: 10, interval: 0.05 },
+        { etype: 'skill', desc: '有{0}%機率將打擊時機提升一個階段（依一般陣容接觸比例變動）', min: 9, max: 18, interval: 0.05 },
+        { etype: 'skill', desc: '增加全壘打性擊球機率{0}%', min: 5.5, max: 11, interval: 0.05 },
+      ]},
+      { tier: 'III', prob: '0.83%', rows: [
+        { etype: 'base', desc: '增加強力的滾地球機率{0}%', min: 3.5, max: 7, interval: 0.05 },
+        { etype: 'base', desc: '增加平飛球機率{0}%', min: 3.5, max: 7, interval: 0.05 },
+        { etype: 'skill', desc: '有{0}%機率將打擊時機提升一個階段（依一般陣容接觸比例變動）', min: 10, max: 20, interval: 0.05 },
+        { etype: 'skill', desc: '增加強力的滾地球機率{0}%', min: 4.5, max: 9, interval: 0.05 },
+        { etype: 'skill', desc: '增加平飛球機率{0}%', min: 4.5, max: 9, interval: 0.05 },
+      ]},
+    ]
+  },
+  {
+    name: '老手', type: 'bat',
+    tiers: [
+      { tier: 'I', prob: '2.78%', rows: [
+        { etype: 'base', desc: '好球帶邊緣、好球帶以外投球的揮空機率減少{0}%', min: 3.5, max: 7, interval: 0.05 },
+        { etype: 'skill', desc: '針對防守漏洞的強擊球發生機率增加{0}%（依與對方投手交手次數比例變動）', min: 4, max: 8, interval: 0.05 },
+        { etype: 'skill', desc: '好球帶邊緣、好球帶以外投球的揮空機率減少{0}%', min: 4, max: 8, interval: 0.05 },
+      ]},
+      { tier: 'II', prob: '1.94%', rows: [
+        { etype: 'base', desc: '對方投手的暴投、死球發生機率增加{0}%', min: 1.4, max: 2.8, interval: 0.01 },
+        { etype: 'skill', desc: '針對防守漏洞的強擊球發生機率增加{0}%（依與對方投手交手次數比例變動）', min: 5, max: 10, interval: 0.05 },
+        { etype: 'skill', desc: '對方投手的暴投、死球發生機率增加{0}%', min: 1.6, max: 3.2, interval: 0.01 },
+      ]},
+      { tier: 'III', prob: '0.83%', rows: [
+        { etype: 'base', desc: '增加強力的滾地球機率{0}%', min: 5.5, max: 11, interval: 0.05 },
+        { etype: 'skill', desc: '針對防守漏洞的強擊球發生機率增加{0}%（依與對方投手交手次數比例變動）', min: 6, max: 12, interval: 0.05 },
+        { etype: 'skill', desc: '增加強力的滾地球機率{0}%', min: 6, max: 12, interval: 0.05 },
+      ]},
+    ]
+  },
+  // ---- PITCHERS ----
+  {
+    name: '投手洞察力', type: 'pit',
+    tiers: [
+      { tier: 'I', prob: '2.78%', rows: [
+        { etype: 'base', desc: '好球帶邊緣、好球帶以外投球的揮空機率追加{0}%（依與對方打者交手次數比例變動）', min: 3.5, max: 7, interval: 0.05 },
+        { etype: 'skill', desc: '對方打者的傳說技能等級減少{0}（打者洞察力除外）', min: 1, max: 1, interval: null },
+        { etype: 'skill', desc: '好球帶邊緣、好球帶以外投球的揮空機率追加{0}%（依與對方打者交手次數比例變動）', min: 4, max: 8, interval: 0.05 },
+      ]},
+      { tier: 'II', prob: '1.94%', rows: [
+        { etype: 'base', desc: '減少對方打者擊出強力的滾地球的機率{0}%', min: 1.8, max: 3.6, interval: 0.02 },
+        { etype: 'base', desc: '減少對方打者擊出平飛球的機率{0}%', min: 1.8, max: 3.6, interval: 0.02 },
+        { etype: 'skill', desc: '對方打者的傳說技能等級減少{0}（打者洞察力除外）', min: 1, max: 2, interval: 1 },
+        { etype: 'skill', desc: '減少對方打者擊出強力的滾地球的機率{0}%', min: 2, max: 4, interval: 0.02 },
+        { etype: 'skill', desc: '減少對方打者擊出平飛球的機率{0}%（依與對方打者交手次數比例變動）', min: 2, max: 4, interval: 0.02 },
+      ]},
+      { tier: 'III', prob: '0.83%', rows: [
+        { etype: 'base', desc: '減少對方打者擊出平飛球的機率{0}%（依與對方打者交手次數比例變動）', min: 2.2, max: 4.4, interval: 0.02 },
+        { etype: 'base', desc: '減少對方打者擊出全壘打性擊球的機率（依與對方打者交手次數比例變動）', min: 2.2, max: 4.4, interval: 0.02 },
+        { etype: 'skill', desc: '對方打者的傳說技能等級減少{0}（打者洞察力除外）', min: 1, max: 2, interval: 1 },
+        { etype: 'skill', desc: '減少對方打者擊出平飛球的機率{0}%（依與對方打者交手次數比例變動）', min: 2.4, max: 4.8, interval: 0.02 },
+        { etype: 'skill', desc: '減少對方打者擊出全壘打性擊球的機率（依與對方打者交手次數比例變動）', min: 2.4, max: 4.8, interval: 0.02 },
+      ]},
+    ]
+  },
+  {
+    name: '精準控球', type: 'pit',
+    tiers: [
+      { tier: 'I', prob: '2.78%', rows: [
+        { etype: 'base', desc: '增加對方打者擊出飛球的機率{0}%', min: 3, max: 6, interval: 0.05 },
+        { etype: 'skill', desc: '針對防守漏洞的強擊球發生機率增加{0}%（依與對方投手交手次數比例變動）', min: 3, max: 6, interval: 0.05 },
+        { etype: 'skill', desc: '增加對方打者擊出飛球的機率{0}%', min: 3.5, max: 7, interval: 0.05 },
+      ]},
+      { tier: 'II', prob: '1.94%', rows: [
+        { etype: 'base', desc: '增加對方打者擊出滾地球的機率{0}%', min: 5.5, max: 11, interval: 0.05 },
+        { etype: 'skill', desc: '針對防守漏洞的強擊球發生機率增加{0}%（依與對方投手交手次數比例變動）', min: 4.5, max: 9, interval: 0.05 },
+        { etype: 'skill', desc: '增加對方打者擊出滾地球的機率{0}%', min: 6, max: 12, interval: 0.05 },
+      ]},
+      { tier: 'III', prob: '0.83%', rows: [
+        { etype: 'base', desc: '靠近守備球員正面的滾地球機率增加{0}%', min: 7.5, max: 15, interval: 0.05 },
+        { etype: 'skill', desc: '針對防守漏洞的強擊球發生機率增加{0}%（依與對方投手交手次數比例變動）', min: 6, max: 12, interval: 0.05 },
+        { etype: 'skill', desc: '靠近守備球員正面的滾地球機率增加{0}%', min: 8, max: 16, interval: 0.05 },
+      ]},
+    ]
+  },
+  {
+    name: '速球型投手', type: 'pit',
+    tiers: [
+      { tier: 'I', prob: '2.78%', rows: [
+        { etype: 'base', desc: '增加對方打者擊出飛球的機率{0}%', min: 3, max: 6, interval: 0.05 },
+        { etype: 'skill', desc: '有{0}%機率將打擊時機減少一個階段（依一般陣容球威+直球比例變動）', min: 6, max: 12, interval: 0.05 },
+        { etype: 'skill', desc: '增加對方打者擊出飛球的機率{0}%', min: 4, max: 8, interval: 0.05 },
+      ]},
+      { tier: 'II', prob: '1.94%', rows: [
+        { etype: 'base', desc: '增加對方打者擊出飛球的機率{0}%', min: 3, max: 6, interval: 0.05 },
+        { etype: 'base', desc: '增加對方打者擊出滾地球的機率{0}%', min: 3, max: 6, interval: 0.05 },
+        { etype: 'skill', desc: '有{0}%機率將打擊時機減少一個階段（依一般陣容球威+直球比例變動）', min: 7, max: 14, interval: 0.05 },
+        { etype: 'skill', desc: '增加對方打者擊出飛球的機率{0}%', min: 3.6, max: 7.2, interval: 0.05 },
+        { etype: 'skill', desc: '增加對方打者擊出滾地球的機率{0}%', min: 3.6, max: 7.2, interval: 0.05 },
+      ]},
+      { tier: 'III', prob: '0.83%', rows: [
+        { etype: 'base', desc: '減少對方打者擊出平飛球的機率{0}%', min: 3, max: 6, interval: 0.05 },
+        { etype: 'base', desc: '減少對方打者擊出全壘打性擊球的機率{0}%', min: 3, max: 6, interval: 0.05 },
+        { etype: 'skill', desc: '有{0}%機率將打擊時機減少一個階段（依一般陣容球威+直球比例變動）', min: 8, max: 16, interval: 0.05 },
+        { etype: 'skill', desc: '減少對方打者擊出平飛球的機率{0}%', min: 3.75, max: 7.5, interval: 0.05 },
+        { etype: 'skill', desc: '減少對方打者擊出全壘打性擊球的機率{0}%', min: 3.75, max: 7.5, interval: 0.05 },
+      ]},
+    ]
+  },
+  {
+    name: '先守後攻', type: 'pit',
+    tiers: [
+      { tier: 'I', prob: '2.78%', rows: [
+        { etype: 'base', desc: '減少對方打者擊出強力的滾地球的機率{0}%', min: 4, max: 8, interval: 0.05 },
+        { etype: 'skill', desc: '獲得追加能力投球數減少{0}', min: 1, max: 1, interval: 1 },
+        { etype: 'skill', desc: '減少對方打者擊出強力的滾地球的機率{0}%（依一般陣容體力比例變動）', min: 4.5, max: 9, interval: 0.05 },
+      ]},
+      { tier: 'II', prob: '1.94%', rows: [
+        { etype: 'base', desc: '減少對方打者擊出平飛球的機率{0}%', min: 6.5, max: 13, interval: 0.05 },
+        { etype: 'skill', desc: '獲得追加能力投球數減少{0}', note: '{0}的值以1或2登場的機率分別為71%、29%', min: 1, max: 2, interval: 1 },
+        { etype: 'skill', desc: '減少對方打者擊出平飛球的機率{0}%（依一般陣容體力比例變動）', min: 7, max: 14, interval: 0.05 },
+      ]},
+      { tier: 'III', prob: '0.83%', rows: [
+        { etype: 'base', desc: '靠近守備球員正面的滾地球機率增加{0}%', min: 10, max: 20, interval: 0.05 },
+        { etype: 'skill', desc: '獲得追加能力投球數減少{0}', note: '{0}的值以1或2登場的機率分別為31%、69%', min: 1, max: 2, interval: 1 },
+        { etype: 'skill', desc: '靠近守備球員正面的滾地球機率增加{0}%（依一般陣容體力比例變動）', min: 11, max: 22, interval: 0.05 },
+      ]},
+    ]
+  },
+  {
+    name: '牛棚日', type: 'pit',
+    tiers: [
+      { tier: 'I', prob: '2.78%', rows: [
+        { etype: 'base', desc: '登板後，1局期間內高飛球機率增加{0}%', min: 4, max: 8, interval: 0.05 },
+        { etype: 'skill', desc: '體力消耗量減少{0}%', min: 5, max: 10, interval: 0.05 },
+        { etype: 'skill', desc: '登板後，1局期間內高飛球機率增加{0}%', min: 5, max: 10, interval: 0.05 },
+      ]},
+      { tier: 'II', prob: '1.94%', rows: [
+        { etype: 'base', desc: '登板後，1局期間內強擊球機率減少{0}%', min: 5, max: 10, interval: 0.05 },
+        { etype: 'skill', desc: '體力消耗量減少{0}%', min: 6, max: 12, interval: 0.05 },
+        { etype: 'skill', desc: '登板後，1局期間內強擊球機率減少{0}%', min: 6, max: 12, interval: 0.05 },
+      ]},
+      { tier: 'III', prob: '0.83%', rows: [
+        { etype: 'base', desc: '登板後，1局期間內高飛球機率增加{0}%', min: 10, max: 20, interval: 0.05 },
+        { etype: 'skill', desc: '體力消耗量減少{0}%', min: 7, max: 14, interval: 0.05 },
+        { etype: 'skill', desc: '登板後，1局期間內高飛球機率增加{0}%', min: 11, max: 22, interval: 0.05 },
+      ]},
+    ]
+  },
+  {
+    name: '合力投球', type: 'pit',
+    tiers: [
+      { tier: 'I', prob: '2.78%', rows: [
+        { etype: 'base', desc: '投球準確度增加{0}%', min: 3.5, max: 7, interval: 0.05 },
+        { etype: 'skill', desc: '登板後，3局期間內體力消耗量增加{0}%', min: 6, max: 12, interval: 0.05 },
+        { etype: 'skill', desc: '登板後，3局期間內高飛球機率增加{0}%', min: 3.5, max: 7, interval: 0.05 },
+        { etype: 'skill', desc: '投球準確度增加{0}%', min: 4.5, max: 9, interval: 0.05 },
+      ]},
+      { tier: 'II', prob: '1.94%', rows: [
+        { etype: 'base', desc: '好球帶邊緣、好球帶以外投球的揮空機率增加{0}%', min: 9.5, max: 19, interval: 0.05 },
+        { etype: 'skill', desc: '登板後，3局期間內體力消耗量增加{0}%', min: 5, max: 10, interval: 0.05 },
+        { etype: 'skill', desc: '登板後，3局期間內高飛球機率增加{0}%', min: 4.5, max: 9, interval: 0.05 },
+        { etype: 'skill', desc: '好球帶邊緣、好球帶以外投球的揮空機率增加{0}%', min: 10.5, max: 21, interval: 0.05 },
+      ]},
+      { tier: 'III', prob: '0.83%', rows: [
+        { etype: 'base', desc: '增加對方打者擊出滾地球的機率{0}%', min: 6, max: 12, interval: 0.05 },
+        { etype: 'skill', desc: '登板後，3局期間內體力消耗量增加{0}%', min: 4, max: 8, interval: 0.05 },
+        { etype: 'skill', desc: '登板後，3局期間內高飛球機率增加{0}%', min: 5.5, max: 11, interval: 0.05 },
+        { etype: 'skill', desc: '增加對方打者擊出滾地球的機率{0}%', min: 7, max: 14, interval: 0.05 },
+      ]},
+    ]
+  },
+  {
+    name: '投手默契', type: 'pit',
+    tiers: [
+      { tier: 'I', prob: '2.78%', rows: [
+        { etype: 'base', desc: '追擊組、長中繼投手的投球準確度增加{0}%', min: 2.4, max: 4.8, interval: 0.02 },
+        { etype: 'skill', desc: '追擊組、長中繼投手的投球準確度增加{0}%（僅套用於發動中的默契技能）', min: 2.6, max: 5.2, interval: 0.02 },
+      ]},
+      { tier: 'II', prob: '1.94%', rows: [
+        { etype: 'base', desc: '勝利組、終結者投手的投球準確度增加{0}%', min: 2.4, max: 4.8, interval: 0.02 },
+        { etype: 'skill', desc: '勝利組、終結者投手的投球準確度增加{0}%（僅套用於發動中的默契技能）', min: 2.6, max: 5.2, interval: 0.02 },
+      ]},
+      { tier: 'III', prob: '0.83%', rows: [
+        { etype: 'base', desc: '先發投手的投球準確度增加{0}%', min: 2.4, max: 4.8, interval: 0.02 },
+        { etype: 'skill', desc: '先發投手的投球準確度增加{0}%（僅套用於發動中的默契技能）', min: 2.6, max: 5.2, interval: 0.02 },
+      ]},
+    ]
+  },
+  {
+    name: '工作馬', type: 'pit',
+    tiers: [
+      { tier: 'I', prob: '2.78%', rows: [
+        { etype: 'base', desc: '好球帶邊緣、好球帶以外投球的揮空機率增加{0}%（依投球局數比例變動）', min: 6, max: 12, interval: 0.05 },
+        { etype: 'skill', desc: '基本體力數值增加{0}', note: '{0}的值以1或2登場的機率分別為81%、19%', min: 1, max: 2, interval: 1 },
+        { etype: 'skill', desc: '好球帶邊緣、好球帶以外投球的揮空機率增加{0}%（依投球局數比例變動）', min: 6.5, max: 13, interval: 0.05 },
+      ]},
+      { tier: 'II', prob: '1.94%', rows: [
+        { etype: 'base', desc: '增加對方打者擊出滾地球的機率{0}%（依投球局數比例變動）', min: 4.5, max: 9, interval: 0.05 },
+        { etype: 'skill', desc: '基本體力數值增加{0}', note: '{0}的值以1或2登場的機率分別為51%、49%', min: 1, max: 2, interval: 1 },
+        { etype: 'skill', desc: '增加對方打者擊出滾地球的機率{0}%（依投球局數比例變動）', min: 5.5, max: 11, interval: 0.05 },
+      ]},
+      { tier: 'III', prob: '0.83%', rows: [
+        { etype: 'base', desc: '減少對方打者擊出平飛球的機率{0}%（依投球局數比例變動）', min: 3, max: 6, interval: 0.05 },
+        { etype: 'base', desc: '減少對方打者擊出全壘打性擊球的機率{0}%（依投球局數比例變動）', min: 3, max: 6, interval: 0.05 },
+        { etype: 'skill', desc: '基本體力數值增加{0}', note: '{0}的值以1或2登場的機率分別為71%、29%', min: 1, max: 2, interval: 1 },
+        { etype: 'skill', desc: '減少對方打者擊出平飛球的機率{0}%（依投球局數比例變動）', min: 3.5, max: 7, interval: 0.05 },
+        { etype: 'skill', desc: '減少對方打者擊出全壘打性擊球的機率{0}%（依投球局數比例變動）', min: 3.5, max: 7, interval: 0.05 },
+      ]},
+    ]
+  },
+  {
+    name: '完美先生', type: 'pit',
+    tiers: [
+      { tier: 'I', prob: '2.78%', rows: [
+        { etype: 'base', desc: '投球準確度增加{0}%（依被四死球+被安打個數成反比變動）', min: 6, max: 12, interval: 0.05 },
+        { etype: 'skill', desc: '投球準確度增加{0}%（依被四死球+被安打個數成反比變動）', min: 7, max: 14, interval: 0.05 },
+      ]},
+      { tier: 'II', prob: '1.94%', rows: [
+        { etype: 'base', desc: '增加對方打者擊出飛球的機率{0}%（依被四死球+被安打個數成反比變動）', min: 3.25, max: 6.5, interval: 0.05 },
+        { etype: 'base', desc: '增加對方打者擊出滾地球的機率{0}%（依被四死球+被安打個數成反比變動）', min: 3.25, max: 6.5, interval: 0.05 },
+        { etype: 'skill', desc: '增加對方打者擊出飛球的機率{0}%（依被四死球+被安打個數成反比變動）', min: 4, max: 8, interval: 0.05 },
+        { etype: 'skill', desc: '增加對方打者擊出滾地球的機率{0}%（依被四死球+被安打個數成反比變動）', min: 4, max: 8, interval: 0.05 },
+      ]},
+      { tier: 'III', prob: '0.83%', rows: [
+        { etype: 'base', desc: '靠近守備球員正面的滾地球機率增加{0}%（依被四死球+被安打個數成反比變動）', min: 8, max: 16, interval: 0.05 },
+        { etype: 'skill', desc: '靠近守備球員正面的滾地球機率增加{0}%（依被四死球+被安打個數成反比變動）', min: 10, max: 20, interval: 0.05 },
+      ]},
+    ]
+  },
+];
+
+// ===================== RENDER =====================
+function renderCard(trainer) {
+  const typeTag = trainer.type === 'bat'
+    ? '<span style="background:#1f4a2c;color:#56d364;font-size:11px;padding:2px 8px;border-radius:4px;font-weight:700;">打擊</span>'
+    : '<span style="background:#1a3a5c;color:#58a6ff;font-size:11px;padding:2px 8px;border-radius:4px;font-weight:700;">投球</span>';
+  const icon = trainer.type === 'bat' ? '⚾' : '🎯';
+
+  const tierBadges = { I: 'badge-I', II: 'badge-II', III: 'badge-III' };
+  const tierColors = { I: '#56d364', II: '#f0c040', III: '#a8d8f0' };
+
+  let tiersHtml = '';
+  trainer.tiers.forEach(tier => {
+    let rowsHtml = '';
+    tier.rows.forEach(row => {
+      const isBase = row.etype === 'base';
+      const etypeLabel = isBase
+        ? '<span class="etype-cell etype-base">基本效果</span>'
+        : '<span class="etype-cell etype-skill">技能效果</span>';
+      const noteHtml = row.note ? `<span class="note">★ ${row.note}</span>` : '';
+      let valHtml = '';
+      if (row.interval === null) {
+        valHtml = `<td class="val-cell" colspan="3"><span class="val-fixed">${row.min}</span></td>`;
+      } else if (row.min === row.max) {
+        valHtml = `<td class="val-cell"><span class="val-fixed">${row.min}</span></td>
+                   <td class="val-cell"><span class="val-fixed">${row.max}</span></td>
+                   <td class="val-cell"><span class="val-dash">—</span></td>`;
+      } else {
+        valHtml = `<td class="val-cell"><span class="val-min">${row.min}</span></td>
+                   <td class="val-cell"><span class="val-max">${row.max}</span></td>
+                   <td class="val-cell"><span class="val-interval">${row.interval}</span></td>`;
+      }
+      rowsHtml += `<tr>
+        <td>${etypeLabel}</td>
+        <td class="desc-cell">${row.desc}${noteHtml}</td>
+        ${valHtml}
+      </tr>`;
+    });
+
+    tiersHtml += `<div class="tier-block">
+      <div class="tier-header">
+        <span class="badge ${tierBadges[tier.tier]}">${tier.tier}</span>
+        <span style="font-size:13px;color:${tierColors[tier.tier]};font-weight:700;">傳說屬性 ${tier.tier}</span>
+        <span class="tier-prob">獲得機率 <span>${tier.prob}</span></span>
+      </div>
+      <div style="overflow-x:auto">
+      <table class="effect-table">
+        <thead><tr>
+          <th style="width:80px">效果類型</th>
+          <th style="text-align:left">效果說明</th>
+          <th style="width:70px">最小值</th>
+          <th style="width:70px">最大值</th>
+          <th style="width:60px">間隔</th>
+        </tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+      </div>
+    </div>`;
+  });
+
+  const allText = trainer.tiers.flatMap(t => t.rows.map(r => r.desc)).join(' ');
+
+  return `<div class="trainer-card" data-name="${trainer.name}" data-type="${trainer.type}" data-search="${trainer.name} ${allText}">
+    <div class="card-header" onclick="toggleCard(this)">
+      <span style="font-size:20px">${icon}</span>
+      <div style="flex:1">
+        <div class="card-title">傳說技能 — ${trainer.name}</div>
+        <div class="card-subtitle">I / II / III 三階傳說屬性</div>
+      </div>
+      ${typeTag}
+      <span class="card-toggle">▼</span>
+    </div>
+    <div class="card-body" style="display:none">${tiersHtml}</div>
+  </div>`;
+}
+
+function buildGrid(gridId, type) {
+  const grid = document.getElementById(gridId);
+  const items = skillData.filter(t => t.type === type);
+  grid.innerHTML = items.map(renderCard).join('');
+}
+
+// ===================== TOGGLE =====================
+function toggleCard(header) {
+  const body = header.nextElementSibling;
+  const toggle = header.querySelector('.card-toggle');
+  const open = body.style.display === 'none';
+  body.style.display = open ? 'block' : 'none';
+  toggle.classList.toggle('open', open);
+}
+
+// ===================== FILTERS =====================
+let batFilter = 'all';
+let pitFilter = 'all';
+
+function setBatFilter(name, btn) {
+  batFilter = name;
+  document.querySelectorAll('#bat-filter .filter-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  filterBat();
+}
+
+function filterBat() {
+  const q = (document.getElementById('search-bat').value || '').toLowerCase();
+  document.querySelectorAll('#bat-grid .trainer-card').forEach(card => {
+    const matchName = batFilter === 'all' || card.dataset.name === batFilter;
+    const matchQ = !q || card.dataset.search.toLowerCase().includes(q);
+    card.style.display = (matchName && matchQ) ? '' : 'none';
+  });
+}
+
+function setPitFilter(name, btn) {
+  pitFilter = name;
+  document.querySelectorAll('#pit-filter .filter-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  filterPit();
+}
+
+function filterPit() {
+  const q = (document.getElementById('search-pit').value || '').toLowerCase();
+  document.querySelectorAll('#pit-grid .trainer-card').forEach(card => {
+    const matchName = pitFilter === 'all' || card.dataset.name === pitFilter;
+    const matchQ = !q || card.dataset.search.toLowerCase().includes(q);
+    card.style.display = (matchName && matchQ) ? '' : 'none';
+  });
+}
+
+// ===================== NAV =====================
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach((t, i) => {
+    const ids = ['detail', 'pitcher'];
+    t.classList.toggle('active', ids[i] === id);
+  });
+}
+
+// ===================== SCROLL =====================
+window.addEventListener('scroll', () => {
+  document.getElementById('backTop').classList.toggle('visible', window.scrollY > 300);
+});
+
+// ===================== INIT =====================
+buildGrid('bat-grid', 'bat');
+buildGrid('pit-grid', 'pit');
+</script>
+</body>
+</html>
