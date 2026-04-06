@@ -583,8 +583,10 @@ function updateProgress() {
     const hasDuplicate = ranks.length !== new Set(ranks).size;
     if (Object.keys(r1Results[gi]).length === grp.length && !hasDuplicate) done++;
   }
-  document.getElementById('prog-count').textContent = done;
-  document.getElementById('prog-fill').style.width = (done / 16 * 100) + '%';
+  const countEl = document.getElementById('prog-count');
+  const fillEl  = document.getElementById('prog-fill');
+  if (countEl) countEl.textContent = done;
+  if (fillEl)  fillEl.style.width = (done / 16 * 100) + '%';
 }
 
 function resetAll() {
