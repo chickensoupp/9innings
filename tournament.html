@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>個人錦標賽</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --accent: #3b82f6;
+    --accent2: #f59e0b;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --rank1: #f59e0b;
+    --rank2: #94a3b8;
+    --rank3: #cd7c4a;
+    --rank4: #475569;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
+
+  header { text-align: center; margin-bottom: 36px; }
+  .title-en {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 6vw, 72px);
+    letter-spacing: 0.08em;
+    line-height: 1;
+    background: linear-gradient(135deg, #fff 0%, #93c5fd 50%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .title-sub {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+  .tab {
+    padding: 10px 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    transition: all 0.2s;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 0.1em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tab:hover { color: var(--text); border-color: var(--muted); }
+  .tab.active-r1 { background: #1e3a5f; border-color: #3b82f6; color: #93c5fd; }
+  .tab.active-r2 { background: #3b2a0a; border-color: #f59e0b; color: #fcd34d; }
+  .tab.active-r3 { background: #0d2e1a; border-color: #22c55e; color: #6ee7b7; }
+  .tab .badge {
+    background: #22c55e;
+    color: #000;
+    font-size: 10px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 10px;
+    letter-spacing: 0;
+  }
+
+  /* Round panels */
+  .round-panel { display: none; }
+  .round-panel.active { display: block; }
+
+  /* Top bar */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .progress-wrap { display: flex; align-items: center; gap: 12px; }
+  .progress-label { font-size: 12px; color: var(--muted); }
+  .progress-bar-bg {
+    width: 160px; height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6, #22c55e);
+    border-radius: 3px;
+    transition: width 0.3s;
+  }
+  .progress-count { font-size: 12px; color: var(--text); font-weight: 700; }
+
+.btn-reset {
+    padding: 9px 16px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-reset:hover { color: var(--text); border-color: var(--muted); }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+  /* Grid */
+  .groups-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+
+  /* Group card */
+  .group-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .group-card.complete { border-color: rgba(34,197,94,0.4); }
+
+  .group-header {
+    padding: 8px 12px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.1em;
+    background: #1e3a5f;
+    color: #93c5fd;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .group-header .check { color: #22c55e; font-size: 13px; display: none; }
+  .group-card.complete .group-header .check { display: inline; }
+
+  /* Player row */
+  .player-row {
+    display: grid;
+    grid-template-columns: 30px 1fr 56px;
+    align-items: center;
+    padding: 5px 10px 5px 8px;
+    border-top: 1px solid var(--border);
+    gap: 6px;
+    transition: background 0.15s;
+  }
+  .player-row:hover { background: rgba(255,255,255,0.02); }
+
+  /* rank background highlight */
+  .player-row.rank-1 { background: rgba(245,158,11,0.08); }
+  .player-row.rank-2 { background: rgba(148,163,184,0.07); }
+  .player-row.rank-3 { background: rgba(205,124,74,0.06); }
+
+  .seed {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    color: var(--muted);
+    text-align: center;
+  }
+  .name { font-size: 11.5px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* Dropdown */
+  select.rank-select {
+    width: 52px;
+    padding: 3px 2px;
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-size: 11px;
+    font-family: 'Noto Sans TC', sans-serif;
+    cursor: pointer;
+    outline: none;
+    text-align: center;
+    appearance: auto;
+  }
+  select.rank-select:focus { border-color: var(--accent); }
+  select.rank-select.has-value { font-weight: 700; }
+  select.rank-select.rank-val-1 { border-color: var(--rank1); color: var(--rank1); }
+  select.rank-select.rank-val-2 { border-color: var(--rank2); color: var(--rank2); }
+  select.rank-select.rank-val-3 { border-color: var(--rank3); color: var(--rank3); }
+  select.rank-select.rank-val-4 { border-color: var(--rank4); color: #94a3b8; }
+
+  /* Rank badge */
+  .rank-badge {
+    display: inline-block;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+    line-height: 22px;
+    margin-right: 2px;
+    flex-shrink: 0;
+  }
+  .badge-1 { background: rgba(245,158,11,0.2); color: var(--rank1); }
+  .badge-2 { background: rgba(148,163,184,0.2); color: var(--rank2); }
+  .badge-3 { background: rgba(205,124,74,0.2); color: var(--rank3); }
+  .badge-4 { background: rgba(71,85,105,0.2); color: #64748b; }
+
+  /* Warning */
+  .conflict-warn {
+    font-size: 10px;
+    color: #f87171;
+    padding: 3px 10px;
+    background: rgba(248,113,113,0.08);
+    border-top: 1px solid rgba(248,113,113,0.2);
+    display: none;
+  }
+  .group-card.has-conflict .conflict-warn { display: block; }
+
+  /* ===== Round 2 ===== */
+  .r2-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .r2-header {
+    padding: 8px 12px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.1em;
+    background: #3b2a0a;
+    color: #fcd34d;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .r2-header .mirror-tag { font-size: 10px; font-family: 'Noto Sans TC', sans-serif; font-weight: 400; letter-spacing: 0; opacity: 0.7; }
+  .r2-player {
+    display: grid;
+    grid-template-columns: 28px 1fr 52px;
+    align-items: center;
+    padding: 5px 10px 5px 8px;
+    border-top: 1px solid var(--border);
+    gap: 6px;
+    transition: background 0.15s;
+  }
+  .r2-player.rank-1 { background: rgba(245,158,11,0.08); }
+  .r2-player.rank-2 { background: rgba(148,163,184,0.07); }
+  .r2-player.rank-3 { background: rgba(205,124,74,0.06); }
+  .r2-seed { font-family: 'Bebas Neue', sans-serif; font-size: 13px; color: #6ee7b7; text-align: center; }
+  .r2-name { font-size: 11.5px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .r2-name.placeholder { color: var(--muted); font-style: italic; }
+  .r2-tag {
+    font-size: 9.5px;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .tag-top { background: rgba(110,231,183,0.12); color: #6ee7b7; }
+  .tag-r1-1st { background: rgba(59,130,246,0.15); color: #93c5fd; }
+  .tag-r1-2nd { background: rgba(245,158,11,0.15); color: #fcd34d; }
+  .tag-r2-1st { background: rgba(110,231,183,0.15); color: #6ee7b7; }
+  .tag-r2-2nd { background: rgba(253,211,77,0.15); color: #fcd34d; }
+  .tag-pending { background: rgba(100,116,139,0.15); color: var(--muted); }
+  .r2-card.complete { border-color: rgba(34,197,94,0.4); }
+  .r2-conflict-warn {
+    font-size: 10px; color: #f87171;
+    padding: 3px 10px;
+    background: rgba(248,113,113,0.08);
+    border-top: 1px solid rgba(248,113,113,0.2);
+    display: none;
+  }
+  .r2-card.has-conflict .r2-conflict-warn { display: block; }
+
+  /* ===== Round 3 ===== */
+  .r3-header {
+    padding: 8px 12px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.1em;
+    background: #0d2e1a;
+    color: #6ee7b7;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .r3-header .mirror-tag { font-size: 10px; font-family: 'Noto Sans TC', sans-serif; font-weight: 400; letter-spacing: 0; opacity: 0.7; }
+
+  /* ===== Round 4 ===== */
+  .tab.active-r4 { background: #2d1a40; border-color: #a855f7; color: #d8b4fe; }
+
+  .r4-bracket-outer { overflow-x: auto; padding: 4px 0 16px; }
+  .r4-bracket-inner {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    min-width: 900px;
+    padding: 12px 8px;
+  }
+  .r4-round {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    flex: 1;
+    gap: 8px;
+    min-width: 0;
+  }
+  .r4-round-final { flex: 1.15; justify-content: center; }
+  .r4-spacer { flex: 0 0 24px; }
+
+  .r4-mbox {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .r4-mbox.complete { border-color: rgba(168,85,247,0.45); }
+  .r4-mbox-hdr {
+    padding: 3px 8px;
+    background: #2d1a40;
+    color: #d8b4fe;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .r4-mbox-hdr.final-hdr {
+    background: #2d1f00;
+    color: #f59e0b;
+    font-size: 14px;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px 8px;
+  }
+  .r4-mbox-player {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    border-top: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.15s;
+    min-height: 33px;
+  }
+  .r4-mbox-player:hover:not(.tbd) { background: rgba(168,85,247,0.1); }
+  .r4-mbox-player.winner { background: rgba(168,85,247,0.2); border-left: 3px solid #a855f7; }
+  .r4-mbox-player.loser { opacity: 0.35; }
+  .r4-mbox-player.tbd { cursor: default; }
+  .r4-right .r4-mbox-player.winner { border-left: none; border-right: 3px solid #a855f7; }
+  .r4-mbox-name { font-size: 10.5px; color: var(--text); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .r4-mbox-name.placeholder { color: var(--muted); font-style: italic; }
+  .r4-mbox-tag { font-size: 8.5px; padding: 1px 4px; border-radius: 3px; background: rgba(168,85,247,0.15); color: #d8b4fe; white-space: nowrap; flex-shrink: 0; }
+  .r4-mbox-divider { text-align: center; font-size: 8px; color: var(--muted); background: var(--surface2); border-top: 1px solid var(--border); padding: 1px 0; }
+  .r4-champion-bar {
+    display: none;
+    border-top: 1px solid rgba(245,158,11,0.4);
+    background: rgba(245,158,11,0.08);
+    padding: 8px;
+    text-align: center;
+  }
+  .r4-champion-bar.show { display: block; }
+  .r4-champion-label { font-family: 'Bebas Neue', sans-serif; font-size: 12px; color: #f59e0b; letter-spacing: 0.1em; }
+  .r4-champion-name { font-size: 12px; color: var(--text); font-weight: 700; margin-top: 3px; }
+
+  /* Responsive */
+  @media (max-width: 1000px) { .groups-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .groups-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="title-en">Individual Championship</div>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active-r1" id="tab-r1" onclick="switchRound(1)">ROUND 1 &nbsp;·&nbsp; 第一輪</div>
+    <div class="tab" id="tab-r2" onclick="switchRound(2)">ROUND 2 &nbsp;·&nbsp; 第二輪</div>
+    <div class="tab" id="tab-r3" onclick="switchRound(3)">ROUND 3 &nbsp;·&nbsp; 第三輪</div>
+    <div class="tab" id="tab-r4" onclick="switchRound(4)">ROUND 4 &nbsp;·&nbsp; 第四輪</div>
+  </div>
+
+  <!-- Round 1 -->
+  <div class="round-panel active" id="panel-r1">
+    <div class="top-bar">
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn-reset" onclick="resetAll()">重置全部</button>
+      </div>
+    </div>
+    <div class="groups-grid" id="grid-r1"></div>
+  </div>
+
+  <!-- Round 2 -->
+  <div class="round-panel" id="panel-r2">
+    <div class="groups-grid" id="grid-r2"></div>
+  </div>
+
+  <!-- Round 3 -->
+  <div class="round-panel" id="panel-r3">
+    <div class="groups-grid" id="grid-r3" style="grid-template-columns:repeat(4,1fr)"></div>
+  </div>
+
+  <!-- Round 4 -->
+  <div class="round-panel" id="panel-r4">
+  </div>
+</div>
+
+<script>
+const groupNames = [...'ABCDEFGHIJKLMNOP'];
+const mirror  = [15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0];
+const mirror3 = [15,14,13,12,11,10,9,8]; // R3 用：group i 對應 R2 group (15-i)
+
+const players33_96 = [
+  [33,"YoonSomLAD"],[34,"[AL]비오"],[35,"鬥陣-麻子"],[36,"탐브래디"],
+  [37,"[B.M]MAELLE"],[38,"善良鮑。咖撐叼賽"],[39,"YoonSomNYM"],[40,"<白康>흑인스킬을주세요333"],
+  [41,"鬥陣-戲子"],[42,"初見です"],[43,"권도비"],[44,"琋琋琋琦"],
+  [45,"Taiwan_Yankee"],[46,"鬥陣-天子"],[47,"IMF-M.Marquez93"],[48,"용진또용진"],
+  [49,"담빈후"],[50,"오티즈77"],[51,"[B.M]김지수x카리나"],[52,"LuckyVicky"],
+  [53,"라이언승포"],[54,"鬥陣-提你老姆的老姆"],[55,"[B.M]跳跳白虎"],[56,"樂天派-LastDance"],
+  [57,"열풍."],[58,"튤립"],[59,"Captain_Sogu"],[60,"YoonSomNYY"],
+  [61,"No.55"],[62,"[B.M]GoDodgers"],[63,"Alpha_Dog"],[64,"優質藍教頭"],
+  [65,"抹茶抹茶幾月開花"],[66,"C@LLP@CK"],[67,"[B.M]YWChen"],[68,"막스3"],
+  [69,"M@NGO"],[70,"NYY_PlatCoach"],[71,"Key.L"],[72,"[B.M]愛隨雪尋於浪漫"],
+  [73,"[B.M]대빵_WSH"],[74,"IMFHelios.824"],[75,"<IMF>守護天使"],[76,"Tiger_Team"],
+  [77,"黑貓-豪哥"],[78,"통풍"],[79,"<IMF>Labubu"],[80,"鬥陣-鵝子"],
+  [81,"[B.M]激乎槌槌"],[82,"[AL]도라미"],[83,"미떼"],[84,"mapleman"],
+  [85,"해피율"],[86,"루리"],[87,"技技技技白白白"],[88,"CHN-走走停停的月想"],
+  [89,"멘징"],[90,"RYU-99"],[91,"[B.M]金鋼狼Murphy"],[92,"轟砲河馬"],
+  [93,"대빵_D-Backs"],[94,"鬥陣-儒子"],[95,"雪乃貓派大勝利"],[96,"[AL]가후문화"],
+];
+
+const players1_32 = [
+  [1,"닉네임탱쑤"],[2,"BearZ2Z"],[3,"강릉"],[4,"[AL]킹콩"],
+  [5,"鬥陣-遊子"],[6,"톰브래디"],[7,"善良。Godzilla"],[8,"鬥陣-冬子"],
+  [9,"양념게장!"],[10,"JÖNE$5.0"],[11,"[AL]항상행복"],[12,"한방샷"],
+  [13,"New_Face"],[14,"[CARES]001"],[15,"Zeus-眾神之王"],[16,"김만동"],
+  [17,"Hades-冥界之王"],[18,"熊抱哥派大勝利"],[19,"[B.M]又在夜裡聽雨聲"],[20,"技技白白白技技"],
+  [21,"[B.M]咖哩羊炒雞排"],[22,"라드inBOS."],[23,"善良鮑。帆旺"],[24,"[B.M]瓦荷酋長"],
+  [25,"[AL]양봉"],[26,"風之濤"],[27,"LA椪柑"],[28,"칼포퍼"],
+  [29,"Bobo_Bear"],[30,"Taiwan.Dodgers"],[31,"榮美"],[32,"IMF-NiceSundays"],
+];
+
+function snakeAssign(players, G) {
+  const groups = Array.from({length: G}, () => []);
+  players.forEach((p, i) => {
+    const rnd = Math.floor(i / G);
+    const pos = i % G;
+    const gi = rnd % 2 === 0 ? pos : (G - 1 - pos);
+    groups[gi].push(p);
+  });
+  return groups;
+}
+
+const r1Groups = snakeAssign(players33_96, 16);
+const r2Top32Groups = snakeAssign(players1_32, 16);
+
+// State: r1Results[gi] = { playerIdx: rank } (1-4)
+const r1Results = Array.from({length: 16}, () => ({}));
+// State: r2Results[gi] = { playerIdx: rank } (1-4)
+const r2Results = Array.from({length: 16}, () => ({}));
+
+function buildR1() {
+  const grid = document.getElementById('grid-r1');
+  grid.innerHTML = '';
+  r1Groups.forEach((grp, gi) => {
+    const card = document.createElement('div');
+    card.className = 'group-card';
+    card.id = `r1-card-${gi}`;
+
+    card.innerHTML = `
+      <div class="group-header">
+        <span>GROUP ${groupNames[gi]}</span>
+        <span class="check">✓</span>
+      </div>
+      ${grp.map(([seed, name], pi) => `
+        <div class="player-row" id="r1-row-${gi}-${pi}">
+          <div class="seed">${seed}</div>
+          <div class="name" title="${name}">${name}</div>
+          <select class="rank-select" id="sel-${gi}-${pi}" onchange="onRankChange(${gi},${pi},this)">
+            <option value="">—</option>
+            <option value="1">🥇 1st</option>
+            <option value="2">🥈 2nd</option>
+            <option value="3">🥉 3rd</option>
+            <option value="4">4th</option>
+          </select>
+        </div>
+      `).join('')}
+      <div class="conflict-warn" id="warn-${gi}">⚠ 名次重複，請重新確認</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function onRankChange(gi, pi, sel) {
+  const val = sel.value ? parseInt(sel.value) : null;
+
+  // Remove old entry for this player
+  delete r1Results[gi][pi];
+  if (val !== null) r1Results[gi][pi] = val;
+
+  // Update select styles
+  sel.className = 'rank-select' + (val ? ` has-value rank-val-${val}` : '');
+
+  validateGroup(gi);
+  updateProgress();
+  updateR2();
+}
+
+function validateGroup(gi) {
+  const card = document.getElementById(`r1-card-${gi}`);
+  const grp = r1Groups[gi];
+  const ranks = Object.values(r1Results[gi]);
+  const hasDuplicate = ranks.length !== new Set(ranks).size;
+  const isComplete = Object.keys(r1Results[gi]).length === grp.length && !hasDuplicate;
+
+  card.classList.toggle('has-conflict', hasDuplicate);
+  card.classList.toggle('complete', isComplete);
+
+  // Update row highlights
+  grp.forEach((_, pi) => {
+    const row = document.getElementById(`r1-row-${gi}-${pi}`);
+    const rank = r1Results[gi][pi];
+    row.className = 'player-row' + (rank ? ` rank-${rank}` : '');
+  });
+}
+
+function updateProgress() {
+  let done = 0;
+  for (let gi = 0; gi < 16; gi++) {
+    const grp = r1Groups[gi];
+    const ranks = Object.values(r1Results[gi]);
+    const hasDuplicate = ranks.length !== new Set(ranks).size;
+    if (Object.keys(r1Results[gi]).length === grp.length && !hasDuplicate) done++;
+  }
+  document.getElementById('prog-count').textContent = done;
+  document.getElementById('prog-fill').style.width = (done / 16 * 100) + '%';
+}
+
+function resetAll() {
+  if (!confirm('確定要重置所有名次？')) return;
+  // reset R1
+  for (let gi = 0; gi < 16; gi++) {
+    r1Results[gi] = {};
+    r1Groups[gi].forEach((_, pi) => {
+      const sel = document.getElementById(`sel-${gi}-${pi}`);
+      if (sel) { sel.value = ''; sel.className = 'rank-select'; }
+    });
+    validateGroup(gi);
+  }
+  // reset R2
+  for (let gi = 0; gi < 16; gi++) {
+    r2Results[gi] = {};
+    for (let pi = 0; pi < 4; pi++) {
+      const sel = document.getElementById(`r2-sel-${gi}-${pi}`);
+      if (sel) { sel.value = ''; sel.className = 'rank-select'; }
+    }
+    validateR2Group(gi);
+  }
+  // reset R3
+  for (let gi = 0; gi < 8; gi++) {
+    r3Results[gi] = {};
+    for (let pi = 0; pi < 4; pi++) {
+      const sel = document.getElementById(`r3-sel-${gi}-${pi}`);
+      if (sel) { sel.value = ''; sel.className = 'rank-select'; }
+    }
+    validateR3Group(gi);
+  }
+  // reset R4
+  r4Results.fill(null);
+  updateProgress();
+  updateR2();
+  updateR3();
+  updateR4();
+}
+
+function getPlayerByRank(gi, rank) {
+  for (const [pi, r] of Object.entries(r1Results[gi])) {
+    if (r === rank) return r1Groups[gi][parseInt(pi)];
+  }
+  return null;
+}
+
+// 取得 R2 某組某位置的選手資料 [seed, name]
+function getR2PlayerInfo(gi, pi) {
+  if (pi < 2) return r2Top32Groups[gi][pi];
+  if (pi === 2) return getPlayerByRank(gi, 1);
+  if (pi === 3) return getPlayerByRank(mirror[gi], 2);
+  return null;
+}
+
+// 依名次取得 R2 選手
+function getR2PlayerByRank(gi, rank) {
+  for (const [pi, r] of Object.entries(r2Results[gi])) {
+    if (r === rank) return getR2PlayerInfo(gi, parseInt(pi));
+  }
+  return null;
+}
+
+function buildR2() {
+  const grid = document.getElementById('grid-r2');
+  grid.innerHTML = '';
+
+  for (let gi = 0; gi < 16; gi++) {
+    const mi = mirror[gi];
+    const top32 = r2Top32Groups[gi];
+
+    // 靜態選手 (pi=0,1) 和動態選手 (pi=2,3) 的 row 函式
+    const makeRow = (pi, seedHtml, nameHtml, nameCls, tagHtml, tagCls) => `
+      <div class="r2-player" id="r2-row-${gi}-${pi}">
+        <div class="r2-seed">${seedHtml}</div>
+        <div class="r2-name ${nameCls}" id="r2-name-${gi}-${pi}">${nameHtml}</div>
+        <select class="rank-select" id="r2-sel-${gi}-${pi}" onchange="onR2RankChange(${gi},${pi},this)">
+          <option value="">—</option>
+          <option value="1">🥇 1st</option>
+          <option value="2">🥈 2nd</option>
+          <option value="3">🥉 3rd</option>
+          <option value="4">4th</option>
+        </select>
+      </div>`;
+
+    const card = document.createElement('div');
+    card.className = 'r2-card';
+    card.id = `r2-card-${gi}`;
+    card.innerHTML = `
+      <div class="r2-header">
+        <span>GROUP ${groupNames[gi]}</span>
+      </div>
+      ${top32.map(([seed, name], idx) => makeRow(idx, seed, name, '', '直晉', 'tag-top')).join('')}
+      ${makeRow(2, '<span style="color:#93c5fd">1st</span>', '待定', 'placeholder', `R1-${groupNames[gi]} #1`, 'tag-pending')}
+      ${makeRow(3, '<span style="color:#fcd34d">2nd</span>', '待定', 'placeholder', `R1-${groupNames[mi]} #2`, 'tag-pending')}
+      <div class="r2-conflict-warn" id="r2-warn-${gi}">⚠ 名次重複，請重新確認</div>
+    `;
+    grid.appendChild(card);
+  }
+}
+
+// 只更新 R2 動態列（pi=2,3）的名字與標籤，不碰 select
+function updateR2() {
+  for (let gi = 0; gi < 16; gi++) {
+    const mi = mirror[gi];
+    const p1st = getPlayerByRank(gi, 1);
+    const p2nd = getPlayerByRank(mi, 2);
+
+    const nameEl2 = document.getElementById(`r2-name-${gi}-2`);
+    const tagEl2  = document.getElementById(`r2-tag-${gi}-2`);
+    if (nameEl2) {
+      nameEl2.textContent = p1st ? p1st[1] : '待定';
+      nameEl2.className = 'r2-name' + (p1st ? '' : ' placeholder');
+    }
+    if (tagEl2) {
+      tagEl2.textContent = `R1-${groupNames[gi]} #1`;
+      tagEl2.className = 'r2-tag ' + (p1st ? 'tag-r1-1st' : 'tag-pending');
+    }
+
+    const nameEl3 = document.getElementById(`r2-name-${gi}-3`);
+    const tagEl3  = document.getElementById(`r2-tag-${gi}-3`);
+    if (nameEl3) {
+      nameEl3.textContent = p2nd ? p2nd[1] : '待定';
+      nameEl3.className = 'r2-name' + (p2nd ? '' : ' placeholder');
+    }
+    if (tagEl3) {
+      tagEl3.textContent = `R1-${groupNames[mi]} #2`;
+      tagEl3.className = 'r2-tag ' + (p2nd ? 'tag-r1-2nd' : 'tag-pending');
+    }
+  }
+}
+
+function onR2RankChange(gi, pi, sel) {
+  const val = sel.value ? parseInt(sel.value) : null;
+  delete r2Results[gi][pi];
+  if (val !== null) r2Results[gi][pi] = val;
+  sel.className = 'rank-select' + (val ? ` has-value rank-val-${val}` : '');
+  validateR2Group(gi);
+  updateR3();
+}
+
+function validateR2Group(gi) {
+  const card = document.getElementById(`r2-card-${gi}`);
+  const ranks = Object.values(r2Results[gi]);
+  const hasDuplicate = ranks.length !== new Set(ranks).size;
+  const isComplete = Object.keys(r2Results[gi]).length === 4 && !hasDuplicate;
+  card.classList.toggle('has-conflict', hasDuplicate);
+  card.classList.toggle('complete', isComplete);
+  // 更新 row 背景
+  for (let pi = 0; pi < 4; pi++) {
+    const row = document.getElementById(`r2-row-${gi}-${pi}`);
+    if (row) {
+      const rank = r2Results[gi][pi];
+      row.className = 'r2-player' + (rank ? ` rank-${rank}` : '');
+    }
+  }
+}
+
+// ===== Round 3 =====
+const r3Results = Array.from({length: 8}, () => ({}));
+
+function buildR3() {
+  const grid = document.getElementById('grid-r3');
+  grid.innerHTML = '';
+  const r3Names = [...'ABCDEFGH'];
+  const piLabels = ['A','B','C','D'];
+
+  for (let gi = 0; gi < 8; gi++) {
+    const mi = mirror3[gi];
+
+    const makeR3Row = (pi, nameTxt, nameCls, tagTxt, tagCls) => `
+      <div class="r2-player" id="r3-row-${gi}-${pi}">
+        <div class="r2-seed">${piLabels[pi]}</div>
+        <div class="r2-name ${nameCls}" id="r3-name-${gi}-${pi}">${nameTxt}</div>
+        <select class="rank-select" id="r3-sel-${gi}-${pi}" onchange="onR3RankChange(${gi},${pi},this)">
+          <option value="">—</option>
+          <option value="1">🥇 1st</option>
+          <option value="2">🥈 2nd</option>
+          <option value="3">🥉 3rd</option>
+          <option value="4">4th</option>
+        </select>
+      </div>`;
+
+    const card = document.createElement('div');
+    card.className = 'r2-card';
+    card.id = `r3-card-${gi}`;
+    card.innerHTML = `
+      <div class="r3-header">
+        <span>GROUP ${r3Names[gi]}</span>
+      </div>
+      ${makeR3Row(0, '待定', 'placeholder', `R2-${groupNames[gi]} #1`, 'tag-pending')}
+      ${makeR3Row(1, '待定', 'placeholder', `R2-${groupNames[gi]} #2`, 'tag-pending')}
+      ${makeR3Row(2, '待定', 'placeholder', `R2-${groupNames[mi]} #1`, 'tag-pending')}
+      ${makeR3Row(3, '待定', 'placeholder', `R2-${groupNames[mi]} #2`, 'tag-pending')}
+      <div class="r2-conflict-warn" id="r3-warn-${gi}">⚠ 名次重複，請重新確認</div>
+    `;
+    grid.appendChild(card);
+  }
+}
+
+function onR3RankChange(gi, pi, sel) {
+  const val = sel.value ? parseInt(sel.value) : null;
+  delete r3Results[gi][pi];
+  if (val !== null) r3Results[gi][pi] = val;
+  sel.className = 'rank-select' + (val ? ` has-value rank-val-${val}` : '');
+  validateR3Group(gi);
+  updateR4();
+}
+
+function validateR3Group(gi) {
+  const card = document.getElementById(`r3-card-${gi}`);
+  const ranks = Object.values(r3Results[gi]);
+  const hasDuplicate = ranks.length !== new Set(ranks).size;
+  const isComplete = Object.keys(r3Results[gi]).length === 4 && !hasDuplicate;
+  card.classList.toggle('has-conflict', hasDuplicate);
+  card.classList.toggle('complete', isComplete);
+  for (let pi = 0; pi < 4; pi++) {
+    const row = document.getElementById(`r3-row-${gi}-${pi}`);
+    if (row) {
+      const rank = r3Results[gi][pi];
+      row.className = 'r2-player' + (rank ? ` rank-${rank}` : '');
+    }
+  }
+}
+
+function getR3PlayerByRank(gi, rank) {
+  const mi = mirror3[gi];
+  for (const [pi, r] of Object.entries(r3Results[gi])) {
+    if (parseInt(r) === rank) {
+      const slot = parseInt(pi);
+      if (slot === 0) return getR2PlayerByRank(gi, 1);
+      if (slot === 1) return getR2PlayerByRank(gi, 2);
+      if (slot === 2) return getR2PlayerByRank(mi, 1);
+      if (slot === 3) return getR2PlayerByRank(mi, 2);
+    }
+  }
+  return null;
+}
+
+function updateR3() {
+  for (let gi = 0; gi < 8; gi++) {
+    const mi = mirror3[gi];
+    const slots = [
+      { pi: 0, src: gi, rank: 1, tagCls: 'tag-r2-1st', tagTxt: `R2-${groupNames[gi]} #1` },
+      { pi: 1, src: gi, rank: 2, tagCls: 'tag-r2-2nd', tagTxt: `R2-${groupNames[gi]} #2` },
+      { pi: 2, src: mi, rank: 1, tagCls: 'tag-r2-1st', tagTxt: `R2-${groupNames[mi]} #1` },
+      { pi: 3, src: mi, rank: 2, tagCls: 'tag-r2-2nd', tagTxt: `R2-${groupNames[mi]} #2` },
+    ];
+    for (const { pi, src, rank, tagCls, tagTxt } of slots) {
+      const player = getR2PlayerByRank(src, rank);
+      const nameEl = document.getElementById(`r3-name-${gi}-${pi}`);
+      const tagEl  = document.getElementById(`r3-tag-${gi}-${pi}`);
+      if (nameEl) {
+        nameEl.textContent = player ? player[1] : '待定';
+        nameEl.className = 'r2-name' + (player ? '' : ' placeholder');
+      }
+      if (tagEl) {
+        tagEl.textContent = tagTxt;
+        tagEl.className = 'r2-tag ' + (player ? tagCls : 'tag-pending');
+      }
+    }
+  }
+}
+
+// ===== Round 4 (Single Elimination — two-sided bracket) =====
+// Left half: M1-M4 → QF1/QF2 → SF1  ──►  FINAL  ◄──  SF2 ← QF3/QF4 ← M5-M8 :Right half
+// p1/p2 = [r3GroupIndex, rank]  |  from = [prevMatchIdx, prevMatchIdx]
+const r4MatchDefs = [
+  // ── Left half R16 (0-3) ──
+  { label:'M1',    p1:[0,1], p2:[7,2] },  // R3-A#1 vs R3-H#2
+  { label:'M2',    p1:[7,1], p2:[0,2] },  // R3-H#1 vs R3-A#2
+  { label:'M3',    p1:[1,1], p2:[6,2] },  // R3-B#1 vs R3-G#2
+  { label:'M4',    p1:[6,1], p2:[1,2] },  // R3-G#1 vs R3-B#2
+  // ── Left QF (4-5) ──
+  { label:'QF1',   from:[0,1] },
+  { label:'QF2',   from:[2,3] },
+  // ── Left SF (6) ──
+  { label:'SF1',   from:[4,5] },
+  // ── Right half R16 (7-10) ──
+  { label:'M5',    p1:[2,1], p2:[5,2] },  // R3-C#1 vs R3-F#2
+  { label:'M6',    p1:[5,1], p2:[2,2] },  // R3-F#1 vs R3-C#2
+  { label:'M7',    p1:[3,1], p2:[4,2] },  // R3-D#1 vs R3-E#2
+  { label:'M8',    p1:[4,1], p2:[3,2] },  // R3-E#1 vs R3-D#2
+  // ── Right QF (11-12) ──
+  { label:'QF3',   from:[7,8] },
+  { label:'QF4',   from:[9,10] },
+  // ── Right SF (13) ──
+  { label:'SF2',   from:[11,12] },
+  // ── Final (14) ──
+  { label:'FINAL', from:[6,13] },
+];
+// [gridRow, gridCol, rowSpan] — 4-row × 7-col grid
+//   col: 1=leftR16  2=leftQF  3=leftSF  4=FINAL  5=rightSF  6=rightQF  7=rightR16
+const r4MatchGrid = [
+  // Left R16 (0-3)
+  [1,1,1],[2,1,1],[3,1,1],[4,1,1],
+  // Left QF (4-5)
+  [1,2,2],[3,2,2],
+  // Left SF (6)
+  [1,3,4],
+  // Right R16 (7-10)
+  [1,7,1],[2,7,1],[3,7,1],[4,7,1],
+  // Right QF (11-12)
+  [1,6,2],[3,6,2],
+  // Right SF (13)
+  [1,5,4],
+  // Final (14)
+  [1,4,4],
+];
+const r4Results = new Array(15).fill(null);
+
+function getR4Player(mi, side) {
+  const def = r4MatchDefs[mi];
+  if (def.p1) {
+    const src = side === 1 ? def.p1 : def.p2;
+    return getR3PlayerByRank(src[0], src[1]);
+  }
+  const prevMi = def.from[side - 1];
+  const w = r4Results[prevMi];
+  if (!w) return null;
+  return getR4Player(prevMi, w);
+}
+
+function getR4PlayerTag(mi, side) {
+  const r3N = [...'ABCDEFGH'];
+  const def = r4MatchDefs[mi];
+  if (def.p1) {
+    const src = side === 1 ? def.p1 : def.p2;
+    return `R3-${r3N[src[0]]} #${src[1]}`;
+  }
+  return `W(${r4MatchDefs[def.from[side-1]].label})`;
+}
+
+function setR4Winner(mi, side) {
+  if (!getR4Player(mi, 1) || !getR4Player(mi, 2)) return;
+  r4Results[mi] = (r4Results[mi] === side) ? null : side;
+  clearDownstream(mi);
+  updateR4();
+  drawBracketLines();
+}
+
+function clearDownstream(mi) {
+  for (let i = mi + 1; i < 15; i++) {
+    const def = r4MatchDefs[i];
+    if (def.from && (def.from[0] === mi || def.from[1] === mi)) {
+      r4Results[i] = null;
+      clearDownstream(i);
+    }
+  }
+}
+
+function buildR4() {
+  const panel = document.getElementById('panel-r4');
+  const old = panel.querySelector('.r4-bracket-outer');
+  if (old) old.remove();
+
+  function mbox(mi, isRight) {
+    const def = r4MatchDefs[mi];
+    const isFinal = def.label === 'FINAL';
+    const p1Tag = getR4PlayerTag(mi, 1);
+    const p2Tag = getR4PlayerTag(mi, 2);
+    return `
+      <div class="r4-mbox" id="r4-m${mi}">
+        <div class="r4-mbox-hdr${isFinal ? ' final-hdr' : ''}">
+          ${isFinal ? '<span>🏆</span>' : ''}<span>${def.label}</span>
+        </div>
+        <div class="r4-mbox-player tbd" id="r4-p${mi}-1" onclick="setR4Winner(${mi},1)">
+          <span class="r4-mbox-name placeholder" id="r4-n${mi}-1">待定</span>
+        </div>
+        <div class="r4-mbox-divider">VS</div>
+        <div class="r4-mbox-player tbd" id="r4-p${mi}-2" onclick="setR4Winner(${mi},2)">
+          <span class="r4-mbox-name placeholder" id="r4-n${mi}-2">待定</span>
+        </div>
+        ${isFinal ? '<div class="r4-champion-bar" id="r4-champ-bar"><div class="r4-champion-label">🏆 CHAMPION</div><div class="r4-champion-name" id="r4-champ-name"></div></div>' : ''}
+      </div>`;
+  }
+
+  // Column definitions: left→center→right
+  const cols = [
+    { ids:[0,1,2,3], cls:'r4-left' },
+    { spacer:true },
+    { ids:[4,5],     cls:'r4-left' },
+    { spacer:true },
+    { ids:[6],       cls:'r4-left' },
+    { spacer:true },
+    { ids:[14],      cls:'r4-round-final', final:true },
+    { spacer:true },
+    { ids:[13],      cls:'r4-right' },
+    { spacer:true },
+    { ids:[11,12],   cls:'r4-right' },
+    { spacer:true },
+    { ids:[7,8,9,10],cls:'r4-right' },
+  ];
+
+  let inner = '<div class="r4-bracket-inner" id="r4-bracket-inner">';
+  for (const col of cols) {
+    if (col.spacer) { inner += '<div class="r4-spacer"></div>'; continue; }
+    const isFinal = !!col.final;
+    inner += `<div class="r4-round${isFinal ? ' r4-round-final' : ''} ${col.cls || ''}">`;
+    for (const mi of col.ids) inner += mbox(mi, col.cls === 'r4-right');
+    inner += '</div>';
+  }
+  inner += '<svg id="r4-lines" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible"></svg>';
+  inner += '</div>';
+
+  const outer = document.createElement('div');
+  outer.className = 'r4-bracket-outer';
+  outer.innerHTML = inner;
+  panel.appendChild(outer);
+
+  requestAnimationFrame(() => requestAnimationFrame(drawBracketLines));
+}
+
+function updateR4() {
+  for (let mi = 0; mi < 15; mi++) {
+    const p1 = getR4Player(mi, 1);
+    const p2 = getR4Player(mi, 2);
+    const winner = r4Results[mi];
+    const canClick = !!(p1 && p2);
+
+    const n1 = document.getElementById(`r4-n${mi}-1`);
+    const n2 = document.getElementById(`r4-n${mi}-2`);
+    const p1El = document.getElementById(`r4-p${mi}-1`);
+    const p2El = document.getElementById(`r4-p${mi}-2`);
+    const t1 = document.getElementById(`r4-t${mi}-1`);
+    const t2 = document.getElementById(`r4-t${mi}-2`);
+
+    if (n1) { n1.textContent = p1 ? p1[1] : '待定'; n1.className = 'r4-mbox-name' + (p1 ? '' : ' placeholder'); }
+    if (n2) { n2.textContent = p2 ? p2[1] : '待定'; n2.className = 'r4-mbox-name' + (p2 ? '' : ' placeholder'); }
+    if (t1) t1.textContent = getR4PlayerTag(mi, 1);
+    if (t2) t2.textContent = getR4PlayerTag(mi, 2);
+
+    if (p1El) p1El.className = 'r4-mbox-player' + (!canClick ? ' tbd' : '') +
+      (winner === 1 ? ' winner' : winner === 2 ? ' loser' : '');
+    if (p2El) p2El.className = 'r4-mbox-player' + (!canClick ? ' tbd' : '') +
+      (winner === 2 ? ' winner' : winner === 1 ? ' loser' : '');
+
+    const matchEl = document.getElementById(`r4-m${mi}`);
+    if (matchEl) matchEl.classList.toggle('complete', winner !== null);
+  }
+  const champWinner = r4Results[14] ? getR4Player(14, r4Results[14]) : null;
+  const champBar  = document.getElementById('r4-champ-bar');
+  const champName = document.getElementById('r4-champ-name');
+  if (champBar)  champBar.classList.toggle('show', !!champWinner);
+  if (champName && champWinner) champName.textContent = champWinner[1];
+}
+
+function drawBracketLines() {
+  const svg = document.getElementById('r4-lines');
+  if (!svg) return;
+  const panel = document.getElementById('panel-r4');
+  if (!panel || !panel.classList.contains('active')) return;
+  const inner = document.getElementById('r4-bracket-inner');
+  if (!inner) return;
+
+  const cr = inner.getBoundingClientRect();
+  if (cr.width === 0) return;
+  svg.innerHTML = '';
+
+  function pt(mi, edge) {
+    const el = document.getElementById(`r4-m${mi}`);
+    if (!el) return null;
+    const r = el.getBoundingClientRect();
+    return {
+      x: (edge === 'r' ? r.right : r.left) - cr.left,
+      y: (r.top + r.bottom) / 2 - cr.top
+    };
+  }
+
+  function draw(x1, y1, x2, y2, decided) {
+    const mid = (x1 + x2) / 2;
+    const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    p.setAttribute('d', `M${x1},${y1} H${mid} V${y2} H${x2}`);
+    p.setAttribute('stroke', decided ? '#a855f7' : '#1e2d45');
+    p.setAttribute('stroke-width', decided ? '2' : '1.5');
+    p.setAttribute('fill', 'none');
+    p.setAttribute('stroke-linecap', 'round');
+    p.setAttribute('stroke-linejoin', 'round');
+    svg.appendChild(p);
+  }
+
+  // Left side: from right-edge of source → left-edge of dest
+  const leftConns = [[0,4],[1,4],[2,5],[3,5],[4,6],[5,6],[6,14]];
+  for (const [src, dst] of leftConns) {
+    const f = pt(src, 'r'), t = pt(dst, 'l');
+    if (f && t) draw(f.x, f.y, t.x, t.y, r4Results[src] !== null);
+  }
+  // Right side: from left-edge of source → right-edge of dest
+  const rightConns = [[7,11],[8,11],[9,12],[10,12],[11,13],[12,13],[13,14]];
+  for (const [src, dst] of rightConns) {
+    const f = pt(src, 'l'), t = pt(dst, 'r');
+    if (f && t) draw(f.x, f.y, t.x, t.y, r4Results[src] !== null);
+  }
+}
+
+function switchRound(r) {
+  [1,2,3,4].forEach(n => {
+    document.getElementById(`panel-r${n}`).classList.toggle('active', r === n);
+    document.getElementById(`tab-r${n}`).className = 'tab' + (r === n ? ` active-r${n}` : '');
+  });
+  if (r === 4) requestAnimationFrame(drawBracketLines);
+}
+
+window.addEventListener('resize', drawBracketLines);
+
+buildR1();
+buildR2();
+buildR3();
+buildR4();
+</script>
+</body>
+</html>
