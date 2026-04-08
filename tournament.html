@@ -462,33 +462,49 @@ const mirror  = [15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0];
 const mirror3 = [15,14,13,12,11,10,9,8]; // R3 用：group i 對應 R2 group (15-i)
 
 const players33_96 = [
-  [33,"YoonSomLAD"],[34,"[AL]비오"],[35,"鬥陣-麻子"],[36,"탐브래디"],
-  [37,"[B.M]MAELLE"],[38,"善良鮑。咖撐叼賽"],[39,"YoonSomNYM"],[40,"<白康>흑인스킬을주세요333"],
-  [41,"鬥陣-戲子"],[42,"初見です"],[43,"권도비"],[44,"琋琋琋琦"],
-  [45,"Taiwan_Yankee"],[46,"鬥陣-天子"],[47,"IMF-M.Marquez93"],[48,"용진또용진"],
-  [49,"담빈후"],[50,"오티즈77"],[51,"[B.M]김지수x카리나"],[52,"LuckyVicky"],
-  [53,"라이언승포"],[54,"鬥陣-提你老姆的老姆"],[55,"[B.M]跳跳白虎"],[56,"樂天派-LastDance"],
-  [57,"열풍."],[58,"튤립"],[59,"Captain_Sogu"],[60,"YoonSomNYY"],
-  [61,"No.55"],[62,"[B.M]GoDodgers"],[63,"Alpha_Dog"],[64,"優質藍教頭"],
-  [65,"抹茶抹茶幾月開花"],[66,"C@LLP@CK"],[67,"[B.M]YWChen"],[68,"막스3"],
-  [69,"M@NGO"],[70,"NYY_PlatCoach"],[71,"Key.L"],[72,"[B.M]愛隨雪尋於浪漫"],
-  [73,"[B.M]대빵_WSH"],[74,"IMFHelios.824"],[75,"<IMF>守護天使"],[76,"Tiger_Team"],
-  [77,"黑貓-豪哥"],[78,"통풍"],[79,"<IMF>Labubu"],[80,"鬥陣-鵝子"],
-  [81,"[B.M]激乎槌槌"],[82,"[AL]도라미"],[83,"미떼"],[84,"mapleman"],
-  [85,"해피율"],[86,"루리"],[87,"技技技技白白白"],[88,"CHN-走走停停的月想"],
-  [89,"멘징"],[90,"RYU-99"],[91,"[B.M]金鋼狼Murphy"],[92,"轟砲河馬"],
-  [93,"대빵_D-Backs"],[94,"鬥陣-儒子"],[95,"雪乃貓派大勝利"],[96,"[AL]가후문화"],
+  // Group   A                                   B                                        C                                   D
+  [33, "YoonSomLAD"       ,2], [34, "[AL]비오"               ,1 ],[35, "鬥陣-麻子"            ],[36, "탐브래디"            ,3 ],
+  //          E                                   F                                        G                                   H
+  [37, "[B.M]MAELLE"    ,2   ], [38, "善良鮑。咖撐叼賽"       ,1 ],[39, "YoonSomNYM"          ,1 ],[40, "<白康>흑인스킬을주세요333",2],
+  //          I                                   J                                        K                                   L
+  [41, "鬥陣-戲子"        ,3  ], [42, "初見です"               ],[43, "권도비"            ,1   ],[44, "琋琋琋琦"             ],
+  //          M                                   N                                        O                                   P
+  [45, "Taiwan_Yankee"   ,4  ], [46, "鬥陣-天子"           ,3   ],[47, "IMF-M.Marquez93"   ,1   ],[48, "용진또용진"            ],
+  // Group   P                                   O                                        N                                   M  ← 蛇行反向
+  [49, "담빈후"             ], [50, "오티즈77"           ,3   ],[51, "[B.M]김지수x카리나"  ,2  ],[52, "LuckyVicky"          ,2 ],
+  //          L                                   K                                        J                                   I
+  [53, "라이언승포"          ], [54, "鬥陣-提你老姆的老姆"  ,2  ],[55, "[B.M]跳跳白虎"        ],[56, "樂天派-LastDance"   ,2  ],
+  //          H                                   G                                        F                                   E
+  [57, "열풍."             ,4 ], [58, "튤립"                ,3   ],[59, "Captain_Sogu"      ,3   ],[60, "YoonSomNYY"         ,1  ],
+  //          D                                   C                                        B                                   A
+  [61, "No.55"             ,4], [62, "[B.M]GoDodgers"         ],[63, "Alpha_Dog"           ,2 ],[64, "優質藍教頭"           ,4 ],
+  // Group   A                                   B                                        C                                   D
+  [65, "抹茶抹茶幾月開花"   ,3], [66, "C@LLP@CK"            ,3  ],[67, "[B.M]YWChen"          ],[68, "막스3"               ,2 ],
+  //          E                                   F                                        G                                   H
+  [69, "M@NGO"           ,4  ], [70, "NYY_PlatCoach"        ,2  ],[71, "Key.L"            ,2    ],[72, "[B.M]愛隨雪尋於浪漫" ,1  ],
+  //          I                                   J                                        K                                   L
+  [73, "[B.M]대빵_WSH"    ,4 ], [74, "IMFHelios.824"          ],[75, "<IMF>守護天使"     ,3],[76, "Tiger_Team"           ],
+  //          M                                   N                                        O                                   P
+  [77, "黑貓-豪哥"        ,1  ], [78, "통풍"              ,1     ],[79, "<IMF>Labubu"        ,4  ],[80, "鬥陣-鵝子"            ],
+  // Group   P                                   O                                        N                                   M  ← 蛇行反向
+  [81, "[B.M]激乎槌槌"     ], [82, "[AL]도라미"          ,2   ],[83, "미떼"          ,4       ],[84, "mapleman"          ,3   ],
+  //          L                                   K                                        J                                   I
+  [85, "해피율"             ], [86, "루리"                ,4   ],[87, "技技技技白白白"        ],[88, "CHN-走走停停的月想"  ,1  ],
+  //          H                                   G                                        F                                   E
+  [89, "멘징"            ,3], [90, "RYU-99"               ,4 ],[91, "[B.M]金鋼狼Murphy"    ,4],[92, "轟砲河馬"           ,3 ],
+  //          D                                   C                                        B                                   A
+  [93, "대빵_D-Backs"     ,1 ], [94, "鬥陣-儒子"              ],[95, "雪乃貓派大勝利"      ,4  ],[96, "[AL]가후문화"          ,1],
 ];
 
 const players1_32 = [
-  [1,"닉네임탱쑤"],[2,"BearZ2Z"],[3,"강릉"],[4,"[AL]킹콩"],
-  [5,"鬥陣-遊子"],[6,"톰브래디"],[7,"善良。Godzilla"],[8,"鬥陣-冬子"],
-  [9,"양념게장!"],[10,"JÖNE$5.0"],[11,"[AL]항상행복"],[12,"한방샷"],
-  [13,"New_Face"],[14,"[CARES]001"],[15,"Zeus-眾神之王"],[16,"김만동"],
-  [17,"Hades-冥界之王"],[18,"熊抱哥派大勝利"],[19,"[B.M]又在夜裡聽雨聲"],[20,"技技白白白技技"],
-  [21,"[B.M]咖哩羊炒雞排"],[22,"라드inBOS."],[23,"善良鮑。帆旺"],[24,"[B.M]瓦荷酋長"],
-  [25,"[AL]양봉"],[26,"風之濤"],[27,"LA椪柑"],[28,"칼포퍼"],
-  [29,"Bobo_Bear"],[30,"Taiwan.Dodgers"],[31,"榮美"],[32,"IMF-NiceSundays"],
+  [ 1, "닉네임탱쑤"         ], [ 2, "BearZ2Z"               ], [ 3, "강릉"                 ], [ 4, "[AL]킹콩"             ],
+  [ 5, "鬥陣-遊子"          ], [ 6, "톰브래디"               ], [ 7, "善良。Godzilla"        ], [ 8, "鬥陣-冬子"            ],
+  [ 9, "양념게장!"           ], [10, "JÖNE$5.0"              ], [11, "[AL]항상행복"          ], [12, "한방샷"               ],
+  [13, "New_Face"           ], [14, "[CARES]001"             ], [15, "Zeus-眾神之王"         ], [16, "김만동"               ],
+  [17, "Hades-冥界之王"      ], [18, "熊抱哥派大勝利"          ], [19, "[B.M]又在夜裡聽雨聲"   ], [20, "技技白白白技技"        ],
+  [21, "[B.M]咖哩羊炒雞排"  ], [22, "라드inBOS."             ], [23, "善良鮑。帆旺"          ], [24, "[B.M]瓦荷酋長"        ],
+  [25, "[AL]양봉"           ], [26, "風之濤"                 ], [27, "LA椪柑"               ], [28, "칼포퍼"               ],
+  [29, "Bobo_Bear"          ], [30, "Taiwan.Dodgers"         ], [31, "榮美"                 ], [32, "IMF-NiceSundays"      ],
 ];
 
 function snakeAssign(players, G) {
@@ -509,6 +525,24 @@ const r2Top32Groups = snakeAssign(players1_32, 16);
 const r1Results = Array.from({length: 16}, () => ({}));
 // State: r2Results[gi] = { playerIdx: rank } (1-4)
 const r2Results = Array.from({length: 16}, () => ({}));
+
+// ===== 名次預設（直接在程式碼中標示名次）=====
+// R1：在 players33_96 每位選手後加第三個數字 → [種子, 名字, 名次]
+//   例：[33, "YoonSomLAD", 2]  表示該選手在 R1 組內拿第2名
+//
+// R2：r2Presets[組別 0-15] = [slot0名次, slot1名次, slot2名次, slot3名次]
+//   null 表示整組不預設；陣列中 0 表示該位置不預設
+//   例：r2Presets[0] = [1, 3, 2, 4];
+const r2Presets = new Array(16).fill(null);
+//
+// R3：r3Presets[組別 0-7] = [slot0名次, slot1名次, slot2名次, slot3名次]
+//   例：r3Presets[0] = [2, 1, 4, 3];
+const r3Presets = new Array(8).fill(null);
+//
+// R4：r4Presets[場次 0-14] = 勝者側（1 或 2），null 表示不預設
+//   場次順序：M1-M8(0-3,7-10)、QF1-QF4(4-5,11-12)、SF1-SF2(6,13)、FINAL(14)
+//   例：r4Presets[0] = 1;  // M1 由第1側選手獲勝
+const r4Presets = new Array(15).fill(null);
 
 function buildR1() {
   const grid = document.getElementById('grid-r1');
@@ -1095,6 +1129,59 @@ buildR1();
 buildR2();
 buildR3();
 buildR4();
+
+// 套用所有名次預設
+function applyPresets() {
+  // --- R1 ---
+  r1Groups.forEach((grp, gi) => {
+    let hasPreset = false;
+    grp.forEach(([seed, name, rank], pi) => {
+      if (!rank) return;
+      hasPreset = true;
+      r1Results[gi][pi] = rank;
+      const sel = document.getElementById(`sel-${gi}-${pi}`);
+      if (sel) { sel.value = String(rank); sel.className = `rank-select has-value rank-val-${rank}`; }
+    });
+    if (hasPreset) validateGroup(gi);
+  });
+  updateProgress();
+  updateR2();
+
+  // --- R2 ---
+  r2Presets.forEach((preset, gi) => {
+    if (!preset) return;
+    preset.forEach((rank, pi) => {
+      if (!rank) return;
+      r2Results[gi][pi] = rank;
+      const sel = document.getElementById(`r2-sel-${gi}-${pi}`);
+      if (sel) { sel.value = String(rank); sel.className = `rank-select has-value rank-val-${rank}`; }
+    });
+    validateR2Group(gi);
+  });
+  updateR3();
+
+  // --- R3 ---
+  r3Presets.forEach((preset, gi) => {
+    if (!preset) return;
+    preset.forEach((rank, pi) => {
+      if (!rank) return;
+      r3Results[gi][pi] = rank;
+      const sel = document.getElementById(`r3-sel-${gi}-${pi}`);
+      if (sel) { sel.value = String(rank); sel.className = `rank-select has-value rank-val-${rank}`; }
+    });
+    validateR3Group(gi);
+  });
+  updateR4();
+
+  // --- R4 ---
+  r4Presets.forEach((winner, mi) => {
+    if (winner !== null) r4Results[mi] = winner;
+  });
+  updateR4();
+  drawBracketLines();
+}
+
+applyPresets();
 </script>
 </body>
 </html>
