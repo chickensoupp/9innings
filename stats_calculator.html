@@ -318,6 +318,7 @@
             width: 80px;
         }
 
+        .row-target     td:first-child { background: linear-gradient(135deg, #ede7f6, #d1c4e9) !important; color: #4527a0 !important; }
         .row-coach      td:first-child { background: linear-gradient(135deg, #fff8e1, #fff3cd) !important; color: #b8860b !important; }
         .row-training   td:first-child { background: linear-gradient(135deg, #fce4ec, #f8d7da) !important; color: #c62828 !important; }
         .row-enhance    td:first-child { background: linear-gradient(135deg, #e3f2fd, #cce5ff) !important; color: #1565c0 !important; }
@@ -712,9 +713,9 @@
                     </tbody>
                 </table>
 
-                <!-- 校正 UI -->
-                <div style="margin-top:18px;">
-                    </div>
+                <!-- 校正 UI + 強化量總計 -->
+                <div style="margin-top:18px;display:flex;align-items:center;">
+                    <div style="flex:1;"></div>
                     <div class="correction-ui">
                         <div class="correction-arrow">-</div>
                         <div class="correction-group">
@@ -750,6 +751,17 @@
                                 <option value="4">4</option>
                                 <option value="5">5</option>
                             </select>
+                        </div>
+                    </div>
+                    <div style="flex:1;display:flex;justify-content:flex-end;">
+                        <div id="enhanceSummary" style="padding:10px 16px;border-radius:10px;background:#f0f4ff;border:1.5px solid #c3d4f7;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:90px;">
+                            <span style="font-size:0.78rem;font-weight:600;color:#888;">強化量總計</span>
+                            <span style="display:flex;align-items:baseline;gap:4px;">
+                                <span id="enhanceTotalDisplay" style="font-size:1.4rem;font-weight:700;color:#1b5e20;">0</span>
+                                <span style="color:#aaa;font-size:0.9rem;">／</span>
+                                <span id="enhanceLimitDisplay" style="font-size:0.95rem;font-weight:600;color:#555;">57</span>
+                            </span>
+                            <span id="enhanceWarning" style="font-size:0.75rem;font-weight:600;color:#c62828;display:none;">超過上限！</span>
                         </div>
                     </div>
                 </div>
@@ -1066,25 +1078,49 @@
         supreme: { team: 10, coach: 0, diamond: 2, sig: 0  },
     };
 
+    let currentCardType = 'sign';
+
+    function hasTargets() {
+        return STATS.some((_, si) => {
+            const v = parseInt(document.getElementById(`target_${si}`)?.value);
+            return !isNaN(v);
+        });
+    }
+
+    function recalc() {
+        if (hasTargets()) calcEnhanceFromTarget(); else calculate();
+    }
+
     function setCardType(type) {
+        currentCardType = type;
         document.querySelectorAll('.card-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('cardBtn_' + type).classList.add('active');
         const p = CARD_PRESETS[type];
         document.getElementById('teamBonus').value    = p.team;
         document.getElementById('diamondBonus').value = p.diamond;
         setSignature(p.sig);
-        calculate();
+        recalc();
     }
 
     function buildTable() {
         const tbody = document.getElementById('statsBody');
+
+        // 目標值列
+        const trTarget = document.createElement('tr');
+        trTarget.className = 'row-target';
+        let targetCells = `<td>目標值<br><span style="font-size:0.7rem;font-weight:400;color:#999;">（自動反推）</span></td>`;
+        STATS.forEach((_, si) => {
+            targetCells += `<td><input type="number" class="stat-input" id="target_${si}" value="" min="0" placeholder="—" oninput="calcEnhanceFromTarget()"></td>`;
+        });
+        trTarget.innerHTML = targetCells;
+        tbody.appendChild(trTarget);
 
         // 教練列
         const trCoach = document.createElement('tr');
         trCoach.className = 'row-coach';
         let coachCells = `<td>教練</td>`;
         STATS.forEach((_, si) => {
-            coachCells += `<td><input type="number" class="stat-input" id="coach_${si}" value="0" min="0" oninput="calculate()"></td>`;
+            coachCells += `<td><input type="number" class="stat-input" id="coach_${si}" value="0" min="0" oninput="recalc()"></td>`;
         });
         trCoach.innerHTML = coachCells;
         tbody.appendChild(trCoach);
@@ -1100,15 +1136,23 @@
         tbody.appendChild(trTraining);
 
         // 強化量、上升量、基礎值
-        const restFields = ['enhance','rise','base'];
-        const restLabels = ['強化量','上升量','基礎值'];
-        const restRows   = ['row-enhance','row-rise','row-base'];
-        restFields.forEach((field, fi) => {
+        // 強化量：手動輸入，直接 calculate（不觸發目標反推）
+        const trEnhance = document.createElement('tr');
+        trEnhance.className = 'row-enhance';
+        let enhCells = `<td>強化量</td>`;
+        STATS.forEach((_, si) => {
+            enhCells += `<td><input type="number" class="stat-input" id="enhance_${si}" value="0" min="0" oninput="calculate()"></td>`;
+        });
+        trEnhance.innerHTML = enhCells;
+        tbody.appendChild(trEnhance);
+
+        // 上升量、基礎值：改動時若有目標值則重新反推
+        [['rise','上升量','row-rise'],['base','基礎值','row-base']].forEach(([field, label, cls]) => {
             const tr = document.createElement('tr');
-            tr.className = restRows[fi];
-            let cells = `<td>${restLabels[fi]}</td>`;
+            tr.className = cls;
+            let cells = `<td>${label}</td>`;
             STATS.forEach((_, si) => {
-                cells += `<td><input type="number" class="stat-input" id="${field}_${si}" value="0" min="0" oninput="calculate()"></td>`;
+                cells += `<td><input type="number" class="stat-input" id="${field}_${si}" value="0" min="0" oninput="recalc()"></td>`;
             });
             tr.innerHTML = cells;
             tbody.appendChild(tr);
@@ -1182,6 +1226,125 @@
         return vals;
     }
 
+    function calcEnhanceFromTarget() {
+        const targets = STATS.map((_, si) => {
+            const el = document.getElementById(`target_${si}`);
+            const v = parseInt(el?.value);
+            return isNaN(v) ? null : v;
+        });
+
+        if (targets.every(t => t === null)) { calculate(); return; }
+
+        const teamBonus      = getNum('teamBonus');
+        const coachBonus     = getNum('coachBonus');
+        const diamondBonus   = getNum('diamondBonus');
+        const signatureBonus = getNum('signatureBonus');
+
+        const bases   = STATS.map((_, si) => getNum(`base_${si}`));
+        const rises   = STATS.map((_, si) => getNum(`rise_${si}`));
+        const coaches = STATS.map((_, si) => getNum(`coach_${si}`));
+        const corrs   = STATS.map((_, si) => correctionVals[si] || 0);
+
+        const fixed = STATS.map((_, si) =>
+            bases[si] + rises[si] + coaches[si] + corrs[si] +
+            signatureBonus + diamondBonus + teamBonus + coachBonus
+        );
+
+        const trainingMap = [12, 10, 4, 0, 0];
+        const n = STATS.length;
+
+        // 根據 enhance 計算實際特訓分配
+        function actualTraining(enhances) {
+            const sorted = [...Array(n).keys()].sort((a, b) =>
+                enhances[b] !== enhances[a] ? enhances[b] - enhances[a] :
+                bases[b] !== bases[a] ? bases[b] - bases[a] : a - b
+            );
+            const tr = new Array(n).fill(0);
+            if (enhances.some(e => e > 0)) {
+                sorted.forEach((si, rank) => { tr[si] = trainingMap[rank] ?? 0; });
+            }
+            return tr;
+        }
+
+        // 假設某種特訓分配，反推 enhance
+        function computeEnhances(training) {
+            return STATS.map((_, si) =>
+                targets[si] !== null
+                    ? Math.max(0, targets[si] - fixed[si] - training[si])
+                    : getNum(`enhance_${si}`)
+            );
+        }
+
+        // 計算各項偏差陣列（只計有目標的項）
+        function calcDevs(enhances, training) {
+            return STATS.map((_, si) => {
+                if (targets[si] === null) return 0;
+                return Math.abs(fixed[si] + enhances[si] + training[si] - targets[si]);
+            });
+        }
+
+        // 比較：先比最大單項偏差，再比總偏差
+        function isBetter(devsA, devsB) {
+            const maxA = Math.max(...devsA), maxB = Math.max(...devsB);
+            if (maxA !== maxB) return maxA < maxB;
+            return devsA.reduce((s, v) => s + v, 0) < devsB.reduce((s, v) => s + v, 0);
+        }
+
+        let bestEnhances = null;
+        let bestDevs = new Array(n).fill(Infinity);
+        let exactEnhances = null;   // 完全符合（偏差全 0）的解
+
+        // ── 第一階段：尋找自洽且完全符合的解 ──
+        outer: for (let a = 0; a < n; a++) {
+            for (let b = 0; b < n; b++) {
+                if (b === a) continue;
+                for (let c = 0; c < n; c++) {
+                    if (c === a || c === b) continue;
+                    const tr = new Array(n).fill(0);
+                    tr[a] = 12; tr[b] = 10; tr[c] = 4;
+                    const enh = computeEnhances(tr);
+                    const realTr = actualTraining(enh);
+                    // 自洽：假設分配 == 實際分配
+                    if (!realTr.every((v, i) => v === tr[i])) continue;
+                    const devs = calcDevs(enh, realTr);
+                    // 完全符合：有目標的項偏差皆為 0
+                    if (devs.every(d => d === 0)) { exactEnhances = enh; break outer; }
+                    // 記錄自洽但部分符合的最佳解
+                    if (isBetter(devs, bestDevs)) { bestDevs = devs; bestEnhances = enh; }
+                }
+            }
+        }
+
+        // ── 第二階段：若無完全符合，枚舉所有 60 種取 minimax 最優 ──
+        if (!exactEnhances) {
+            for (let a = 0; a < n; a++) {
+                for (let b = 0; b < n; b++) {
+                    if (b === a) continue;
+                    for (let c = 0; c < n; c++) {
+                        if (c === a || c === b) continue;
+                        const tr = new Array(n).fill(0);
+                        tr[a] = 12; tr[b] = 10; tr[c] = 4;
+                        const enh = computeEnhances(tr);
+                        const realTr = actualTraining(enh);
+                        const devs = calcDevs(enh, realTr);
+                        if (isBetter(devs, bestDevs)) { bestDevs = devs; bestEnhances = enh; }
+                    }
+                }
+            }
+        }
+
+        // 填入強化量：優先完全符合，其次最佳近似
+        const chosen = exactEnhances || bestEnhances || computeEnhances(new Array(n).fill(0));
+        STATS.forEach((_, si) => {
+            if (targets[si] !== null) {
+                const el = document.getElementById(`enhance_${si}`);
+                if (el) el.value = chosen[si];
+            }
+        });
+
+        calculate();
+    }
+
     function calculate() {
         const teamBonus      = getNum('teamBonus');
         const coachBonus     = getNum('coachBonus');
@@ -1189,6 +1352,21 @@
         const signatureBonus = getNum('signatureBonus');
         const training       = calcTraining();
         let grandTotal = 0;
+
+        // 強化量上限檢查
+        const enhanceLimit = (currentCardType === 'supreme') ? 87 : 57;
+        const enhanceTotal = STATS.reduce((sum, _, si) => sum + getNum(`enhance_${si}`), 0);
+        const totalEl   = document.getElementById('enhanceTotalDisplay');
+        const limitEl   = document.getElementById('enhanceLimitDisplay');
+        const warnEl    = document.getElementById('enhanceWarning');
+        const summaryEl = document.getElementById('enhanceSummary');
+        if (totalEl)   totalEl.textContent = enhanceTotal;
+        if (limitEl)   limitEl.textContent = enhanceLimit;
+        const over = enhanceTotal > enhanceLimit;
+        if (totalEl)   totalEl.style.color = over ? '#c62828' : '#1b5e20';
+        if (warnEl)    warnEl.style.display = over ? 'inline' : 'none';
+        if (summaryEl) summaryEl.style.borderColor = over ? '#e57373' : '#c3d4f7';
+        if (summaryEl) summaryEl.style.background  = over ? '#fff0f0' : '#f0f4ff';
 
         STATS.forEach((_, si) => {
             const el = document.getElementById(`training_display_${si}`);

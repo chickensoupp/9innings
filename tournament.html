@@ -459,42 +459,28 @@
 <script>
 const groupNames = [...'ABCDEFGHIJKLMNOP'];
 const mirror  = [15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0];
-const mirror3 = [15,14,13,12,11,10,9,8]; // R3 用：group i 對應 R2 group (15-i)
-
-const players33_96 = [
-  // Group   A                                   B                                        C                                   D
-  [33, "YoonSomLAD"       ,2], [34, "[AL]비오"               ,1 ],[35, "鬥陣-麻子"            ],[36, "탐브래디"            ,3 ],
-  //          E                                   F                                        G                                   H
-  [37, "[B.M]MAELLE"    ,2   ], [38, "善良鮑。咖撐叼賽"       ,1 ],[39, "YoonSomNYM"          ,1 ],[40, "<白康>흑인스킬을주세요333",2],
-  //          I                                   J                                        K                                   L
-  [41, "鬥陣-戲子"        ,3  ], [42, "初見です"               ],[43, "권도비"            ,1   ],[44, "琋琋琋琦"             ],
-  //          M                                   N                                        O                                   P
-  [45, "Taiwan_Yankee"   ,4  ], [46, "鬥陣-天子"           ,3   ],[47, "IMF-M.Marquez93"   ,1   ],[48, "용진또용진"            ],
-  // Group   P                                   O                                        N                                   M  ← 蛇行反向
-  [49, "담빈후"             ], [50, "오티즈77"           ,3   ],[51, "[B.M]김지수x카리나"  ,2  ],[52, "LuckyVicky"          ,2 ],
-  //          L                                   K                                        J                                   I
-  [53, "라이언승포"          ], [54, "鬥陣-提你老姆的老姆"  ,2  ],[55, "[B.M]跳跳白虎"        ],[56, "樂天派-LastDance"   ,2  ],
-  //          H                                   G                                        F                                   E
-  [57, "열풍."             ,4 ], [58, "튤립"                ,3   ],[59, "Captain_Sogu"      ,3   ],[60, "YoonSomNYY"         ,1  ],
-  //          D                                   C                                        B                                   A
-  [61, "No.55"             ,4], [62, "[B.M]GoDodgers"         ],[63, "Alpha_Dog"           ,2 ],[64, "優質藍教頭"           ,4 ],
-  // Group   A                                   B                                        C                                   D
-  [65, "抹茶抹茶幾月開花"   ,3], [66, "C@LLP@CK"            ,3  ],[67, "[B.M]YWChen"          ],[68, "막스3"               ,2 ],
-  //          E                                   F                                        G                                   H
-  [69, "M@NGO"           ,4  ], [70, "NYY_PlatCoach"        ,2  ],[71, "Key.L"            ,2    ],[72, "[B.M]愛隨雪尋於浪漫" ,1  ],
-  //          I                                   J                                        K                                   L
-  [73, "[B.M]대빵_WSH"    ,4 ], [74, "IMFHelios.824"          ],[75, "<IMF>守護天使"     ,3],[76, "Tiger_Team"           ],
-  //          M                                   N                                        O                                   P
-  [77, "黑貓-豪哥"        ,1  ], [78, "통풍"              ,1     ],[79, "<IMF>Labubu"        ,4  ],[80, "鬥陣-鵝子"            ],
-  // Group   P                                   O                                        N                                   M  ← 蛇行反向
-  [81, "[B.M]激乎槌槌"     ], [82, "[AL]도라미"          ,2   ],[83, "미떼"          ,4       ],[84, "mapleman"          ,3   ],
-  //          L                                   K                                        J                                   I
-  [85, "해피율"             ], [86, "루리"                ,4   ],[87, "技技技技白白白"        ],[88, "CHN-走走停停的月想"  ,1  ],
-  //          H                                   G                                        F                                   E
-  [89, "멘징"            ,3], [90, "RYU-99"               ,4 ],[91, "[B.M]金鋼狼Murphy"    ,4],[92, "轟砲河馬"           ,3 ],
-  //          D                                   C                                        B                                   A
-  [93, "대빵_D-Backs"     ,1 ], [94, "鬥陣-儒子"              ],[95, "雪乃貓派大勝利"      ,4  ],[96, "[AL]가후문화"          ,1],
+// R3 各組的4個來源 slot：{ src: R2組別索引, rank: 名次 }
+const r3Slots = [
+  // A: A#1, I#1, H#2, P#2
+  [{src:0,rank:1},{src:8,rank:1},{src:7,rank:2},{src:15,rank:2}],
+  // B: B#1, J#1, G#2, O#2
+  [{src:1,rank:1},{src:9,rank:1},{src:6,rank:2},{src:14,rank:2}],
+  // C: C#1, K#1, F#2, N#2
+  [{src:2,rank:1},{src:10,rank:1},{src:5,rank:2},{src:13,rank:2}],
+  // D: D#1, L#1, E#2, M#2
+  [{src:3,rank:1},{src:11,rank:1},{src:4,rank:2},{src:12,rank:2}],
+  // E: E#1, M#1, D#2, L#2
+  [{src:4,rank:1},{src:12,rank:1},{src:3,rank:2},{src:11,rank:2}],
+  // F: F#1, N#1, C#2, K#2
+  [{src:5,rank:1},{src:13,rank:1},{src:2,rank:2},{src:10,rank:2}],
+  // G: G#1, O#1, B#2, J#2
+  [{src:6,rank:1},{src:14,rank:1},{src:1,rank:2},{src:9,rank:2}],
+  // H: H#1, P#1, A#2, I#2
+  [{src:7,rank:1},{src:15,rank:1},{src:0,rank:2},{src:8,rank:2}],
 ];
+
+// R1 各組名單（直接按組別列出，格式：[種子, 名字, 名次]）
+const players33_96 = null; // 已改為直接定義 r1Groups
 
 const players1_32 = [
   [ 1, "닉네임탱쑤"         ], [ 2, "BearZ2Z"               ], [ 3, "강릉"                 ], [ 4, "[AL]킹콩"             ],
@@ -518,7 +504,40 @@ function snakeAssign(players, G) {
   return groups;
 }
 
-const r1Groups = snakeAssign(players33_96, 16);
+const r1Groups = [
+  // Group A
+  [[33, "YoonSomLAD"             ], [64, "優質藍教頭"            ], [65, "抹茶抹茶幾月開花"   ], [96, "[AL]가후문화"          ]],
+  // Group B
+  [[34, "[AL]비오"                ], [63, "Alpha_Dog"            ], [66, "C@LLP@CK"              ], [95, "雪乃貓派大勝利"        ]],
+  // Group C
+  [[35, "鬥陣-麻子"               ], [62, "[B.M]GoDodgers"       ], [67, "[B.M]YWChen"          ], [94, "鬥陣-儒子"              ]],
+  // Group D
+  [[36, "탐브래디"                ], [61, "No.55"                ], [68, "막스3"                ], [93, "대빵_D-Backs"           ]],
+  // Group E
+  [[37, "[B.M]MAELLE"            ], [60, "YoonSomNYY"           ], [69, "M@NGO"                ], [92, "轟砲河馬"               ]],
+  // Group F
+  [[38, "善良鮑。咖撐叼賽"         ], [59, "Captain_Sogu"         ], [70, "NYY_PlatCoach"        ], [91, "[B.M]金鋼狼Murphy"      ]],
+  // Group G
+  [[39, "YoonSomNYM"             ], [58, "튤립"                  ], [71, "Key.L"                ], [90, "RYU-99"                ]],
+  // Group H
+  [[40, "<白康>흑인스킬을주세요333"], [57, "열풍."                ], [72, "[B.M]愛隨雪尋於浪漫"   ], [89, "멘징"                   ]],
+  // Group I
+  [[41, "鬥陣-戲子"               ], [56, "樂天派-LastDance"     ], [73, "[B.M]대빵_WSH"        ], [88, "CHN-走走停停的月想"      ]],
+  // Group J
+  [[42, "初見です"                ], [55, "[B.M]跳跳白虎"        ], [74, "IMFHelios.824"        ], [87, "技技技技白白白"           ]],
+  // Group K
+  [[43, "권도비"                  ], [54, "鬥陣-提你老姆的老姆"   ], [75, "<IMF>守護天使"        ], [86, "루리"                   ]],
+  // Group L
+  [[44, "琋琋琋琦"                ], [53, "라이언승포"             ], [76, "Tiger_Team"           ], [85, "해피율"                 ]],
+  // Group M
+  [[45, "Taiwan_Yankee"          ], [52, "LuckyVicky"            ], [77, "黑貓-豪哥"             ], [84, "mapleman"              ]],
+  // Group N
+  [[46, "鬥陣-天子"               ], [51, "[B.M]김지수x카리나"    ], [78, "통풍"                 ], [83, "미떼"                   ]],
+  // Group O
+  [[47, "IMF-M.Marquez93"        ], [50, "오티즈77"              ], [79, "<IMF>Labubu"          ], [82, "[AL]도라미"             ]],
+  // Group P
+  [[48, "용진또용진"               ], [49, "담빈후"               ], [80, "鬥陣-鵝子"             ], [81, "[B.M]激乎槌槌"          ]],
+];
 const r2Top32Groups = snakeAssign(players1_32, 16);
 
 // State: r1Results[gi] = { playerIdx: rank } (1-4)
@@ -526,23 +545,79 @@ const r1Results = Array.from({length: 16}, () => ({}));
 // State: r2Results[gi] = { playerIdx: rank } (1-4)
 const r2Results = Array.from({length: 16}, () => ({}));
 
-// ===== 名次預設（直接在程式碼中標示名次）=====
-// R1：在 players33_96 每位選手後加第三個數字 → [種子, 名字, 名次]
-//   例：[33, "YoonSomLAD", 2]  表示該選手在 R1 組內拿第2名
-//
-// R2：r2Presets[組別 0-15] = [slot0名次, slot1名次, slot2名次, slot3名次]
-//   null 表示整組不預設；陣列中 0 表示該位置不預設
-//   例：r2Presets[0] = [1, 3, 2, 4];
-const r2Presets = new Array(16).fill(null);
-//
-// R3：r3Presets[組別 0-7] = [slot0名次, slot1名次, slot2名次, slot3名次]
-//   例：r3Presets[0] = [2, 1, 4, 3];
-const r3Presets = new Array(8).fill(null);
-//
-// R4：r4Presets[場次 0-14] = 勝者側（1 或 2），null 表示不預設
-//   場次順序：M1-M8(0-3,7-10)、QF1-QF4(4-5,11-12)、SF1-SF2(6,13)、FINAL(14)
-//   例：r4Presets[0] = 1;  // M1 由第1側選手獲勝
-const r4Presets = new Array(15).fill(null);
+// ===== 名次 / 勝者預設（直接在程式碼中標示）=====
+// 所有輪次格式統一：留空 = 未填，填數字 = 已填
+
+// ── R1：每組4個選手的名次（順序與 r1Groups 各組相同）──
+const r1Presets = [
+  /* A (33.YoonSomLAD, 64.優質藍教頭, 65.抹茶, 96.[AL]가후문화) */ [ 2,  4,  3,  1],
+  /* B (34.[AL]비오, 63.Alpha_Dog, 66.C@LLP@CK, 95.雪乃) */        [ 1,  2,  3,  4],
+  /* C (35.鬥陣-麻子, 62.[B.M]GoDodgers, 67.[B.M]YWChen, 94.儒子)*/ [ 3,  2,  4,  1],
+  /* D (36.탐브래디, 61.No.55, 68.막스3, 93.대빵_D-Backs) */        [ 2,  4,  1,  3],
+  /* E (37.[B.M]MAELLE, 60.YoonSomNYY, 69.M@NGO, 92.轟砲河馬) */   [ 1,  2,  4,  3],
+  /* F (38.善良鮑。咖撐叼賽, 59.Captain_Sogu, 70.NYY, 91.Murphy) */ [ 1,  3,  2,  4],
+  /* G (39.YoonSomNYM, 58.튤립, 71.Key.L, 90.RYU-99) */            [ 1,  2,  3,  4],
+  /* H (40.<白康>, 57.열풍., 72.[B.M]愛隨, 89.멘징) */              [ 2,  4,  1,  3],
+  /* I (41.鬥陣-戲子, 56.樂天派, 73.[B.M]대빵_WSH, 88.CHN) */      [ 3,  2,  4,  1],
+  /* J (42.初見です, 55.[B.M]跳跳, 74.IMFHelios, 87.技技技技) */    [ 1,  3,  4,  2],
+  /* K (43.권도비, 54.鬥陣-提你老姆, 75.<IMF>守護天使, 86.루리) */  [ 1,  2,  3,  4],
+  /* L (44.琋琋琋琦, 53.라이언승포, 76.Tiger_Team, 85.해피율) */    [ 1,  4,  3,  2],
+  /* M (45.Taiwan_Yankee, 52.LuckyVicky, 77.黑貓-豪哥, 84.mapleman)*/ [ 4,  2,  1,  3],
+  /* N (46.鬥陣-天子, 51.[B.M]김지수, 78.통풍, 83.미떼) */          [ 3,  2,  1,  4],
+  /* O (47.IMF-M.Marquez93, 50.오티즈77, 79.<IMF>Labubu, 82.[AL]도라미)*/ [ 1,  3,  4,  2],
+  /* P (48.용진또용진, 49.담빈후, 80.鬥陣-鵝子, 81.[B.M]激乎槌槌) */ [ 2,  4,  3,  1],
+];
+
+// ── R2：每組4個選手的名次 [直晉A名次, 直晉B名次, R1同組#1名次, R1鏡像組#2名次] ──
+const r2Presets = [
+  /* A (A直晉x2, R1-A#1, R1-P#2) */ [  ,  ,  ,  ],
+  /* B (B直晉x2, R1-B#1, R1-O#2) */ [  ,  ,  ,  ],
+  /* C (C直晉x2, R1-C#1, R1-N#2) */ [  ,  ,  ,  ],
+  /* D (D直晉x2, R1-D#1, R1-M#2) */ [  ,  ,  ,  ],
+  /* E (E直晉x2, R1-E#1, R1-L#2) */ [  ,  ,  ,  ],
+  /* F (F直晉x2, R1-F#1, R1-K#2) */ [  ,  ,  ,  ],
+  /* G (G直晉x2, R1-G#1, R1-J#2) */ [  ,  ,  ,  ],
+  /* H (H直晉x2, R1-H#1, R1-I#2) */ [  ,  ,  ,  ],
+  /* I (I直晉x2, R1-I#1, R1-H#2) */ [  ,  ,  ,  ],
+  /* J (J直晉x2, R1-J#1, R1-G#2) */ [  ,  ,  ,  ],
+  /* K (K直晉x2, R1-K#1, R1-F#2) */ [  ,  ,  ,  ],
+  /* L (L直晉x2, R1-L#1, R1-E#2) */ [  ,  ,  ,  ],
+  /* M (M直晉x2, R1-M#1, R1-D#2) */ [  ,  ,  ,  ],
+  /* N (N直晉x2, R1-N#1, R1-C#2) */ [  ,  ,  ,  ],
+  /* O (O直晉x2, R1-O#1, R1-B#2) */ [  ,  ,  ,  ],
+  /* P (P直晉x2, R1-P#1, R1-A#2) */ [  ,  ,  ,  ],
+];
+
+// ── R3：每組4個選手的名次 [slot0名次, slot1名次, slot2名次, slot3名次] ──
+const r3Presets = [
+  /* A (R2-A#1, R2-I#1, R2-H#2, R2-P#2) */ [  ,  ,  ,  ],
+  /* B (R2-B#1, R2-J#1, R2-G#2, R2-O#2) */ [  ,  ,  ,  ],
+  /* C (R2-C#1, R2-K#1, R2-F#2, R2-N#2) */ [  ,  ,  ,  ],
+  /* D (R2-D#1, R2-L#1, R2-E#2, R2-M#2) */ [  ,  ,  ,  ],
+  /* E (R2-E#1, R2-M#1, R2-D#2, R2-L#2) */ [  ,  ,  ,  ],
+  /* F (R2-F#1, R2-N#1, R2-C#2, R2-K#2) */ [  ,  ,  ,  ],
+  /* G (R2-G#1, R2-O#1, R2-B#2, R2-J#2) */ [  ,  ,  ,  ],
+  /* H (R2-H#1, R2-P#1, R2-A#2, R2-I#2) */ [  ,  ,  ,  ],
+];
+
+// ── R4：每場填勝者側（1=上方選手, 2=下方選手）──
+const r4Presets = [
+  /* M1  (R3-A#1 vs R3-H#2) */   ,
+  /* M2  (R3-H#1 vs R3-A#2) */   ,
+  /* M3  (R3-B#1 vs R3-G#2) */   ,
+  /* M4  (R3-G#1 vs R3-B#2) */   ,
+  /* QF1 (W-M1  vs W-M2  ) */   ,
+  /* QF2 (W-M3  vs W-M4  ) */   ,
+  /* SF1 (W-QF1 vs W-QF2 ) */   ,
+  /* M5  (R3-C#1 vs R3-F#2) */   ,
+  /* M6  (R3-F#1 vs R3-C#2) */   ,
+  /* M7  (R3-D#1 vs R3-E#2) */   ,
+  /* M8  (R3-E#1 vs R3-D#2) */   ,
+  /* QF3 (W-M5  vs W-M6  ) */   ,
+  /* QF4 (W-M7  vs W-M8  ) */   ,
+  /* SF2 (W-QF3 vs W-QF4 ) */   ,
+  /* FIN (W-SF1 vs W-SF2 ) */   ,
+];
 
 function buildR1() {
   const grid = document.getElementById('grid-r1');
@@ -563,9 +638,9 @@ function buildR1() {
           <div class="name" title="${name}">${name}</div>
           <select class="rank-select" id="sel-${gi}-${pi}" onchange="onRankChange(${gi},${pi},this)">
             <option value="">—</option>
-            <option value="1">🥇 1st</option>
-            <option value="2">🥈 2nd</option>
-            <option value="3">🥉 3rd</option>
+            <option value="1">1st</option>
+            <option value="2">2nd</option>
+            <option value="3">3rd</option>
             <option value="4">4th</option>
           </select>
         </div>
@@ -698,9 +773,9 @@ function buildR2() {
         <div class="r2-name ${nameCls}" id="r2-name-${gi}-${pi}">${nameHtml}</div>
         <select class="rank-select" id="r2-sel-${gi}-${pi}" onchange="onR2RankChange(${gi},${pi},this)">
           <option value="">—</option>
-          <option value="1">🥇 1st</option>
-          <option value="2">🥈 2nd</option>
-          <option value="3">🥉 3rd</option>
+          <option value="1">1st</option>
+          <option value="2">2nd</option>
+          <option value="3">3rd</option>
           <option value="4">4th</option>
         </select>
       </div>`;
@@ -788,7 +863,7 @@ function buildR3() {
   const piLabels = ['A','B','C','D'];
 
   for (let gi = 0; gi < 8; gi++) {
-    const mi = mirror3[gi];
+    const slots = r3Slots[gi];
 
     const makeR3Row = (pi, nameTxt, nameCls, tagTxt, tagCls) => `
       <div class="r2-player" id="r3-row-${gi}-${pi}">
@@ -796,9 +871,9 @@ function buildR3() {
         <div class="r2-name ${nameCls}" id="r3-name-${gi}-${pi}">${nameTxt}</div>
         <select class="rank-select" id="r3-sel-${gi}-${pi}" onchange="onR3RankChange(${gi},${pi},this)">
           <option value="">—</option>
-          <option value="1">🥇 1st</option>
-          <option value="2">🥈 2nd</option>
-          <option value="3">🥉 3rd</option>
+          <option value="1">1st</option>
+          <option value="2">2nd</option>
+          <option value="3">3rd</option>
           <option value="4">4th</option>
         </select>
       </div>`;
@@ -810,10 +885,7 @@ function buildR3() {
       <div class="r3-header">
         <span>GROUP ${r3Names[gi]}</span>
       </div>
-      ${makeR3Row(0, '待定', 'placeholder', `R2-${groupNames[gi]} #1`, 'tag-pending')}
-      ${makeR3Row(1, '待定', 'placeholder', `R2-${groupNames[gi]} #2`, 'tag-pending')}
-      ${makeR3Row(2, '待定', 'placeholder', `R2-${groupNames[mi]} #1`, 'tag-pending')}
-      ${makeR3Row(3, '待定', 'placeholder', `R2-${groupNames[mi]} #2`, 'tag-pending')}
+      ${slots.map((s, pi) => makeR3Row(pi, '待定', 'placeholder', `R2-${groupNames[s.src]} #${s.rank}`, 'tag-pending')).join('')}
       <div class="r2-conflict-warn" id="r3-warn-${gi}">⚠ 名次重複，請重新確認</div>
     `;
     grid.appendChild(card);
@@ -846,14 +918,10 @@ function validateR3Group(gi) {
 }
 
 function getR3PlayerByRank(gi, rank) {
-  const mi = mirror3[gi];
   for (const [pi, r] of Object.entries(r3Results[gi])) {
     if (parseInt(r) === rank) {
-      const slot = parseInt(pi);
-      if (slot === 0) return getR2PlayerByRank(gi, 1);
-      if (slot === 1) return getR2PlayerByRank(gi, 2);
-      if (slot === 2) return getR2PlayerByRank(mi, 1);
-      if (slot === 3) return getR2PlayerByRank(mi, 2);
+      const s = r3Slots[gi][parseInt(pi)];
+      return getR2PlayerByRank(s.src, s.rank);
     }
   }
   return null;
@@ -861,15 +929,11 @@ function getR3PlayerByRank(gi, rank) {
 
 function updateR3() {
   for (let gi = 0; gi < 8; gi++) {
-    const mi = mirror3[gi];
-    const slots = [
-      { pi: 0, src: gi, rank: 1, tagCls: 'tag-r2-1st', tagTxt: `R2-${groupNames[gi]} #1` },
-      { pi: 1, src: gi, rank: 2, tagCls: 'tag-r2-2nd', tagTxt: `R2-${groupNames[gi]} #2` },
-      { pi: 2, src: mi, rank: 1, tagCls: 'tag-r2-1st', tagTxt: `R2-${groupNames[mi]} #1` },
-      { pi: 3, src: mi, rank: 2, tagCls: 'tag-r2-2nd', tagTxt: `R2-${groupNames[mi]} #2` },
-    ];
-    for (const { pi, src, rank, tagCls, tagTxt } of slots) {
-      const player = getR2PlayerByRank(src, rank);
+    for (let pi = 0; pi < 4; pi++) {
+      const s = r3Slots[gi][pi];
+      const tagCls = s.rank === 1 ? 'tag-r2-1st' : 'tag-r2-2nd';
+      const tagTxt = `R2-${groupNames[s.src]} #${s.rank}`;
+      const player = getR2PlayerByRank(s.src, s.rank);
       const nameEl = document.getElementById(`r3-name-${gi}-${pi}`);
       const tagEl  = document.getElementById(`r3-tag-${gi}-${pi}`);
       if (nameEl) {
@@ -1133,16 +1197,15 @@ buildR4();
 // 套用所有名次預設
 function applyPresets() {
   // --- R1 ---
-  r1Groups.forEach((grp, gi) => {
-    let hasPreset = false;
-    grp.forEach(([seed, name, rank], pi) => {
+  r1Presets.forEach((preset, gi) => {
+    if (!preset) return;
+    preset.forEach((rank, pi) => {
       if (!rank) return;
-      hasPreset = true;
       r1Results[gi][pi] = rank;
       const sel = document.getElementById(`sel-${gi}-${pi}`);
       if (sel) { sel.value = String(rank); sel.className = `rank-select has-value rank-val-${rank}`; }
     });
-    if (hasPreset) validateGroup(gi);
+    validateGroup(gi);
   });
   updateProgress();
   updateR2();
