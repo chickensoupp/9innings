@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>俱樂部星等系統</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+
+:root {
+  --bg: #f0f2f5;
+  --sidebar: #1e2a3a;
+  --border: #d0d8e4;
+  --muted: #8090a8;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background: var(--bg);
+  color: #1a1a2e;
+  min-height: 100vh;
+}
+
+.app { display: flex; height: 100vh; overflow: hidden; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 310px;
+  flex-shrink: 0;
+  background: var(--sidebar);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-header {
+  padding: 20px 18px 14px;
+  border-bottom: 1px solid #2d3f52;
+  flex-shrink: 0;
+}
+
+.sidebar-header h1 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f0c040;
+  letter-spacing: 0.05em;
+}
+
+.sidebar-header p {
+  font-size: 0.71rem;
+  color: #8090a8;
+  margin-top: 5px;
+  line-height: 1.6;
+}
+
+.player-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 12px;
+}
+
+.player-list::-webkit-scrollbar { width: 3px; }
+.player-list::-webkit-scrollbar-thumb { background: #3a5068; border-radius: 2px; }
+
+.list-header {
+  display: grid;
+  grid-template-columns: 16px 1fr 80px;
+  gap: 6px;
+  padding: 6px 4px 8px;
+  font-size: 0.65rem;
+  color: #6080a0;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-bottom: 1px solid #2d3f52;
+  margin-bottom: 6px;
+}
+
+.player-item {
+  display: grid;
+  grid-template-columns: 16px 1fr 80px;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.player-item .seq {
+  font-size: 0.65rem;
+  color: #4a6080;
+  text-align: right;
+  padding-right: 2px;
+  user-select: none;
+}
+
+/* 姓名 input */
+.player-item .name-input {
+  background: #1a2535;
+  border: 1px solid #2d3f52;
+  border-radius: 5px;
+  color: #c8d8e8;
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 0.82rem;
+  padding: 4px 7px;
+  width: 100%;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.player-item .name-input:focus {
+  outline: none;
+  border-color: #58a6ff;
+  background: #1e3048;
+  color: #e8f0fc;
+}
+
+/* 力排 input */
+.player-item .rank-input {
+  background: #253545;
+  border: 1px solid #3a5068;
+  border-radius: 5px;
+  color: #f0c040;
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 4px 6px;
+  width: 100%;
+  text-align: center;
+  -moz-appearance: textfield;
+  transition: border-color 0.15s;
+}
+
+.player-item .rank-input::-webkit-outer-spin-button,
+.player-item .rank-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.player-item .rank-input:focus { outline: none; border-color: #58a6ff; background: #1e3048; }
+.player-item .rank-input::placeholder { color: #4a6080; font-weight: 400; }
+
+.sidebar-footer {
+  padding: 12px;
+  border-top: 1px solid #2d3f52;
+  flex-shrink: 0;
+}
+
+.btn-gen {
+  width: 100%;
+  padding: 12px;
+  background: #f0c040;
+  border: none;
+  border-radius: 7px;
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: all 0.2s;
+}
+
+.btn-gen:hover { background: #ffd050; transform: translateY(-1px); }
+.btn-gen:active { transform: none; }
+
+/* ── MAIN ── */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+.tabs-bar {
+  display: flex;
+  background: #ffffff;
+  border-bottom: 2px solid var(--border);
+  flex-shrink: 0;
+  padding: 0 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.tab-btn {
+  padding: 14px 18px;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  background: none;
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+
+.tab-btn:hover { color: #1a1a2e; }
+.tab-btn.active { color: #1a6fc4; border-bottom-color: #1a6fc4; font-weight: 700; }
+
+.tab-area { flex: 1; overflow: auto; padding: 24px; background: var(--bg); }
+
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+.canvas-card {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  display: inline-block;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
+
+.canvas-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.canvas-card-top h2 { font-size: 1rem; font-weight: 700; }
+
+.dl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  background: #f0f4fa;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 0.75rem;
+  color: var(--muted);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.dl-btn:hover { border-color: #1a6fc4; color: #1a6fc4; }
+.dl-btn.hidden { display: none; }
+
+canvas { display: block; border-radius: 4px; }
+
+.empty-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.empty-hint .ico { font-size: 2rem; opacity: 0.3; }
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="sidebar">
+  <div class="sidebar-header">
+    <h1>⚾ 俱樂部星等</h1>
+    <p>姓名可直接編輯<br>輸入力排後點擊「產出星等圖」</p>
+  </div>
+  <div class="player-list" id="playerList"></div>
+  <div class="sidebar-footer">
+    <button class="btn-gen" onclick="generateAll()">⚡ 產出星等圖</button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="tabs-bar" id="tabsBar"></div>
+  <div class="tab-area" id="tabArea"></div>
+</div>
+
+</div>
+<script>
+// 預設姓名（可在 UI 直接修改）
+const DEFAULT_NAMES = [
+  '韋翰','家瑋','宇琛','鴨子教士','豪哥',
+  '許哥','烏薩奇','立源','福哥','墮落',
+  '又疼道奇','森','又疼天使','尚逸','鄰居',
+  '祥又','七海','安安','星城高中','杯麵費城'
+];
+
+const GROUPS = ['A','A','A','A','A','B','B','B','B','B','C','C','C','C','C','D','D','D','D','D'];
+
+const TABS = [
+  {
+    label: '錦標團',
+    stars: [
+      [3,3,3,3,3],[3,3,3,3,3],[3,3,3,3,3],[2,2,1,1,1],[2,2,1,1,1],
+      [2,2,1,1,1],[2,2,1,1,1],[2,2,1,1,1],[2,2,1,1,0],[2,2,1,1,0],
+      [2,2,1,1,0],[2,2,1,1,0],[1,1,1,0,0],[1,1,1,0,0],[1,1,0,0,0],
+      [1,1,0,0,0],[1,1,0,0,0],[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0],
+    ]
+  },
+  {
+    label: '20-30（一團）',
+    stars: [
+      [3,3,3,3,3],[3,3,3,3,3],[3,3,3,3,3],[3,3,3,3,2],[3,3,2,2,2],
+      [3,2,2,2,2],[2,2,2,2,2],[2,2,2,2,1],[2,2,2,2,1],[2,2,2,1,1],
+      [2,2,2,1,1],[2,2,1,1,1],[2,1,1,1,1],[2,1,1,1,0],[1,1,1,0,0],
+      [1,1,1,0,0],[1,1,0,0,0],[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0],
+    ]
+  },
+  {
+    label: '30-50（一團）',
+    stars: [
+      [3,3,3,3,3],[3,3,3,3,3],[3,3,3,3,3],[3,3,3,3,2],[3,3,3,2,2],
+      [3,3,2,2,2],[3,3,2,2,2],[3,3,2,2,1],[3,3,2,2,1],[3,2,2,1,1],
+      [3,2,2,1,1],[3,2,2,1,1],[2,2,1,1,1],[2,1,1,1,0],[2,1,1,0,0],
+      [1,1,1,0,0],[1,1,0,0,0],[1,1,0,0,0],[1,1,0,0,0],[1,1,0,0,0],
+    ]
+  },
+  {
+    label: '50-80（一團）',
+    stars: [
+      [3,3,3,3,3],[3,3,3,3,3],[3,3,3,3,3],[3,3,3,3,2],[3,3,3,2,2],
+      [3,3,2,2,2],[3,3,2,2,2],[3,3,2,2,2],[3,3,2,2,1],[3,3,2,1,1],
+      [3,2,2,1,1],[3,2,2,1,1],[2,2,2,1,0],[2,2,2,1,0],[2,2,1,1,0],
+      [2,2,1,0,0],[2,1,1,0,0],[1,1,0,0,0],[1,1,0,0,0],[1,1,0,0,0],
+    ]
+  },
+  {
+    label: '80+（一團）',
+    stars: [
+      [3,3,3,3,3],[3,3,3,3,3],[3,3,3,3,3],[3,3,3,3,3],[3,3,3,3,3],
+      [3,3,3,2,2],[3,3,2,2,2],[3,3,2,2,2],[3,3,2,2,2],[3,3,2,2,2],
+      [3,3,2,2,2],[3,3,2,2,2],[2,2,2,1,1],[2,2,1,1,1],[2,2,1,1,1],
+      [2,2,1,1,0],[2,1,1,1,0],[2,1,1,0,0],[1,1,0,0,0],[1,1,0,0,0],
+    ]
+  },
+];
+
+const GROUP_BG  = { A:'#8b9dc3', B:'#c8a0c8', C:'#5b8dd9', D:'#e08080' };
+const STAR_BG   = { 3:'#f5e040', 2:'#70c060', 1:'#f0a040', 0:'#e8eef5' };
+const STAR_TEXT = { 3:'#5a4800', 2:'#1a4a10', 1:'#7a3800', 0:'#9aaabb' };
+
+// ── State：名字和力排都從 input 即時讀取
+const names   = [...DEFAULT_NAMES];
+const ranking = new Array(20).fill(undefined);
+
+// ── Sidebar
+function buildPlayerList() {
+  const list = document.getElementById('playerList');
+  list.innerHTML = `
+    <div class="list-header">
+      <span></span><span>姓名</span><span>力排</span>
+    </div>`;
+
+  for (let i = 0; i < 20; i++) {
+    const div = document.createElement('div');
+    div.className = 'player-item';
+    div.innerHTML = `
+      <span class="seq">${i + 1}</span>
+      <input class="name-input" type="text"
+        value="${names[i]}" data-idx="${i}"
+        oninput="onNameInput(this)" placeholder="姓名">
+      <input class="rank-input" type="number" min="1"
+        placeholder="力排" data-idx="${i}"
+        oninput="onRankInput(this)">`;
+    list.appendChild(div);
+  }
+}
+
+function onNameInput(el) {
+  names[parseInt(el.dataset.idx)] = el.value;
+}
+
+function onRankInput(el) {
+  const v = el.value.trim();
+  ranking[parseInt(el.dataset.idx)] = v === '' ? undefined : Number(v);
+}
+
+// ── Tabs
+function buildTabs() {
+  const bar  = document.getElementById('tabsBar');
+  const area = document.getElementById('tabArea');
+  bar.innerHTML = ''; area.innerHTML = '';
+
+  TABS.forEach((tab, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'tab-btn' + (i === 0 ? ' active' : '');
+    btn.textContent = tab.label;
+    btn.onclick = () => switchTab(i);
+    bar.appendChild(btn);
+
+    const pane = document.createElement('div');
+    pane.className = 'tab-pane' + (i === 0 ? ' active' : '');
+    pane.id = `pane_${i}`;
+    pane.innerHTML = `
+      <div class="canvas-card">
+        <div class="canvas-card-top">
+          <h2>${tab.label}</h2>
+          <a id="dl_${i}" class="dl-btn hidden" download="${tab.label}.png">⬇ 下載圖片</a>
+        </div>
+        <div id="cw_${i}">
+          <div class="empty-hint"><div class="ico">📋</div><div>輸入力排後點擊「產出星等圖」</div></div>
+        </div>
+      </div>`;
+    area.appendChild(pane);
+  });
+}
+
+function switchTab(i) {
+  document.querySelectorAll('.tab-btn').forEach((b,j) => b.classList.toggle('active', i===j));
+  document.querySelectorAll('.tab-pane').forEach((p,j) => p.classList.toggle('active', i===j));
+}
+
+// ── Generate
+function generateAll() {
+  // 建立 {idx, name, rank} 陣列
+  const players = names.map((name, i) => ({ idx: i, name: name || `球員${i+1}`, rank: ranking[i] }));
+
+  // 有力排的由小到大，沒填的維持原序放後面
+  const withRank    = players.filter(p => p.rank != null).sort((a, b) => a.rank - b.rank);
+  const withoutRank = players.filter(p => p.rank == null);
+  const sorted      = [...withRank, ...withoutRank];
+
+  TABS.forEach((tab, ti) => {
+    const rows = sorted.map((p, slot) => ({
+      name:  p.name,
+      group: GROUPS[slot],
+      stars: tab.stars[slot] || [0,0,0,0,0],
+    }));
+
+    const canvas = drawTable(tab.label, rows);
+    const cw    = document.getElementById(`cw_${ti}`);
+    const dlBtn = document.getElementById(`dl_${ti}`);
+    cw.innerHTML = '';
+    cw.appendChild(canvas);
+    dlBtn.classList.remove('hidden');
+    dlBtn.href     = canvas.toDataURL('image/png');
+    dlBtn.download = `${tab.label}.png`;
+  });
+
+  switchTab(0);
+}
+
+// ── Canvas drawing
+function drawTable(title, rows) {
+  const SCALE    = 2;
+  const COL_NAME = 100;
+  const COL_GRP  = 36;
+  const COL_STAR = 46;
+  const N_STARS  = 5;
+  const ROW_H    = 34;
+  const HEADER_H = 44;
+  const TITLE_H  = 40;
+
+  const W = COL_NAME + COL_GRP + COL_STAR * N_STARS;
+  const H = TITLE_H + HEADER_H + rows.length * ROW_H;
+
+  const canvas = document.createElement('canvas');
+  canvas.width  = W * SCALE;
+  canvas.height = H * SCALE;
+  canvas.style.width  = W + 'px';
+  canvas.style.height = H + 'px';
+
+  const ctx = canvas.getContext('2d');
+  ctx.scale(SCALE, SCALE);
+
+  // 全白底
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, W, H);
+
+  // ── 標題
+  ctx.fillStyle = '#1e2a3a';
+  ctx.fillRect(0, 0, W, TITLE_H);
+  ctx.font = `bold 15px 'Noto Sans TC',sans-serif`;
+  ctx.fillStyle = '#f0c040';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(`⚾ ${title}`, 14, TITLE_H / 2);
+
+  // ── 表頭
+  const HY = TITLE_H;
+  const starX0 = COL_NAME + COL_GRP;
+  ctx.fillStyle = '#2c3e5a';
+  ctx.fillRect(0, HY, W, HEADER_H);
+
+  ctx.fillStyle = '#e8f0fc';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  const hcy = HY + HEADER_H / 2;
+
+  ctx.font = `bold 12px 'Noto Sans TC',sans-serif`;
+  ctx.fillText('姓名', COL_NAME / 2, hcy - 6);
+  ctx.fillText('組別', COL_NAME + COL_GRP / 2, hcy - 6);
+  ctx.fillText('星等', starX0 + (COL_STAR * N_STARS) / 2, hcy - 8);
+
+  ctx.font = `10px 'Noto Sans TC',sans-serif`;
+  ctx.fillStyle = '#a0b8d0';
+  ['第1場','第2場','第3場','第4場','第5場'].forEach((l, j) => {
+    ctx.fillText(l, starX0 + COL_STAR * j + COL_STAR / 2, hcy + 10);
+  });
+
+  ctx.strokeStyle = '#4a6080';
+  ctx.lineWidth = 0.5;
+  ctx.beginPath();
+  ctx.moveTo(starX0, HY + HEADER_H / 2); ctx.lineTo(W, HY + HEADER_H / 2);
+  ctx.stroke();
+
+  // ── 計算組別合併範圍
+  const groupRanges = [];
+  let curGrp = null, grpStart = 0;
+  rows.forEach((row, i) => {
+    if (row.group !== curGrp) {
+      if (curGrp !== null) groupRanges.push({ group: curGrp, start: grpStart, end: i - 1 });
+      curGrp = row.group; grpStart = i;
+    }
+  });
+  if (curGrp !== null) groupRanges.push({ group: curGrp, start: grpStart, end: rows.length - 1 });
+
+  const BORDER = '#c8d4e4';
+
+  // ── 資料列
+  rows.forEach((row, i) => {
+    const ry = TITLE_H + HEADER_H + i * ROW_H;
+
+    ctx.fillStyle = i % 2 === 0 ? '#f8fafc' : '#ffffff';
+    ctx.fillRect(0, ry, W, ROW_H);
+
+    // 姓名
+    ctx.font = `13px 'Noto Sans TC',sans-serif`;
+    ctx.fillStyle = '#1a1a2e';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(row.name, COL_NAME / 2, ry + ROW_H / 2);
+
+    // 星等格
+    row.stars.forEach((s, j) => {
+      const sx  = starX0 + j * COL_STAR;
+      const pad = 3;
+      ctx.fillStyle = STAR_BG[s];
+      ctx.fillRect(sx + pad, ry + pad, COL_STAR - pad * 2, ROW_H - pad * 2);
+      ctx.font = `bold 13px 'Noto Sans TC',sans-serif`;
+      ctx.fillStyle = STAR_TEXT[s];
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(String(s), sx + COL_STAR / 2, ry + ROW_H / 2);
+    });
+
+    // 橫向格線
+    ctx.strokeStyle = BORDER;
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.moveTo(0, ry + ROW_H); ctx.lineTo(W, ry + ROW_H);
+    ctx.stroke();
+  });
+
+  // ── 組別合併儲存格
+  groupRanges.forEach(({ group, start, end }) => {
+    const gy = TITLE_H + HEADER_H + start * ROW_H;
+    const gh = (end - start + 1) * ROW_H;
+    const gx = COL_NAME;
+    const gw = COL_GRP;
+    ctx.fillStyle = GROUP_BG[group] || '#aaaaaa';
+    ctx.fillRect(gx, gy, gw, gh);
+    ctx.font = `bold 13px 'Noto Sans TC',sans-serif`;
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(group, gx + gw / 2, gy + gh / 2);
+  });
+
+  // ── 縱向格線
+  ctx.strokeStyle = BORDER;
+  ctx.lineWidth = 0.8;
+  [COL_NAME, COL_NAME + COL_GRP].forEach(x => {
+    ctx.beginPath();
+    ctx.moveTo(x, TITLE_H); ctx.lineTo(x, H);
+    ctx.stroke();
+  });
+  ctx.lineWidth = 0.5;
+  for (let j = 1; j < N_STARS; j++) {
+    const x = starX0 + j * COL_STAR;
+    ctx.beginPath();
+    ctx.moveTo(x, TITLE_H + HEADER_H); ctx.lineTo(x, H);
+    ctx.stroke();
+  }
+
+  // ── 外框
+  ctx.strokeStyle = '#a0b0c4';
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(0.75, TITLE_H + 0.75, W - 1.5, H - TITLE_H - 1.5);
+
+  return canvas;
+}
+
+// Init
+buildPlayerList();
+buildTabs();
+</script>
+</body>
+</html>

@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>強化＆五拍計算機</title>
+    <link rel="stylesheet" href="navigation.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+
+        body {
+            font-family: 'Noto Sans TC', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; padding: 20px; color: #333;
+        }
+        .page-container {
+            max-width: 1100px; margin: 0 auto;
+            background: rgba(255,255,255,0.95); border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white; text-align: center; padding: 30px;
+        }
+        .header h1 { font-size: 2rem; font-weight: 700; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .content-wrapper { padding: 30px 40px 40px; }
+
+        /* ===== 區塊 ===== */
+        .calc-section {
+            background: white; border-radius: 15px; padding: 24px 28px;
+            margin-bottom: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            border: 1px solid rgba(79,172,254,0.2);
+            animation: fadeInUp 0.5s ease-out;
+        }
+        @keyframes fadeInUp {
+            from { opacity:0; transform:translateY(16px); }
+            to   { opacity:1; transform:translateY(0); }
+        }
+        .section-title {
+            font-size: 1.1rem; font-weight: 600; color: #4facfe;
+            margin-bottom: 20px; text-align: center; position: relative;
+        }
+        .section-title::after {
+            content:''; position:absolute; bottom:-8px; left:50%; transform:translateX(-50%);
+            width:55px; height:3px;
+            background:linear-gradient(90deg,#4facfe,#00f2fe); border-radius:2px;
+        }
+
+        /* ===== 卡種按鈕 ===== */
+        .card-type-section { background:white; border-radius:15px; padding:20px 28px; margin-bottom:24px; box-shadow:0 8px 24px rgba(0,0,0,0.08); border:1px solid rgba(79,172,254,0.2); }
+        .card-type-row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center; }
+        .card-btn {
+            padding:8px 18px; border-radius:20px; border:2px solid #d0d5e0;
+            background:white; color:#555; font-size:0.9rem; font-weight:600; cursor:pointer; transition:all 0.2s;
+        }
+        .card-btn:hover { border-color:#4facfe; color:#4facfe; }
+        .card-btn.active { background:linear-gradient(135deg,#4facfe,#00f2fe); border-color:#4facfe; color:white; box-shadow:0 3px 12px rgba(79,172,254,0.4); }
+        .card-btn#cardBtn_supreme.active { background:linear-gradient(135deg,#1565c0,#42a5f5); border-color:#1565c0; }
+
+        /* ===== 加成輸入 ===== */
+        .bonus-row { display:flex; flex-wrap:wrap; gap:16px; margin-top:14px; justify-content:center; }
+        .bonus-item { display:flex; flex-direction:column; align-items:center; gap:4px; }
+        .bonus-label { font-size:0.75rem; font-weight:600; color:#888; }
+        .bonus-input { width:64px; padding:6px 4px; border:2px solid #e1e5e9; border-radius:8px; text-align:center; font-size:14px; font-weight:500; transition:border-color 0.2s; }
+        .bonus-input:focus { outline:none; border-color:#4facfe; }
+
+        /* ===== 主表格 ===== */
+        .stats-table { width:100%; border-collapse:collapse; border-radius:12px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.06); }
+        .stats-table th { background:linear-gradient(135deg,#4facfe,#00f2fe); color:white; padding:10px 6px; font-size:0.82rem; font-weight:600; text-align:center; }
+        .stats-table td { padding:8px 6px; text-align:center; border-bottom:1px solid #f0f0f0; background:#fafafa; }
+        .stats-table td:first-child { font-weight:600; font-size:0.82rem; white-space:nowrap; padding:8px 12px; }
+        .stats-table tr:last-child td { border-bottom:none; }
+
+        .row-target   td:first-child { background:linear-gradient(135deg,#ede7f6,#d1c4e9)!important; color:#4527a0!important; }
+        .row-coach    td:first-child { background:linear-gradient(135deg,#fff8e1,#fff3cd)!important; color:#b8860b!important; }
+        .row-training td:first-child { background:linear-gradient(135deg,#fce4ec,#f8d7da)!important; color:#c62828!important; }
+        .row-enhance  td:first-child { background:linear-gradient(135deg,#e3f2fd,#cce5ff)!important; color:#1565c0!important; }
+        .row-rise     td:first-child { background:linear-gradient(135deg,#e8f5e9,#d4edda)!important; color:#2e7d32!important; }
+        .row-base     td:first-child { background:linear-gradient(135deg,#f5f5f5,#eeeeee)!important; color:#555!important; }
+
+        input[type="number"].stat-input {
+            width:64px; padding:7px 4px; border:2px solid #e1e5e9; border-radius:8px;
+            text-align:center; font-size:13px; font-weight:500; transition:border-color 0.2s;
+        }
+        input[type="number"].stat-input:focus { outline:none; border-color:#4facfe; }
+        .training-display { display:inline-block; min-width:40px; font-weight:600; color:#c62828; }
+
+        /* ===== 校正（兩側） + 強化量總計 ===== */
+        .bottom-bar {
+            margin-top:16px; display:flex; align-items:center;
+        }
+        .enhance-summary {
+            padding:10px 16px; border-radius:10px; background:#f0f4ff;
+            border:1.5px solid #c3d4f7; display:flex; flex-direction:column;
+            align-items:center; gap:4px; min-width:90px;
+        }
+        .enhance-summary span.label { font-size:0.78rem; font-weight:600; color:#888; }
+        .enhance-summary .nums { display:flex; align-items:baseline; gap:4px; }
+        .enhance-summary .total-num { font-size:1.4rem; font-weight:700; color:#1b5e20; }
+        .enhance-summary .limit-num { font-size:0.95rem; font-weight:600; color:#555; }
+        .enhance-summary .warn { font-size:0.75rem; font-weight:600; color:#c62828; display:none; }
+
+        /* ===== 五拍勾選 ===== */
+        .five-tools-toggle {
+            display:flex; align-items:center; gap:10px;
+            padding:14px 20px; background:#f8f9ff; border-radius:12px;
+            border:1.5px solid rgba(79,172,254,0.25); margin-bottom:20px; cursor:pointer;
+        }
+        .five-tools-toggle input[type="checkbox"] { width:18px; height:18px; cursor:pointer; accent-color:#4facfe; }
+        .five-tools-toggle label { font-weight:600; font-size:1rem; color:#4facfe; cursor:pointer; }
+
+        .ft-controls { display:flex; flex-wrap:wrap; gap:16px; margin-bottom:20px; }
+        .ft-control-group { display:flex; flex-direction:column; gap:6px; }
+        .ft-control-group label { font-size:0.8rem; font-weight:600; color:#888; }
+        .ft-select {
+            padding:8px 12px; border:2px solid #e1e5e9; border-radius:8px;
+            font-size:13px; font-weight:500; background:white; cursor:pointer; transition:border-color 0.2s;
+        }
+        .ft-select:focus { outline:none; border-color:#4facfe; }
+
+        /* ===== 結果 ===== */
+        .result-grid { display:flex; flex-wrap:wrap; gap:14px; margin-top:16px; }
+        .result-card {
+            flex:1; min-width:100px; background:linear-gradient(135deg,#f8f9ff,#e6f3ff);
+            border-radius:12px; padding:16px 10px; text-align:center;
+            border:2px solid rgba(79,172,254,0.2);
+        }
+        .result-card h3 { font-size:0.82rem; color:#4facfe; margin:0 0 8px; font-weight:600; }
+        .result-value { font-size:1.6rem; font-weight:700; color:#667eea; margin:0; }
+        .result-total {
+            flex:1; min-width:140px; background:linear-gradient(135deg,#4facfe,#00f2fe);
+            border-radius:12px; padding:16px 10px; text-align:center; color:white;
+        }
+        .result-total .total-label { font-size:0.82rem; font-weight:600; opacity:0.9; margin-bottom:6px; }
+        .result-total .total-value { font-size:1.8rem; font-weight:700; }
+
+        /* 五拍結果 */
+        .ft-results { display:flex; flex-wrap:wrap; gap:14px; margin-top:16px; }
+        .ft-result-card {
+            flex:1; min-width:130px; background:linear-gradient(135deg,#e8f5e9,#d4edda);
+            border-radius:12px; padding:16px 10px; text-align:center;
+            border:2px solid rgba(46,125,50,0.25);
+        }
+        .ft-result-card h3 { font-size:0.82rem; color:#2e7d32; margin:0 0 8px; font-weight:600; }
+        .ft-result-card .ft-value { font-size:1.6rem; font-weight:700; color:#1b5e20; margin:0; }
+        .ft-enhance-row { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; justify-content:center; }
+        .ft-enhance-item { display:flex; flex-direction:column; align-items:center; gap:4px; }
+        .ft-enhance-item .stat-name { font-size:0.75rem; color:#666; font-weight:600; }
+        .ft-enhance-item .stat-val {
+            width:52px; height:36px; display:inline-flex; align-items:center; justify-content:center;
+            background:linear-gradient(135deg,#667eea,#764ba2); color:white;
+            font-weight:700; border-radius:8px; font-size:1rem;
+        }
+
+        /* 等級參考表 */
+        .level-table { width:60%; border-collapse:collapse; border-radius:10px; overflow:hidden; margin:16px auto 0; box-shadow:0 4px 12px rgba(0,0,0,0.06); }
+        .level-table th { background:linear-gradient(135deg,#4facfe,#00f2fe); color:white; padding:10px; font-size:0.85rem; text-align:center; }
+        .level-table td { padding:9px; text-align:center; border-bottom:1px solid #f0f0f0; background:#fafafa; font-size:0.85rem; }
+        .level-table td:first-child { background:linear-gradient(135deg,#f8f9ff,#e6f3ff); font-weight:600; color:#4facfe; }
+        .level-table tr:last-child td { border-bottom:none; }
+        .level-table tbody tr.highlighted { background:linear-gradient(135deg,#ffd700,#ffed4e)!important; font-weight:700; box-shadow:0 3px 10px rgba(255,215,0,0.4); }
+        .level-table tbody tr.highlighted td { background:transparent!important; color:#2c3e50; }
+        .level-table tbody tr.highlighted td:first-child { color:#2c3e50; }
+
+        /* ===== 卓越球員選擇器 ===== */
+        .player-selector-box { background:linear-gradient(135deg,#f0f7ff,#e0f0ff); border:1.5px solid rgba(79,172,254,0.35); border-radius:12px; padding:16px 20px; margin-bottom:20px; }
+        .player-selector-label { font-weight:600; color:#4facfe; font-size:0.92rem; margin-bottom:10px; display:block; }
+        .player-search-wrapper { position:relative; width:100%; }
+        .player-search-input { width:100%; padding:9px 12px; border:2px solid #e1e5e9; border-radius:8px; font-size:13px; background:white; box-sizing:border-box; transition:border-color 0.2s; }
+        .player-search-input:focus { outline:none; border-color:#4facfe; }
+        .player-dropdown { position:absolute; top:calc(100% + 2px); left:0; right:0; background:white; border:2px solid #4facfe; border-radius:0 0 10px 10px; max-height:220px; overflow-y:auto; z-index:999; box-shadow:0 8px 24px rgba(0,0,0,0.13); display:none; }
+        .player-dropdown-item { padding:9px 13px; cursor:pointer; border-bottom:1px solid #f0f4ff; transition:background 0.15s; }
+        .player-dropdown-item:last-child { border-bottom:none; }
+        .player-dropdown-item:hover { background:linear-gradient(135deg,#f0f7ff,#e0f0ff); }
+        .dropdown-player-name { font-weight:600; font-size:13px; color:#333; }
+        .dropdown-player-meta { font-size:11px; color:#888; margin-top:2px; }
+        .dropdown-no-result { padding:12px; text-align:center; color:#999; font-size:13px; }
+        .selected-player-tag { display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg,#4facfe,#00f2fe); color:white; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600; margin-top:10px; }
+        .tag-clear { cursor:pointer; font-size:15px; background:none; border:none; color:white; opacity:0.85; padding:0; }
+        .tag-clear:hover { opacity:1; }
+
+        @media (max-width: 680px) {
+            .content-wrapper { padding:20px; }
+            .stats-table th, .stats-table td { padding:6px 3px; font-size:0.78rem; }
+            input[type="number"].stat-input { width:50px; font-size:12px; }
+            .level-table { width:100%; }
+        }
+    </style>
+</head>
+<body>
+<div class="main-content">
+<div class="page-container">
+    <div class="header"><h1>強化 ＆ 五拍計算機</h1></div>
+    <div class="content-wrapper">
+
+        <!-- 卡種 -->
+        <div class="card-type-section">
+            <div class="card-type-row">
+                <button class="card-btn" id="cardBtn_normal"  onclick="setCardType('normal')">普卡</button>
+                <button class="card-btn" id="cardBtn_sign"    onclick="setCardType('sign')">簽名</button>
+                <button class="card-btn" id="cardBtn_peak"    onclick="setCardType('peak')">全盛</button>
+                <button class="card-btn" id="cardBtn_legend"  onclick="setCardType('legend')">傳說</button>
+                <button class="card-btn" id="cardBtn_supreme" onclick="setCardType('supreme')">卓越</button>
+            </div>
+            <div class="bonus-row">
+                <div class="bonus-item"><span class="bonus-label">團隊加成</span><input class="bonus-input" type="number" id="teamBonus"      min="0" max="12" value="0" oninput="clampAndRecalc(this,0,12)"></div>
+                <div class="bonus-item"><span class="bonus-label">指導球員</span><input class="bonus-input" type="number" id="coachBonus"     min="0" max="3"  value="0" oninput="clampAndRecalc(this,0,3)"></div>
+                <div class="bonus-item"><span class="bonus-label">黑鑽</span>   <input class="bonus-input" type="number" id="diamondBonus"    min="0" max="3"  value="0" oninput="clampAndRecalc(this,0,3)"></div>
+                <div class="bonus-item"><span class="bonus-label">簽名增加量</span><input class="bonus-input" type="number" id="signatureBonus" min="0" max="12" value="0" oninput="clampAndRecalc(this,0,12)"></div>
+            </div>
+        </div>
+
+        <!-- 主計算區 -->
+        <div class="calc-section">
+            <div class="section-title">球員屬性設定</div>
+
+            <!-- 卓越選擇器（supreme時才顯示） -->
+            <div class="player-selector-box" id="supremeSelector" style="display:none;">
+                <span class="player-selector-label">選擇卓越球員（自動帶入基礎值與上升量）</span>
+                <div class="player-search-wrapper">
+                    <input type="text" class="player-search-input" id="supremeSearch"
+                           placeholder="輸入球員姓名、隊伍或守備位置..."
+                           oninput="filterSupremePlayers(this.value)"
+                           onfocus="showSupremeDropdown()" autocomplete="off">
+                    <div class="player-dropdown" id="supremeDropdown"></div>
+                </div>
+                <div id="selectedPlayerTag"></div>
+            </div>
+
+            <!-- 主表格 -->
+            <table class="stats-table">
+                <thead>
+                    <tr>
+                        <th>欄位</th>
+                        <th>控球/接觸</th>
+                        <th>球威/力量</th>
+                        <th>體力/選球</th>
+                        <th>直球/速度</th>
+                        <th>變化/守備</th>
+                    </tr>
+                </thead>
+                <tbody id="statsBody"></tbody>
+            </table>
+
+            <!-- 強化量總計 + 無（右側） -->
+            <div class="bottom-bar">
+                <div style="flex:1;"></div>
+                <div class="enhance-summary" id="enhanceSummary">
+                    <span class="label">強化量總計</span>
+                    <div class="nums">
+                        <span class="total-num" id="enhanceTotalDisplay">0</span>
+                        <span style="color:#aaa;font-size:0.9rem;">／</span>
+                        <span class="limit-num" id="enhanceLimitDisplay">57</span>
+                    </div>
+                    <span class="warn" id="enhanceWarning">超過上限！</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 五拍勾選 -->
+        <div class="five-tools-toggle" onclick="document.getElementById('fiveToolsCheck').click()">
+            <input type="checkbox" id="fiveToolsCheck" onclick="event.stopPropagation()" onchange="toggleFiveTools()">
+            <label>計算五拍子球員</label>
+        </div>
+
+        <!-- 五拍設定（隱藏直到勾選） -->
+        <div id="fiveToolsSection" class="calc-section" style="display:none;">
+            <div class="section-title">五拍設定</div>
+            <div class="ft-controls">
+                <div class="ft-control-group">
+                    <label>目標等級</label>
+                    <select class="ft-select" id="ft_level" onchange="calculateFiveTools()">
+                        <option value="max">最大等級</option>
+                        <option value="83">83</option>
+                        <option value="85">85</option>
+                        <option value="88">88</option>
+                        <option value="90">90</option>
+                        <option value="93">93</option>
+                        <option value="95">95</option>
+                        <option value="98">98</option>
+                        <option value="100">100</option>
+                        <option value="103">103</option>
+                        <option value="105">105</option>
+                        <option value="108">108</option>
+                        <option value="110">110</option>
+                    </select>
+                </div>
+                <div class="ft-control-group">
+                    <label>特訓 1（+12）</label>
+                    <select class="ft-select" id="ft_t1" onchange="updateFtTrainingOptions();calculateFiveTools()">
+                        <option value="-1">請選擇</option>
+                        <option value="0">控球/接觸</option>
+                        <option value="1">球威/力量</option>
+                        <option value="2">體力/選球</option>
+                        <option value="3">直球/速度</option>
+                        <option value="4">變化/守備</option>
+                    </select>
+                </div>
+                <div class="ft-control-group">
+                    <label>特訓 2（+10）</label>
+                    <select class="ft-select" id="ft_t2" onchange="updateFtTrainingOptions();calculateFiveTools()">
+                        <option value="-1">請選擇</option>
+                        <option value="0">控球/接觸</option>
+                        <option value="1">球威/力量</option>
+                        <option value="2">體力/選球</option>
+                        <option value="3">直球/速度</option>
+                        <option value="4">變化/守備</option>
+                    </select>
+                </div>
+                <div class="ft-control-group">
+                    <label>特訓 3（+4）</label>
+                    <select class="ft-select" id="ft_t3" onchange="calculateFiveTools()">
+                        <option value="-1">請選擇</option>
+                        <option value="0">控球/接觸</option>
+                        <option value="1">球威/力量</option>
+                        <option value="2">體力/選球</option>
+                        <option value="3">直球/速度</option>
+                        <option value="4">變化/守備</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 五拍結果 -->
+            <div class="ft-results" id="ftResults" style="display:none;">
+                <div class="ft-result-card">
+                    <h3>最大可達等級</h3>
+                    <p class="ft-value" id="ft_result_level">-</p>
+                </div>
+                <div class="ft-result-card">
+                    <h3>剩餘自由點數</h3>
+                    <p class="ft-value" id="ft_result_free">-</p>
+                </div>
+            </div>
+            <div id="ftEnhanceRow" style="display:none;margin-top:14px;">
+                <div style="font-size:0.82rem;font-weight:600;color:#888;text-align:center;margin-bottom:8px;">各項強化量建議</div>
+                <div class="ft-enhance-row" id="ftEnhanceItems"></div>
+            </div>
+
+            <!-- 等級參考表 -->
+            <div style="margin-top:28px;">
+                <div class="section-title" style="margin-bottom:14px;">等級對應參考表</div>
+                <table class="level-table">
+                    <thead><tr><th>等級範圍</th><th>LV7</th><th>LV8</th></tr></thead>
+                    <tbody>
+                        <tr data-range="80-82"><td>80-82</td><td>7</td><td>8</td></tr>
+                        <tr data-range="83-84"><td>83-84</td><td>8</td><td>9</td></tr>
+                        <tr data-range="85">   <td>85</td>   <td>8</td><td>10</td></tr>
+                        <tr data-range="86-87"><td>86-87</td><td>9</td><td>10</td></tr>
+                        <tr data-range="88">   <td>88</td>   <td>9</td><td>11</td></tr>
+                        <tr data-range="89">   <td>89</td>   <td>10</td><td>11</td></tr>
+                        <tr data-range="90-92"><td>90-92</td><td>10</td><td>12</td></tr>
+                        <tr data-range="93-94"><td>93-94</td><td>11</td><td>13</td></tr>
+                        <tr data-range="95-97"><td>95-97</td><td>12</td><td>14</td></tr>
+                        <tr data-range="98-99"><td>98-99</td><td>13</td><td>15</td></tr>
+                        <tr data-range="100-102"><td>100-102</td><td>14</td><td>16</td></tr>
+                        <tr data-range="103-104"><td>103-104</td><td>15</td><td>17</td></tr>
+                        <tr data-range="105-107"><td>105-107</td><td>16</td><td>18</td></tr>
+                        <tr data-range="108-109"><td>108-109</td><td>17</td><td>19</td></tr>
+                        <tr data-range="110">   <td>110</td>  <td>18</td><td>20</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 強化計算結果 -->
+        <div class="calc-section">
+            <div class="section-title">計算結果</div>
+            <div class="result-grid" id="resultGrid"></div>
+        </div>
+
+    </div>
+</div>
+</div>
+
+<script src="navigation.js"></script>
+<script>
+// ── 常數 ──
+const STATS = ['控球/接觸','球威/力量','體力/選球','直球/速度','變化/守備'];
+const STAT_SHORT = ['接觸','力量','選球','速度','守備'];
+
+// ── 卡種 ──
+const CARD_PRESETS = {
+    normal:  { team:11, diamond:0, sig:0  },
+    sign:    { team:12, diamond:0, sig:12 },
+    peak:    { team:12, diamond:0, sig:0  },
+    legend:  { team:11, diamond:3, sig:0  },
+    supreme: { team:10, diamond:2, sig:0  },
+};
+let currentCardType = 'sign';
+
+function setCardType(type) {
+    currentCardType = type;
+    document.querySelectorAll('.card-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('cardBtn_' + type).classList.add('active');
+    const p = CARD_PRESETS[type];
+    document.getElementById('teamBonus').value    = p.team;
+    document.getElementById('diamondBonus').value = p.diamond;
+    document.getElementById('signatureBonus').value = p.sig;
+    // 卓越選擇器顯示/隱藏
+    document.getElementById('supremeSelector').style.display = (type === 'supreme') ? 'block' : 'none';
+    recalc();
+}
+
+// ── 工具 ──
+function getNum(id) { return parseInt(document.getElementById(id)?.value) || 0; }
+
+function clampAndRecalc(el, min, max) {
+    let v = parseInt(el.value) || 0;
+    if (v < min) v = min;
+    if (v > max) v = max;
+    el.value = v;
+    recalc();
+}
+
+function hasTargets() {
+    return STATS.some((_, si) => { const v = parseInt(document.getElementById(`target_${si}`)?.value); return !isNaN(v); });
+}
+function recalc() {
+    if (hasTargets()) calcEnhanceFromTarget(); else calculate();
+    if (document.getElementById('fiveToolsCheck').checked) calculateFiveTools();
+}
+
+// ── 建立表格 ──
+function buildTable() {
+    const tbody = document.getElementById('statsBody');
+
+    // 目標值列
+    const trT = document.createElement('tr'); trT.className = 'row-target';
+    let tCells = `<td>目標值<br><span style="font-size:0.68rem;font-weight:400;color:#999;">（自動反推）</span></td>`;
+    STATS.forEach((_, si) => { tCells += `<td><input type="number" class="stat-input" id="target_${si}" placeholder="—" oninput="calcEnhanceFromTarget()"></td>`; });
+    trT.innerHTML = tCells; tbody.appendChild(trT);
+
+    // 教練列
+    const trC = document.createElement('tr'); trC.className = 'row-coach';
+    let cCells = `<td>教練</td>`;
+    STATS.forEach((_, si) => { cCells += `<td><input type="number" class="stat-input" id="coach_${si}" value="0" min="0" oninput="recalc()"></td>`; });
+    trC.innerHTML = cCells; tbody.appendChild(trC);
+
+    // 特訓（唯讀）
+    const trTr = document.createElement('tr'); trTr.className = 'row-training';
+    let trCells = `<td>特訓<br><span style="font-size:0.68rem;font-weight:400;color:#999;">（自動）</span></td>`;
+    STATS.forEach((_, si) => { trCells += `<td><span class="training-display" id="training_display_${si}">0</span></td>`; });
+    trTr.innerHTML = trCells; tbody.appendChild(trTr);
+
+    // 強化量
+    const trE = document.createElement('tr'); trE.className = 'row-enhance';
+    let eCells = `<td>強化量</td>`;
+    STATS.forEach((_, si) => { eCells += `<td><input type="number" class="stat-input" id="enhance_${si}" value="0" min="0" oninput="calculate()"></td>`; });
+    trE.innerHTML = eCells; tbody.appendChild(trE);
+
+    // 上升量、基礎值
+    [['rise','上升量','row-rise'],['base','基礎值','row-base']].forEach(([field,label,cls]) => {
+        const tr = document.createElement('tr'); tr.className = cls;
+        let cells = `<td>${label}</td>`;
+        STATS.forEach((_, si) => { cells += `<td><input type="number" class="stat-input" id="${field}_${si}" value="0" min="0" oninput="recalc()"></td>`; });
+        tr.innerHTML = cells; tbody.appendChild(tr);
+    });
+}
+
+// ── 建立結果卡 ──
+function buildResults() {
+    const grid = document.getElementById('resultGrid');
+    STATS.forEach((stat, si) => {
+        const c = document.createElement('div'); c.className = 'result-card';
+        c.innerHTML = `<h3>${stat}</h3><p class="result-value" id="res_${si}">0</p>`;
+        grid.appendChild(c);
+    });
+    const tot = document.createElement('div'); tot.className = 'result-total';
+    tot.innerHTML = `<div class="total-label">五項總和</div><div class="total-value" id="res_total">0</div>`;
+    grid.appendChild(tot);
+}
+
+// ── 特訓計算 ──
+function calcTraining() {
+    const bases = STATS.map((_, si) => getNum(`base_${si}`));
+    const candidates = STATS.map((_, si) => ({ si, enhance: getNum(`enhance_${si}`), base: bases[si] }));
+    const sorted = [...candidates].sort((a, b) =>
+        b.enhance !== a.enhance ? b.enhance - a.enhance :
+        b.base !== a.base ? b.base - a.base : a.si - b.si);
+    const vals = [0,0,0,0,0];
+    const map  = [12,10,4,0,0];
+    sorted.forEach((c, r) => { vals[c.si] = map[r] ?? 0; });
+    if (candidates.every(c => c.enhance === 0)) return [0,0,0,0,0];
+    return vals;
+}
+
+// ── 主計算 ──
+function calculate() {
+    const teamBonus      = getNum('teamBonus');
+    const coachBonus     = getNum('coachBonus');
+    const diamondBonus   = getNum('diamondBonus');
+    const signatureBonus = getNum('signatureBonus');
+    const training = calcTraining();
+    let grandTotal = 0;
+
+    // 強化量上限
+    const limit = (currentCardType === 'supreme') ? 87 : 57;
+    const eTotal = STATS.reduce((s, _, si) => s + getNum(`enhance_${si}`), 0);
+    document.getElementById('enhanceTotalDisplay').textContent = eTotal;
+    document.getElementById('enhanceLimitDisplay').textContent = limit;
+    const over = eTotal > limit;
+    document.getElementById('enhanceTotalDisplay').style.color = over ? '#c62828' : '#1b5e20';
+    document.getElementById('enhanceWarning').style.display = over ? 'inline' : 'none';
+    const sumEl = document.getElementById('enhanceSummary');
+    sumEl.style.borderColor = over ? '#e57373' : '#c3d4f7';
+    sumEl.style.background  = over ? '#fff0f0' : '#f0f4ff';
+
+    STATS.forEach((_, si) => {
+        document.getElementById(`training_display_${si}`).textContent = training[si];
+    });
+    STATS.forEach((_, si) => {
+        const total = getNum(`base_${si}`) + getNum(`rise_${si}`) + getNum(`enhance_${si}`)
+                    + training[si] + signatureBonus + diamondBonus
+                    + getNum(`coach_${si}`) + teamBonus + coachBonus;
+        document.getElementById(`res_${si}`).textContent = total;
+        grandTotal += total;
+    });
+    document.getElementById('res_total').textContent = grandTotal;
+}
+
+// ── 目標反推 ──
+function calcEnhanceFromTarget() {
+    const targets = STATS.map((_, si) => { const v = parseInt(document.getElementById(`target_${si}`)?.value); return isNaN(v) ? null : v; });
+    if (targets.every(t => t === null)) { calculate(); return; }
+
+    const teamBonus      = getNum('teamBonus');
+    const coachBonus     = getNum('coachBonus');
+    const diamondBonus   = getNum('diamondBonus');
+    const signatureBonus = getNum('signatureBonus');
+    const bases   = STATS.map((_, si) => getNum(`base_${si}`));
+    const rises   = STATS.map((_, si) => getNum(`rise_${si}`));
+    const coaches = STATS.map((_, si) => getNum(`coach_${si}`));
+    const fixed   = STATS.map((_, si) => bases[si] + rises[si] + coaches[si] + signatureBonus + diamondBonus + teamBonus + coachBonus);
+
+    const trainingMap = [12,10,4,0,0];
+    const n = STATS.length;
+
+    function actualTraining(enhances) {
+        const sorted = [...Array(n).keys()].sort((a, b) =>
+            enhances[b] !== enhances[a] ? enhances[b] - enhances[a] :
+            bases[b] !== bases[a] ? bases[b] - bases[a] : a - b);
+        const tr = new Array(n).fill(0);
+        if (enhances.some(e => e > 0)) sorted.forEach((si, r) => { tr[si] = trainingMap[r] ?? 0; });
+        return tr;
+    }
+
+    function computeEnhances(tr) {
+        return STATS.map((_, si) => targets[si] !== null ? Math.max(0, targets[si] - fixed[si] - tr[si]) : getNum(`enhance_${si}`));
+    }
+
+    function calcDevs(enh, tr) {
+        return STATS.map((_, si) => targets[si] === null ? 0 : Math.abs(fixed[si] + enh[si] + tr[si] - targets[si]));
+    }
+
+    function isBetter(a, b) {
+        const ma = Math.max(...a), mb = Math.max(...b);
+        if (ma !== mb) return ma < mb;
+        return a.reduce((s,v)=>s+v,0) < b.reduce((s,v)=>s+v,0);
+    }
+
+    let bestEnh = null, bestDevs = new Array(n).fill(Infinity), exactEnh = null;
+
+    // Phase 1: consistent + exact
+    outer: for (let a = 0; a < n; a++) for (let b = 0; b < n; b++) {
+        if (b === a) continue;
+        for (let c = 0; c < n; c++) {
+            if (c === a || c === b) continue;
+            const tr = new Array(n).fill(0); tr[a]=12; tr[b]=10; tr[c]=4;
+            const enh = computeEnhances(tr), realTr = actualTraining(enh);
+            if (!realTr.every((v,i) => v === tr[i])) continue;
+            const devs = calcDevs(enh, realTr);
+            if (devs.every(d => d === 0)) { exactEnh = enh; break outer; }
+            if (isBetter(devs, bestDevs)) { bestDevs = devs; bestEnh = enh; }
+        }
+    }
+
+    // Phase 2: best approximation
+    if (!exactEnh) {
+        for (let a = 0; a < n; a++) for (let b = 0; b < n; b++) {
+            if (b === a) continue;
+            for (let c = 0; c < n; c++) {
+                if (c === a || c === b) continue;
+                const tr = new Array(n).fill(0); tr[a]=12; tr[b]=10; tr[c]=4;
+                const enh = computeEnhances(tr), realTr = actualTraining(enh);
+                const devs = calcDevs(enh, realTr);
+                if (isBetter(devs, bestDevs)) { bestDevs = devs; bestEnh = enh; }
+            }
+        }
+    }
+
+    const chosen = exactEnh || bestEnh || computeEnhances(new Array(n).fill(0));
+    STATS.forEach((_, si) => { if (targets[si] !== null) { const el = document.getElementById(`enhance_${si}`); if (el) el.value = chosen[si]; } });
+    calculate();
+}
+
+// ════════════════════════════════════════════
+// 五拍功能
+// ════════════════════════════════════════════
+function toggleFiveTools() {
+    const on = document.getElementById('fiveToolsCheck').checked;
+    document.getElementById('fiveToolsSection').style.display = on ? 'block' : 'none';
+    if (on) calculateFiveTools();
+}
+
+function updateFtTrainingOptions() {
+    const t1 = document.getElementById('ft_t1').value;
+    const t2 = document.getElementById('ft_t2').value;
+    const opts = STATS.map((name, i) => `<option value="${i}">${name}</option>`).join('');
+    const head = '<option value="-1">請選擇</option>';
+
+    const t2el = document.getElementById('ft_t2');
+    t2el.innerHTML = head + STATS.map((name, i) => i == t1 ? '' : `<option value="${i}" ${i == t2 ? 'selected':''}>${name}</option>`).join('');
+
+    const t3el = document.getElementById('ft_t3');
+    const cur3 = t3el.value;
+    t3el.innerHTML = head + STATS.map((name, i) => (i == t1 || i == t2) ? '' : `<option value="${i}" ${i == cur3 ? 'selected':''}>${name}</option>`).join('');
+}
+
+function ftFreePoint() {
+    return currentCardType === 'supreme' ? 87 : 57;
+}
+
+function levelValidation(level) {
+    const gi   = STATS.map((_, si) => getNum(`rise_${si}`));
+    const base = STATS.map((_, si) => getNum(`base_${si}`));
+    let free   = ftFreePoint();
+    const dev  = [0,0,0,0,0];
+
+    for (let i = 0; i < 5; i++) {
+        dev[i] = Math.max(level - (gi[i] + base[i]), 0);
+        free -= dev[i];
+        if (free < 0) return false;
+    }
+
+    const t1 = parseInt(document.getElementById('ft_t1').value);
+    const t2 = parseInt(document.getElementById('ft_t2').value);
+    const t3 = parseInt(document.getElementById('ft_t3').value);
+    if (t1 < 0 || t2 < 0 || t3 < 0) return false;
+    const trainSet = [t1, t2, t3];
+
+    // 非特訓項中最大 dev
+    const nonTrain = [0,1,2,3,4].filter(i => !trainSet.includes(i));
+    const maxNonTrainDev = Math.max(...nonTrain.map(i => dev[i]), 0);
+
+    for (const ti of trainSet) {
+        const diff = Math.max(maxNonTrainDev - dev[ti], 0);
+        dev[ti] += diff; free -= diff;
+        if (free < 0) return false;
+    }
+
+    // 特訓內排序（降序）
+    for (let i = 1; i >= 0; i--) {
+        const diff = Math.max(dev[trainSet[i+1]] - dev[trainSet[i]], 0);
+        dev[trainSet[i]] += diff; free -= diff;
+        if (base[trainSet[i]] < base[trainSet[i+1]] && dev[trainSet[i+1]] === dev[trainSet[i]]) {
+            dev[trainSet[i]]++; free--;
+        }
+        if (free < 0) return false;
+    }
+
+    return { dev, level, free };
+}
+
+function maxGrade() {
+    const grades = [83,85,88,90,93,95,98,100,103,105,108,110];
+    let best = null;
+    for (const g of grades) {
+        const r = levelValidation(g);
+        if (!r) break;
+        best = r;
+    }
+    return best;
+}
+
+function calculateFiveTools() {
+    const levelSel = document.getElementById('ft_level').value;
+    const t1 = parseInt(document.getElementById('ft_t1').value);
+    const t2 = parseInt(document.getElementById('ft_t2').value);
+    const t3 = parseInt(document.getElementById('ft_t3').value);
+    if (t1 < 0 || t2 < 0 || t3 < 0) return;
+
+    const res = levelSel === 'max' ? maxGrade() : levelValidation(parseInt(levelSel));
+
+    const ftRes   = document.getElementById('ftResults');
+    const ftERow  = document.getElementById('ftEnhanceRow');
+    const ftItems = document.getElementById('ftEnhanceItems');
+
+    if (!res) {
+        ftRes.style.display = 'flex';
+        document.getElementById('ft_result_level').textContent = '無法達成';
+        document.getElementById('ft_result_free').textContent  = '-';
+        ftERow.style.display = 'none';
+        highlightLevelRow(null);
+        return;
+    }
+
+    ftRes.style.display = 'flex';
+    document.getElementById('ft_result_level').textContent = res.level;
+    document.getElementById('ft_result_free').textContent  = res.free;
+
+    ftItems.innerHTML = STATS.map((name, si) =>
+        `<div class="ft-enhance-item">
+            <span class="stat-name">${STAT_SHORT[si]}</span>
+            <span class="stat-val">${res.dev[si]}</span>
+        </div>`
+    ).join('');
+    ftERow.style.display = 'block';
+    highlightLevelRow(res.level);
+}
+
+function highlightLevelRow(level) {
+    document.querySelectorAll('.level-table tbody tr').forEach(row => {
+        row.classList.remove('highlighted');
+        if (!level) return;
+        const range = row.getAttribute('data-range');
+        if (!range) return;
+        if (range.includes('-')) {
+            const [mn, mx] = range.split('-').map(Number);
+            if (level >= mn && level <= mx) row.classList.add('highlighted');
+        } else {
+            if (level == parseInt(range)) row.classList.add('highlighted');
+        }
+    });
+}
+
+// ════════════════════════════════════════════
+// 卓越球員資料
+// ════════════════════════════════════════════
+const supremePlayers = [
+    { name:"Vladimir Guerrero", team:"天使",  position:"RF",     stats:{con:84,pow:82,eye:77,spd:68,fld:69,conUp:19,powUp:18,eyeUp:15,spdUp:11,fldUp:12} },
+    { name:"Billy Wagner",      team:"太空人", position:"CP",     stats:{con:76,pow:80,eye:52,spd:83,fld:73,conUp:16,powUp:19,eyeUp:5, spdUp:20,fldUp:15} },
+    { name:"Craig Biggio",      team:"太空人", position:"2B",     stats:{con:81,pow:74,eye:76,spd:71,fld:74,conUp:18,powUp:14,eyeUp:16,spdUp:13,fldUp:14} },
+    { name:"Jeff Bagwell",      team:"太空人", position:"1B",     stats:{con:87,pow:86,eye:82,spd:65,fld:71,conUp:19,powUp:19,eyeUp:16,spdUp:9, fldUp:12} },
+    { name:"Catfish Hunter",    team:"運動家", position:"SP",     stats:{con:79,pow:73,eye:80,spd:78,fld:74,conUp:16,powUp:13,eyeUp:17,spdUp:16,fldUp:13} },
+    { name:"Rollie Fingers",    team:"運動家", position:"CP",     stats:{con:77,pow:73,eye:58,spd:77,fld:74,conUp:18,powUp:15,eyeUp:8, spdUp:18,fldUp:16} },
+    { name:"Chipper Jones",     team:"勇士",   position:"3B",     stats:{con:86,pow:83,eye:81,spd:66,fld:67,conUp:19,powUp:18,eyeUp:17,spdUp:10,fldUp:11} },
+    { name:"Eddie Mathews",     team:"勇士",   position:"3B",     stats:{con:79,pow:84,eye:83,spd:65,fld:65,conUp:17,powUp:19,eyeUp:19,spdUp:10,fldUp:10} },
+    { name:"Hank Aaron",        team:"勇士",   position:"RF",     stats:{con:80,pow:90,eye:80,spd:68,fld:72,conUp:16,powUp:20,eyeUp:16,spdUp:11,fldUp:12} },
+    { name:"John Smoltz",       team:"勇士",   position:"SP",     stats:{con:80,pow:76,eye:77,spd:79,fld:76,conUp:16,powUp:15,eyeUp:14,spdUp:16,fldUp:16} },
+    { name:"Phil Niekro",       team:"勇士",   position:"SP",     stats:{con:79,pow:73,eye:77,spd:75,fld:80,conUp:16,powUp:13,eyeUp:15,spdUp:14,fldUp:17} },
+    { name:"Tom Glavine",       team:"勇士",   position:"SP",     stats:{con:78,pow:73,eye:77,spd:78,fld:73,conUp:16,powUp:14,eyeUp:16,spdUp:16,fldUp:13} },
+    { name:"Paul Molitor",      team:"釀酒人", position:"DH/3B",  stats:{con:85,pow:72,eye:76,spd:71,fld:67,conUp:20,powUp:15,eyeUp:16,spdUp:13,fldUp:11} },
+    { name:"Robin Yount",       team:"釀酒人", position:"SS/CF",  stats:{con:82,pow:75,eye:75,spd:69,fld:69,conUp:19,powUp:16,eyeUp:16,spdUp:12,fldUp:12} },
+    { name:"Bruce Sutter",      team:"紅雀",   position:"CP",     stats:{con:77,pow:77,eye:53,spd:80,fld:71,conUp:18,powUp:18,eyeUp:6, spdUp:19,fldUp:14} },
+    { name:"Dizzy Dean",        team:"紅雀",   position:"SP",     stats:{con:78,pow:70,eye:82,spd:76,fld:73,conUp:16,powUp:12,eyeUp:18,spdUp:16,fldUp:13} },
+    { name:"Lou Brock",         team:"紅雀",   position:"LF",     stats:{con:77,pow:70,eye:72,spd:84,fld:63,conUp:17,powUp:13,eyeUp:15,spdUp:20,fldUp:10} },
+    { name:"Ozzie Smith",       team:"紅雀",   position:"SS",     stats:{con:78,pow:64,eye:79,spd:77,fld:81,conUp:15,powUp:10,eyeUp:17,spdUp:15,fldUp:18} },
+    { name:"Rogers Hornsby",    team:"紅雀",   position:"2B",     stats:{con:94,pow:82,eye:83,spd:65,fld:66,conUp:22,powUp:17,eyeUp:17,spdUp:9, fldUp:10} },
+    { name:"Scott Rolen",       team:"紅雀",   position:"3B",     stats:{con:79,pow:80,eye:74,spd:62,fld:75,conUp:18,powUp:18,eyeUp:15,spdUp:9, fldUp:15} },
+    { name:"Stan Musial",       team:"紅雀",   position:"LF/1B",  stats:{con:81,pow:83,eye:83,spd:65,fld:73,conUp:16,powUp:18,eyeUp:18,spdUp:10,fldUp:13} },
+    { name:"Billy Williams",    team:"小熊",   position:"LF",     stats:{con:83,pow:79,eye:79,spd:65,fld:71,conUp:19,powUp:17,eyeUp:16,spdUp:10,fldUp:13} },
+    { name:"Ron Santo",         team:"小熊",   position:"3B",     stats:{con:80,pow:76,eye:77,spd:62,fld:69,conUp:19,powUp:17,eyeUp:16,spdUp:10,fldUp:13} },
+    { name:"Ryne Sandberg",     team:"小熊",   position:"2B",     stats:{con:79,pow:79,eye:75,spd:76,fld:78,conUp:16,powUp:16,eyeUp:14,spdUp:14,fldUp:15} },
+    { name:"Sammy Sosa",        team:"小熊",   position:"RF",     stats:{con:81,pow:91,eye:76,spd:69,fld:69,conUp:17,powUp:21,eyeUp:15,spdUp:11,fldUp:11} },
+    { name:"Don Drysdale",      team:"道奇",   position:"SP",     stats:{con:79,pow:74,eye:79,spd:73,fld:76,conUp:17,powUp:14,eyeUp:17,spdUp:13,fldUp:14} },
+    { name:"Don Sutton",        team:"道奇",   position:"SP",     stats:{con:79,pow:75,eye:80,spd:76,fld:74,conUp:16,powUp:15,eyeUp:17,spdUp:14,fldUp:13} },
+    { name:"Duke Snider",       team:"道奇",   position:"CF",     stats:{con:83,pow:84,eye:79,spd:67,fld:69,conUp:18,powUp:19,eyeUp:19,spdUp:11,fldUp:11} },
+    { name:"Jackie Robinson",   team:"道奇",   position:"2B/3B",  stats:{con:83,pow:72,eye:83,spd:65,fld:79,conUp:18,powUp:13,eyeUp:18,spdUp:10,fldUp:16} },
+    { name:"Roy Campanella",    team:"道奇",   position:"C",      stats:{con:81,pow:82,eye:78,spd:64,fld:68,conUp:18,powUp:19,eyeUp:16,spdUp:10,fldUp:12} },
+    { name:"Mel Ott",           team:"巨人",   position:"RF",     stats:{con:83,pow:82,eye:85,spd:62,fld:71,conUp:18,powUp:17,eyeUp:19,spdUp:9, fldUp:12} },
+    { name:"Willie Mays",       team:"巨人",   position:"CF",     stats:{con:80,pow:88,eye:76,spd:72,fld:72,conUp:16,powUp:20,eyeUp:15,spdUp:12,fldUp:12} },
+    { name:"Willie McCovey",    team:"巨人",   position:"1B",     stats:{con:81,pow:85,eye:86,spd:60,fld:65,conUp:17,powUp:20,eyeUp:20,spdUp:8, fldUp:10} },
+    { name:"Jim Thome",         team:"守護者", position:"1B",     stats:{con:79,pow:90,eye:79,spd:58,fld:67,conUp:17,powUp:22,eyeUp:17,spdUp:7, fldUp:12} },
+    { name:"Lou Boudreau",      team:"守護者", position:"SS",     stats:{con:85,pow:71,eye:82,spd:64,fld:79,conUp:19,powUp:12,eyeUp:18,spdUp:9, fldUp:17} },
+    { name:"Tris Speaker",      team:"守護者", position:"CF",     stats:{con:90,pow:72,eye:82,spd:72,fld:66,conUp:21,powUp:13,eyeUp:18,spdUp:13,fldUp:10} },
+    { name:"Edgar Martinez",    team:"水手",   position:"DH/3B",  stats:{con:85,pow:79,eye:83,spd:67,fld:63,conUp:20,powUp:16,eyeUp:19,spdUp:11,fldUp:9 } },
+    { name:"Ken Griffey Jr.",   team:"水手",   position:"CF",     stats:{con:82,pow:86,eye:77,spd:68,fld:81,conUp:17,powUp:18,eyeUp:14,spdUp:10,fldUp:16} },
+    { name:"Mike Piazza",       team:"大都會", position:"C",      stats:{con:80,pow:81,eye:75,spd:64,fld:70,conUp:18,powUp:19,eyeUp:15,spdUp:10,fldUp:13} },
+    { name:"Andre Dawson",      team:"國民",   position:"RF/CF",  stats:{con:79,pow:83,eye:70,spd:73,fld:72,conUp:17,powUp:19,eyeUp:12,spdUp:14,fldUp:13} },
+    { name:"Gary Carter",       team:"國民",   position:"C",      stats:{con:77,pow:78,eye:76,spd:64,fld:78,conUp:17,powUp:17,eyeUp:15,spdUp:10,fldUp:16} },
+    { name:"Tim Raines",        team:"國民",   position:"LF",     stats:{con:83,pow:72,eye:80,spd:84,fld:73,conUp:17,powUp:12,eyeUp:16,spdUp:18,fldUp:12} },
+    { name:"Brooks Robinson",   team:"金鶯",   position:"3B",     stats:{con:80,pow:74,eye:74,spd:65,fld:81,conUp:18,powUp:15,eyeUp:14,spdUp:10,fldUp:18} },
+    { name:"Cal Ripken Jr.",    team:"金鶯",   position:"SS",     stats:{con:78,pow:76,eye:79,spd:66,fld:81,conUp:15,powUp:15,eyeUp:17,spdUp:10,fldUp:18} },
+    { name:"Eddie Murray",      team:"金鶯",   position:"1B",     stats:{con:82,pow:77,eye:78,spd:65,fld:76,conUp:18,powUp:15,eyeUp:17,spdUp:10,fldUp:15} },
+    { name:"Dave Winfield",     team:"教士",   position:"RF",     stats:{con:83,pow:81,eye:76,spd:68,fld:73,conUp:18,powUp:17,eyeUp:15,spdUp:11,fldUp:14} },
+    { name:"Tony Gwynn",        team:"教士",   position:"RF",     stats:{con:81,pow:70,eye:78,spd:70,fld:72,conUp:18,powUp:13,eyeUp:17,spdUp:13,fldUp:14} },
+    { name:"Mike Schmidt",      team:"費城人", position:"3B",     stats:{con:76,pow:86,eye:79,spd:68,fld:74,conUp:15,powUp:19,eyeUp:16,spdUp:11,fldUp:14} },
+    { name:"Ralph Kiner",       team:"海盜",   position:"LF",     stats:{con:79,pow:87,eye:86,spd:62,fld:68,conUp:16,powUp:20,eyeUp:19,spdUp:9, fldUp:11} },
+    { name:"Roberto Clemente",  team:"海盜",   position:"RF",     stats:{con:86,pow:74,eye:72,spd:65,fld:79,conUp:20,powUp:15,eyeUp:13,spdUp:10,fldUp:17} },
+    { name:"Willie Stargell",   team:"海盜",   position:"LF/1B",  stats:{con:80,pow:87,eye:75,spd:61,fld:66,conUp:18,powUp:21,eyeUp:16,spdUp:9, fldUp:11} },
+    { name:"Adrian Beltre",     team:"遊騎兵", position:"3B",     stats:{con:82,pow:82,eye:72,spd:62,fld:77,conUp:19,powUp:19,eyeUp:13,spdUp:9, fldUp:15} },
+    { name:"Ivan Rodriguez",    team:"遊騎兵", position:"C",      stats:{con:82,pow:78,eye:71,spd:66,fld:79,conUp:19,powUp:15,eyeUp:13,spdUp:11,fldUp:17} },
+    { name:"Nolan Ryan",        team:"遊騎兵", position:"SP",     stats:{con:74,pow:71,eye:60,spd:87,fld:78,conUp:15,powUp:13,eyeUp:10,spdUp:19,fldUp:17} },
+    { name:"Barry Larkin",      team:"紅人",   position:"SS",     stats:{con:80,pow:79,eye:80,spd:75,fld:76,conUp:16,powUp:16,eyeUp:16,spdUp:13,fldUp:14} },
+    { name:"Johnny Bench",      team:"紅人",   position:"C",      stats:{con:77,pow:82,eye:78,spd:67,fld:71,conUp:15,powUp:19,eyeUp:17,spdUp:11,fldUp:13} },
+    { name:"Joe Morgan",        team:"紅人",   position:"2B",     stats:{con:82,pow:71,eye:87,spd:73,fld:76,conUp:17,powUp:12,eyeUp:19,spdUp:13,fldUp:14} },
+    { name:"Tony Perez",        team:"紅人",   position:"1B/3B",  stats:{con:80,pow:80,eye:72,spd:68,fld:69,conUp:18,powUp:18,eyeUp:15,spdUp:12,fldUp:12} },
+    { name:"David Ortiz",       team:"紅襪",   position:"DH/1B",  stats:{con:82,pow:88,eye:79,spd:59,fld:60,conUp:19,powUp:22,eyeUp:18,spdUp:8, fldUp:8 } },
+    { name:"Jim Rice",          team:"紅襪",   position:"LF",     stats:{con:81,pow:80,eye:72,spd:67,fld:71,conUp:18,powUp:18,eyeUp:15,spdUp:11,fldUp:13} },
+    { name:"Jimmie Foxx",       team:"紅襪",   position:"1B",     stats:{con:85,pow:87,eye:82,spd:64,fld:72,conUp:18,powUp:19,eyeUp:17,spdUp:9, fldUp:12} },
+    { name:"Wade Boggs",        team:"紅襪",   position:"3B",     stats:{con:87,pow:74,eye:84,spd:65,fld:68,conUp:20,powUp:15,eyeUp:19,spdUp:10,fldUp:11} },
+    { name:"George Brett",      team:"皇家",   position:"3B",     stats:{con:90,pow:77,eye:81,spd:71,fld:64,conUp:21,powUp:16,eyeUp:17,spdUp:12,fldUp:9 } },
+    { name:"Al Kaline",         team:"老虎",   position:"RF",     stats:{con:83,pow:81,eye:80,spd:67,fld:81,conUp:17,powUp:17,eyeUp:15,spdUp:10,fldUp:16} },
+    { name:"Alan Trammell",     team:"老虎",   position:"SS",     stats:{con:84,pow:74,eye:75,spd:71,fld:76,conUp:19,powUp:14,eyeUp:14,spdUp:12,fldUp:16} },
+    { name:"Ty Cobb",           team:"老虎",   position:"CF",     stats:{con:93,pow:71,eye:83,spd:77,fld:66,conUp:21,powUp:12,eyeUp:17,spdUp:15,fldUp:10} },
+    { name:"Harmon Killebrew",  team:"雙城",   position:"1B/3B",  stats:{con:75,pow:87,eye:85,spd:59,fld:67,conUp:15,powUp:21,eyeUp:20,spdUp:8, fldUp:11} },
+    { name:"Joe Mauer",         team:"雙城",   position:"C/1B",   stats:{con:87,pow:75,eye:78,spd:65,fld:71,conUp:21,powUp:14,eyeUp:17,spdUp:10,fldUp:13} },
+    { name:"Kirby Puckett",     team:"雙城",   position:"CF",     stats:{con:86,pow:74,eye:72,spd:65,fld:80,conUp:20,powUp:15,eyeUp:13,spdUp:10,fldUp:17} },
+    { name:"Rod Carew",         team:"雙城",   position:"2B/1B",  stats:{con:90,pow:70,eye:79,spd:72,fld:74,conUp:21,powUp:12,eyeUp:16,spdUp:12,fldUp:14} },
+    { name:"Frank Thomas",      team:"白襪",   position:"DH/1B",  stats:{con:85,pow:86,eye:85,spd:59,fld:60,conUp:20,powUp:20,eyeUp:19,spdUp:8, fldUp:8 } },
+    { name:"Babe Ruth",         team:"洋基",   position:"RF",     stats:{con:82,pow:90,eye:88,spd:64,fld:67,conUp:17,powUp:20,eyeUp:19,spdUp:9, fldUp:10} },
+    { name:"Derek Jeter",       team:"洋基",   position:"SS",     stats:{con:84,pow:72,eye:74,spd:70,fld:75,conUp:19,powUp:13,eyeUp:15,spdUp:12,fldUp:16} },
+    { name:"Joe DiMaggio",      team:"洋基",   position:"CF",     stats:{con:88,pow:81,eye:79,spd:65,fld:68,conUp:20,powUp:17,eyeUp:17,spdUp:10,fldUp:11} },
+    { name:"Lou Gehrig",        team:"洋基",   position:"1B",     stats:{con:87,pow:84,eye:87,spd:64,fld:70,conUp:19,powUp:17,eyeUp:19,spdUp:9, fldUp:11} },
+    { name:"Mickey Mantle",     team:"洋基",   position:"CF",     stats:{con:80,pow:89,eye:88,spd:64,fld:70,conUp:16,powUp:20,eyeUp:19,spdUp:9, fldUp:11} },
+    { name:"Yogi Berra",        team:"洋基",   position:"C",      stats:{con:78,pow:77,eye:77,spd:63,fld:78,conUp:17,powUp:17,eyeUp:16,spdUp:9, fldUp:16} },
+    { name:"Larry Walker",      team:"落磯",   position:"RF",     stats:{con:80,pow:84,eye:78,spd:71,fld:72,conUp:17,powUp:18,eyeUp:16,spdUp:12,fldUp:12} },
+    { name:"Gary Sheffield",    team:"馬林魚", position:"RF",     stats:{con:82,pow:85,eye:86,spd:67,fld:68,conUp:17,powUp:18,eyeUp:19,spdUp:10,fldUp:11} },
+    { name:"Rickey Henderson",  team:"運動家", position:"LF",     stats:{con:81,pow:77,eye:81,spd:87,fld:73,conUp:16,powUp:13,eyeUp:16,spdUp:18,fldUp:12} },
+];
+
+let currentSupremeList = [...supremePlayers];
+
+function filterSupremePlayers(query) {
+    query = query.trim().toLowerCase();
+    currentSupremeList = query
+        ? supremePlayers.filter(p => p.name.toLowerCase().includes(query) || p.team.includes(query) || p.position.toLowerCase().includes(query))
+        : [...supremePlayers];
+    renderSupremeDropdown();
+    document.getElementById('supremeDropdown').style.display = 'block';
+}
+
+function showSupremeDropdown() { filterSupremePlayers(document.getElementById('supremeSearch').value); }
+
+function renderSupremeDropdown() {
+    const dd = document.getElementById('supremeDropdown');
+    if (!currentSupremeList.length) { dd.innerHTML = '<div class="dropdown-no-result">找不到符合球員</div>'; return; }
+    dd.innerHTML = currentSupremeList.map(p => {
+        const idx = supremePlayers.indexOf(p);
+        return `<div class="player-dropdown-item" onclick="applySupremePlayer(${idx})">
+            <div class="dropdown-player-name">${p.name} <span style="color:#4facfe;font-weight:400;font-size:11px;">${p.team}</span></div>
+            <div class="dropdown-player-meta">${p.position} | 接${p.stats.con}(+${p.stats.conUp}) 力${p.stats.pow}(+${p.stats.powUp}) 選${p.stats.eye}(+${p.stats.eyeUp}) 速${p.stats.spd}(+${p.stats.spdUp}) 守${p.stats.fld}(+${p.stats.fldUp})</div>
+        </div>`;
+    }).join('');
+}
+
+function applySupremePlayer(idx) {
+    const p = supremePlayers[idx], s = p.stats;
+    const vals = { base:[s.con,s.pow,s.eye,s.spd,s.fld], rise:[s.conUp,s.powUp,s.eyeUp,s.spdUp,s.fldUp] };
+    ['base','rise'].forEach(field => vals[field].forEach((v, si) => { const el = document.getElementById(`${field}_${si}`); if (el) el.value = v; }));
+    document.getElementById('selectedPlayerTag').innerHTML =
+        `<span class="selected-player-tag">${p.name} (${p.team} · ${p.position})<button class="tag-clear" onclick="clearSupremePlayer()">✕</button></span>`;
+    document.getElementById('supremeDropdown').style.display = 'none';
+    document.getElementById('supremeSearch').value = '';
+    recalc();
+}
+
+function clearSupremePlayer() {
+    [0,1,2,3,4].forEach(si => {
+        ['base','rise'].forEach(f => { const el = document.getElementById(`${f}_${si}`); if (el) el.value = 0; });
+    });
+    document.getElementById('selectedPlayerTag').innerHTML = '';
+    recalc();
+}
+
+document.addEventListener('click', e => {
+    if (!e.target.closest('.player-search-wrapper') && !e.target.closest('.player-selector-box'))
+        document.getElementById('supremeDropdown').style.display = 'none';
+});
+
+// ── 初始化 ──
+buildTable();
+buildResults();
+setCardType('sign');
+</script>
+</body>
+</html>
